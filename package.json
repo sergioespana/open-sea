@@ -13,7 +13,9 @@
   "eslintConfig": {
     "extends": "eslint-config-synacor",
     "rules": {
-        "compat/compat": 1
+        "compat/compat": 1,
+        "indent": 1,
+        "react/jsx-indent-props": 1
     }
   },
   "devDependencies": {
