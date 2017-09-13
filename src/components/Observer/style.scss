@@ -1,0 +1,8 @@
+.observer {
+    position: absolute;
+    top: 102vh;
+    left: 0;
+    right: 0;
+    height: calc(100% - 102vh);
+    z-index: -1;
+}

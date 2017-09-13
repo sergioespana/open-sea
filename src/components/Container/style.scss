@@ -1,0 +1,7 @@
+.container {
+    margin: 0 20px;
+
+    @media (min-width: 1025px) {
+        margin: 0 96px;
+    }
+}
