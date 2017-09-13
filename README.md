@@ -1,5 +1,7 @@
 # SEAMan - Socio-environmental auditing manager
 
+[![Build Status](https://travis-ci.org/nielsrowinbik/seaman.svg?branch=master)](https://travis-ci.org/nielsrowinbik/seaman) [![Dependencies Status](https://david-dm.org/nielsrowinbik/seaman/status.svg)](https://david-dm.org/nielsrowinbik/seaman)
+
 *Short introduction to be added...*
 
 ---

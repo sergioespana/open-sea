@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - stable
+
+deploy:
+  - provider: surge
+    project: ./build/
+    domain: seaman.surge.sh
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: surge
+    project: ./build/
+    domain: seaman-next.surge.sh
+    skip_cleanup: true
+    on:
+      branch: next
