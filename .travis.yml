@@ -4,13 +4,13 @@ node_js:
 
 deploy:
   - provider: surge
-    project: ./build/
+    project: build
     domain: seaman.surge.sh
     skip_cleanup: true
     on:
       branch: master
   - provider: surge
-    project: ./build/
+    project: build
     domain: seaman-next.surge.sh
     skip_cleanup: true
     on:
