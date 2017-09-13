@@ -11,7 +11,10 @@
     "test": "eslint src"
   },
   "eslintConfig": {
-    "extends": "eslint-config-synacor"
+    "extends": "eslint-config-synacor",
+    "rules": {
+        "compat/compat": 1
+    }
   },
   "devDependencies": {
     "eslint": "^4.6.1",

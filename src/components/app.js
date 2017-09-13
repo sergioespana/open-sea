@@ -7,19 +7,21 @@ import Observer from './Observer';
 import Home from '../routes';
 
 export default class App extends Component {
-    state = {
-        appHasScrolled: false
-    }
+				state = {
+					appHasScrolled: false
+				}
 
-    render({ appHasScrolled }) {
-        return (
-            <div id="app">
-                <Header hasScrolled={appHasScrolled} />
-                <Router>
-                    <Home path="/" />
-                </Router>
-                <Observer cb={(changes) => this.setState({ appHasScrolled: changes[0].isIntersecting })} />
-            </div>
-        );
-    }
+				onAppScroll = (changes) => this.setState({ appHasScrolled: changes[0].isIntersecting });
+
+				render({ appHasScrolled }) {
+					return (
+						<div id="app">
+							<Header hasScrolled={appHasScrolled} />
+							<Router>
+								<Home path="/" />
+							</Router>
+							<Observer cb={this.onAppScroll} />
+						</div>
+					);
+				}
 }
