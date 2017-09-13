@@ -8,7 +8,7 @@ import style from './style';
 let cx = classnames.bind(style);
 
 export default class Header extends Component {
-	render({ hasScrolled }) {
+	render({ hasScrolled, toggleDrawer }) {
 		return (
 			<header
 				class={cx({
@@ -16,7 +16,7 @@ export default class Header extends Component {
 					hasScrolled
 				})}
 			>
-				<IconToggle>menu</IconToggle>
+				<IconToggle id="menutoggle" onClick={toggleDrawer}>menu</IconToggle>
 				<IconToggle>more_vert</IconToggle>
 			</header>
 		);

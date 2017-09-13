@@ -2,21 +2,26 @@ import { h, Component } from 'preact';
 import { Router } from 'preact-router';
 
 import Header from './Header';
+import Drawer from './Drawer';
 import Observer from './Observer';
 
 import Home from '../routes';
 
 export default class App extends Component {
 	state = {
-		appHasScrolled: false
+		appHasScrolled: false,
+		drawerIsOpen: false
 	}
 
 	onAppScroll = (changes) => this.setState({ appHasScrolled: changes[0].isIntersecting });
 
-	render({ appHasScrolled }) {
+	toggleDrawer = () => this.setState({ drawerIsOpen: !this.state.drawerIsOpen });
+
+	render(props, { appHasScrolled, drawerIsOpen }) {
 		return (
 			<div id="app">
-				<Header hasScrolled={appHasScrolled} />
+				<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
+				<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
 				<Router>
 					<Home path="/" />
 				</Router>
