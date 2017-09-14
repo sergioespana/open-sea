@@ -13,9 +13,8 @@
   "eslintConfig": {
     "extends": "eslint-config-synacor",
     "rules": {
-        "compat/compat": 1,
-        "indent": 1,
-        "react/jsx-indent-props": 1
+      "compat/compat": 1,
+	  "no-console": 0
     }
   },
   "devDependencies": {
@@ -32,6 +31,7 @@
     "preact": "^8.2.5",
     "preact-compat": "^3.17.0",
     "preact-material-components": "^1.1.6",
-    "preact-router": "^2.5.7"
+    "preact-router": "^2.5.7",
+    "react-swipeable": "^4.1.0"
   }
 }

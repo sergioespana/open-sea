@@ -5836,6 +5836,12 @@ rc@^1.0.1, rc@^1.1.2, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-swipeable@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-swipeable/-/react-swipeable-4.1.0.tgz#2796c903e810451058f3c69dfc35740d5857ec7c"
+  dependencies:
+    prop-types "^15.5.8"
+
 read-all-stream@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/read-all-stream/-/read-all-stream-3.1.0.tgz#35c3e177f2078ef789ee4bfafa4373074eaef4fa"
