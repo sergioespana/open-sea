@@ -1,32 +1,22 @@
-import { h, Component } from 'preact';
-import { Router } from 'preact-router';
+import { h } from 'preact';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import PrivateRoute from '../components/PrivateRoute';
 
-import Header from './Header';
-import Drawer from './Drawer';
-import Observer from './Observer';
+// Private routes
+import PrivateRoutes from './private';
 
-import Home from '../routes';
+// Public routes
+import Login from '../routes/login';
+import Signup from '../routes/signup';
 
-export default class App extends Component {
-	state = {
-		appHasScrolled: false,
-		drawerIsOpen: false
-	}
+const App = () => (
+	<Router>
+		<Switch>
+			<Route path="/login" component={Login} />
+			<Route path="/signup" component={Signup} />
+			<PrivateRoute path="*" component={PrivateRoutes} />
+		</Switch>
+	</Router>
+);
 
-	onAppScroll = (changes) => this.setState({ appHasScrolled: changes[0].isIntersecting });
-
-	toggleDrawer = () => this.setState({ drawerIsOpen: !this.state.drawerIsOpen });
-
-	render(props, { appHasScrolled, drawerIsOpen }) {
-		return (
-			<div id="app">
-				<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
-				<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
-				<Router>
-					<Home path="/" />
-				</Router>
-				<Observer cb={this.onAppScroll} />
-			</div>
-		);
-	}
-}
+export default App;

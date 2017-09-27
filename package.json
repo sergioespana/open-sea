@@ -32,6 +32,8 @@
     "preact-compat": "^3.17.0",
     "preact-material-components": "^1.1.6",
     "preact-router": "^2.5.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "react-swipeable": "^4.1.0"
   }
 }
