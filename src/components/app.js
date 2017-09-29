@@ -1,22 +1,60 @@
-import { h } from 'preact';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import PrivateRoute from '../components/PrivateRoute';
+import { h, Component } from 'preact';
+import { injector } from 'react-services-injector';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+// Components
+import Header from './Header';
+import Drawer from './Drawer';
+import Observer from './Observer';
 
 // Private routes
-import PrivateRoutes from './private';
+import Home from '../routes';
 
-// Public routes
-import Login from '../routes/login';
-import Signup from '../routes/signup';
+class App extends Component {
+	state = {
+		appHasScrolled: false,
+		drawerIsOpen: false
+	}
 
-const App = () => (
-	<Router>
-		<Switch>
-			<Route path="/login" component={Login} />
-			<Route path="/signup" component={Signup} />
-			<PrivateRoute path="*" component={PrivateRoutes} />
-		</Switch>
-	</Router>
-);
+	onAppScroll = (changes) => this.setState({ appHasScrolled: changes[0].isIntersecting });
 
-export default App;
+	toggleDrawer = () => this.setState({ drawerIsOpen: !this.state.drawerIsOpen });
+
+	componentWillMount() {
+		const { AuthService } = this.services;
+
+		if (AuthService.isAuthed) return;
+
+		AuthService.parseHash()
+			.then((result) => {
+				if (result === false) return AuthService.login();
+				return this.forceUpdate();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	render(props, { appHasScrolled, drawerIsOpen }) {
+		const { AuthService } = this.services;
+
+		if (this._component) {
+			this._component.history.replace('/');
+		}
+
+		return AuthService.isAuthed ? (
+			<Router>
+				<div id="app">
+					<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
+					<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
+
+					<Route path="/" exact component={Home} />
+
+					<Observer cb={this.onAppScroll} />
+				</div>
+			</Router>
+		) : null;
+	}
+}
+
+export default injector.connect(App);
