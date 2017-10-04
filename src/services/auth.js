@@ -17,6 +17,7 @@ class AuthService extends Service {
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('id_token');
 		localStorage.removeItem('expires_at');
+		this.$update();
 	}
 
 	parseHash = () => new Promise((resolve, reject) => {

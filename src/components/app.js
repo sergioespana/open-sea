@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import PropTypes from 'proptypes';
 import { injector } from 'react-services-injector';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
@@ -20,6 +21,10 @@ class App extends Component {
 
 	toggleDrawer = () => this.setState({ drawerIsOpen: !this.state.drawerIsOpen });
 
+	getChildContext() {
+		return { services: this.services };
+	}
+
 	componentWillMount() {
 		const { AuthService } = this.services;
 
@@ -33,6 +38,12 @@ class App extends Component {
 			.catch((error) => {
 				console.log(error);
 			});
+	}
+
+	componentWillUpdate() {
+		const { AuthService } = this.services;
+
+		if (!AuthService.isAuthed) return AuthService.login();
 	}
 
 	render(props, { appHasScrolled, drawerIsOpen }) {
@@ -56,5 +67,9 @@ class App extends Component {
 		) : null;
 	}
 }
+
+App.childContextTypes = {
+	services: PropTypes.object
+};
 
 export default injector.connect(App);
