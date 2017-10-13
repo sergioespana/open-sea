@@ -13,6 +13,7 @@ export default class YAMLParser extends Component {
 			let fr = new FileReader();
 			fr.onload = this.parseFile;
 			fr.readAsText(file);
+			event.target.value = null;
 		}
 	}
 

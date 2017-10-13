@@ -3,7 +3,10 @@ import AJV from 'ajv';
 import yaml from 'js-yaml';
 import schema from './schema.json';
 
-const ajv = new AJV();
+const ajv = new AJV({
+	allErrors: true,
+	coerceTypes: true
+});
 
 class YAMLService extends Service {
 	parseFile = (event) => {
