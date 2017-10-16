@@ -22,7 +22,7 @@ const Dashboard = (props, { services: { MVCService } }) => {
 						<p>{ indicator.help }</p>
 						<h1>{ MVCService.safeEval(id) }</h1>
 					</div>
-				)
+				);
 			}) }
 		</div>
 	);
