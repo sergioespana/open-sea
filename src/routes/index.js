@@ -1,13 +1,31 @@
 import { h } from 'preact';
-import Container from '../components/Container';
+import { Redirect } from 'react-router-dom';
 
-const Home = () => (
-	<div id="main">
-		<Container>
-			<h1>Home</h1>
-			<p>This is the Home component.</p>
-		</Container>
-	</div>
-);
+const Dashboard = (props, { services: { MVCService } }) => {
+	if (MVCService.loading) return (
+		<div id="main">
+			<h1>Loading...</h1>
+		</div>
+	);
 
-export default Home;
+	if (MVCService.errors && !MVCService.model) return (
+		<Redirect to="/setup" />
+	);
+	
+	return (
+		<div id="main">
+			{ Object.keys(MVCService.model.indicators).map((id) => {
+				let indicator = MVCService.model.indicators[id];
+				return (
+					<div>
+						<h3>{ indicator.name }</h3>
+						<p>{ indicator.help }</p>
+						<h1>{ MVCService.safeEval(id) }</h1>
+					</div>
+				);
+			}) }
+		</div>
+	);
+};
+
+export default Dashboard;

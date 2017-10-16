@@ -9,7 +9,9 @@ import Drawer from './Drawer';
 import Observer from './Observer';
 
 // Private routes
-import Home from '../routes';
+import Dashboard from '../routes';
+import Setup from '../routes/setup';
+import Input from '../routes/input';
 
 class App extends Component {
 	state = {
@@ -49,8 +51,8 @@ class App extends Component {
 	render(props, { appHasScrolled, drawerIsOpen }) {
 		const { AuthService } = this.services;
 
-		if (this._component) {
-			this._component.history.replace('/');
+		if (this._component && this._component.history.location.hash.includes('access_token')) {
+			this._component.history.replace(this._component.history.location.pathname);
 		}
 
 		return AuthService.isAuthed ? (
@@ -59,7 +61,9 @@ class App extends Component {
 					<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
 					<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
 
-					<Route path="/" exact component={Home} />
+					<Route path="/" exact component={Dashboard} />
+					<Route path="/setup" component={Setup} />
+					<Route path="/input" component={Input} />
 
 					<Observer cb={this.onAppScroll} />
 				</div>

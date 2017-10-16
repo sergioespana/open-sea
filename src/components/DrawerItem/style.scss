@@ -1,6 +1,6 @@
-.link {
+.link,
+.active {
     display: block;
-    // height: 48px;
     line-height: 48px;
     padding: 0 16px 0 72px;
     text-decoration: none;
@@ -14,16 +14,16 @@
         color: rgb(117, 117, 117);
     }
 
-    &.active {
-        color: #4285f4;
-        background-color: #f5f5f5;
-
-        i {
-            color: inherit;
-        }
-    }
-
     &:hover {
         background-color: rgba(0, 0, 0, 0.1);
     }
+}
+
+.active {
+	color: #4285f4;
+	background-color: #f5f5f5;
+
+	i {
+		color: inherit;
+	}
 }
