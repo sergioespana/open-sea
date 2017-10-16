@@ -9,8 +9,7 @@ import Drawer from './Drawer';
 import Observer from './Observer';
 
 // Private routes
-import Home from '../routes';
-import Validator from '../routes/validator';
+import Dashboard from '../routes';
 
 class App extends Component {
 	state = {
@@ -60,8 +59,7 @@ class App extends Component {
 					<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
 					<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
 
-					<Route path="/" exact component={Home} />
-					<Route path="/validator" component={Validator} />
+					<Route path="/" component={Dashboard} />
 
 					<Observer cb={this.onAppScroll} />
 				</div>

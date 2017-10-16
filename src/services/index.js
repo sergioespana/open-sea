@@ -1,7 +1,7 @@
 import AuthService from './auth';
-import YAMLService from './yaml';
+import MVCService from './mvc';
 
 export default [
 	AuthService,
-	YAMLService
+	MVCService
 ];

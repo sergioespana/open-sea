@@ -6,8 +6,7 @@ import DrawerContainer from '../DrawerContainer';
 const Drawer = ({ isOpen, toggleDrawer }, { services: { AuthService } }) => (
 	<DrawerContainer isOpen={isOpen} toggleDrawer={toggleDrawer}>
 		<DrawerDivider />
-		<DrawerItem href="/" icon="home" label="Home" />
-		<DrawerItem href="/validator" icon="playlist_add_check" label="Validator" />
+		<DrawerItem href="/" icon="dashboard" label="Dashboard" />
 		<DrawerDivider />
 		<button onClick={AuthService.logout}>Logout</button>
 	</DrawerContainer>

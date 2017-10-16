@@ -32,7 +32,7 @@
 							"description": { "type": "string" },
 							"type": {
 								"type": "string",
-								"enum": [ "text", "number", "list", "chart" ]
+								"enum": [ "text", "number", "list" ]
 							}
 						},
 						"required": [ "id", "name" ],
