@@ -10,6 +10,8 @@ import Observer from './Observer';
 
 // Private routes
 import Dashboard from '../routes';
+import Setup from '../routes/setup';
+import Input from '../routes/input';
 
 class App extends Component {
 	state = {
@@ -59,7 +61,9 @@ class App extends Component {
 					<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
 					<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
 
-					<Route path="/" component={Dashboard} />
+					<Route path="/" exact component={Dashboard} />
+					<Route path="/setup" component={Setup} />
+					<Route path="/input" component={Input} />
 
 					<Observer cb={this.onAppScroll} />
 				</div>

@@ -1,5 +1,7 @@
 import { Service } from 'react-services-injector';
 import AJV from 'ajv';
+import delve from 'dlv';
+import mathjs from 'mathjs';
 import yaml from 'js-yaml';
 import schema from './schema.json';
 
@@ -10,29 +12,83 @@ const ajv = new AJV({
 
 class MVCService extends Service {
 
-	parseModel = (event) => {
-		const str = event.target.result,
+	loading = true;
+	errors = null;
+	model = null;
+	metrics = {};
+
+	serviceDidConnect = () => {
+		// TODO: Load model from DB
+		// [ ] Check for model on DB
+		// [ ] If no model, set model to false and display error
+		// [ ] If model is present, set it
+
+		const MODEL_FOUND = false;
+		if (!MODEL_FOUND) {
+			this.model = false;
+			// FIXME: figure out errors format
+			this.errors = [{
+				message: 'No model present on the server. Please upload one.'
+			}];
+		}
+
+		this.loading = false;
+		this.$update();
+	}
+
+	parseFile = (event) => {
+		let file = event.target.files[0];
+		if (file) {
+			let fr = new FileReader();
+			fr.onload = this._parseStringToModel;
+			fr.readAsText(file);
+			event.target.value = null;
+		}
+	};
+
+	_parseStringToModel = (event) => {
+		let str = event.target.result,
 			model = yaml.safeLoad(str),
 			valid = ajv.validate(schema, model);
 
-		if (valid) return Promise.resolve(model);
-		return Promise.reject(ajv.errors);
+		if (valid) {
+			this.model = model;
+			this.errors = false;
+		}
+		else {
+			this.model = false;
+			this.errors = ajv.errors;
+		}
+
+		this.$update();
 	}
 
-	// To be replaced by parseModel
-	parseFile = (event) => {
-		const str = event.target.result,
-			obj = yaml.safeLoad(str);
+	linkMetrics = (key, eventPath) => {
+		let path = key.split('.');
 
-		return this.validate(obj);
+		return (event) => {
+			let metrics = {},
+				obj = metrics,
+				value = delve(event, eventPath),
+				i = 0;
+
+			for ( ; i < path.lenght -1; i++) {
+				obj = obj[path[i]] || (obj[path[i]] = !i && this.metrics[path[i]] || {});
+			}
+
+			obj[path[i]] = value;
+			this.metrics = Object.assign(this.metrics, metrics);
+		};
 	}
 
-	// To be replaced by parseModel
-	validate = (obj) => new Promise((resolve, reject) => {
-		const valid = ajv.validate(schema, obj);
-		if (valid) resolve({ valid, model: obj });
-		else reject(ajv.errors);
-	});
+	safeEval = (id) => {
+		try {
+			return mathjs.eval(this.model.indicators[id].value, this.metrics);
+		}
+		catch (e) {
+			return false;
+		}
+	}
 }
 
 MVCService.publicName = 'MVCService';

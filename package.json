@@ -29,6 +29,7 @@
     "ajv": "^5.2.3",
     "auth0-js": "^8.10.1",
     "classnames": "^2.2.5",
+    "dlv": "^1.1.0",
     "js-yaml": "^3.10.0",
     "linkstate": "^1.1.0",
     "material-ui-icons": "^1.0.0-beta.5",
