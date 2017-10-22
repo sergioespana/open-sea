@@ -1,9 +1,21 @@
 import { h } from 'preact';
+import classnames from 'classnames/bind';
 import style from './style';
 
-const Container = ({ children, ...props }) => <div {...props} class={style.container}>{ children }</div>;
+const cx = classnames.bind(style);
+
+const Container = ({ children, slim, ...props }) => (
+	<div
+		class={cx({
+			container: true,
+			slim
+		})}
+		{...props}
+	>
+		{ children }
+	</div>
+);
 
 export default Container;
 
-// TODO: Define dynamic props (to adjust the components looks through props and having the component apply a different class to itself)
 // TODO: Check for proptypes

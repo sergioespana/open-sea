@@ -1,8 +1,11 @@
 import { h } from 'preact';
-import IconToggle from 'preact-material-components/IconToggle';
-import 'preact-material-components/IconToggle/style.css';
 import classnames from 'classnames/bind';
 import style from './style';
+import IconButton from '../IconButton';
+import IconMenu from '../IconMenu';
+
+import MenuIcon from 'material-ui-icons/Menu';
+import MoreVertIcon from 'material-ui-icons/MoreVert';
 
 const cx = classnames.bind(style);
 
@@ -13,11 +16,11 @@ const Header = ({ hasScrolled, toggleDrawer }) => (
 			hasScrolled
 		})}
 	>
-		<IconToggle id="menutoggle" onClick={toggleDrawer}>menu</IconToggle>
-		<IconToggle>more_vert</IconToggle>
+		<IconButton id="menutoggle" onClick={toggleDrawer}><MenuIcon /></IconButton>
+		<IconMenu icon={<MoreVertIcon />}>
+			<div>stuff</div>
+		</IconMenu>
 	</header>
 );
 
 export default Header;
-
-// TODO: Check for proptypes

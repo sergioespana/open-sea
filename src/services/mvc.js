@@ -26,9 +26,8 @@ class MVCService extends Service {
 		const MODEL_FOUND = false;
 		if (!MODEL_FOUND) {
 			this.model = false;
-			// FIXME: figure out errors format
 			this.errors = [{
-				message: 'No model present on the server. Please upload one.'
+				message: 'No model could be found on the server.'
 			}];
 		}
 
@@ -78,6 +77,7 @@ class MVCService extends Service {
 
 			obj[path[i]] = value;
 			this.metrics = Object.assign(this.metrics, metrics);
+			this.$update();
 		};
 	}
 

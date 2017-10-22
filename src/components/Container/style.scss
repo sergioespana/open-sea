@@ -3,5 +3,14 @@
 
     @media (min-width: 1025px) {
         margin: 0 96px;
-    }
+		
+		
+	}
+
+	&.slim {
+		@media (min-width: 640px) {
+			margin: 0 auto;
+			max-width: 640px;
+		}
+	}
 }
