@@ -1,9 +1,9 @@
 import AuthService from './auth';
 import MVCService from './mvc';
-import SnackService from './snack';
+import OrgService from './org';
 
 export default [
 	AuthService,
 	MVCService,
-	SnackService
+	OrgService
 ];

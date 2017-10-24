@@ -1,19 +1,23 @@
 import { h, Component } from 'preact';
 import PropTypes from 'proptypes';
 import { injector } from 'react-services-injector';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Redirect, BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import Snackbar from 'material-ui/Snackbar';
+import { CircularProgress } from 'material-ui/Progress';
 
 // Components
 import Header from './Header';
 import Drawer from './Drawer';
 import Observer from './Observer';
+import PrivateRoute from './PrivateRoute';
+import PublicRoute from './PublicRoute';
 
-// Private routes
+// Routes
+import Signup from '../routes/signup';
+import Login from '../routes/login';
+import Logout from '../routes/logout';
 import Dashboard from '../routes';
-import Setup from '../routes/setup';
-import Input from '../routes/input';
+import Organisation from '../routes/organisation';
 
 const theme = createMuiTheme();
 
@@ -31,57 +35,33 @@ class App extends Component {
 		return { services: this.services };
 	}
 
-	componentWillMount() {
-		const { AuthService } = this.services;
-
-		if (AuthService.isAuthed) return;
-
-		AuthService.parseHash()
-			.then((result) => {
-				if (result === false) return AuthService.login();
-				return this.forceUpdate();
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	}
-
-	componentWillUpdate() {
-		const { AuthService } = this.services;
-
-		if (!AuthService.isAuthed) return AuthService.login();
-	}
-
-	render(props, { appHasScrolled, drawerIsOpen }) {
-		const { AuthService, SnackService } = this.services;
-
-		if (this._component && this._component.history.location.hash.includes('access_token')) {
-			this._component.history.replace(this._component.history.location.pathname);
-		}
-
-		return AuthService.isAuthed ? (
-			<Router>
-				<MuiThemeProvider theme={theme}>
+	render = (props, { appHasScrolled, drawerIsOpen }) => {
+		let { AuthService } = this.services;
+		return AuthService.loading ? (
+			<CircularProgress />
+		) : (
+			<MuiThemeProvider theme={theme}>
+				<Router>
 					<div id="app">
 						<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
 						<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
 
-						<Route path="/" exact component={Dashboard} />
-						<Route path="/setup" component={Setup} />
-						<Route path="/input" component={Input} />
+						<Switch>
+							<PublicRoute path="/signup" component={Signup} />
+							<PublicRoute path="/login" component={Login} />
+
+							<Route path="/logout" component={Logout} />
+
+							<PrivateRoute path="/" exact component={Dashboard} />
+
+							<PrivateRoute path="/:org" component={Organisation} />
+						</Switch>
 
 						<Observer cb={this.onAppScroll} />
-
-						<Snackbar
-							open={SnackService.open}
-							message={SnackService.message}
-							onRequestClose={SnackService.hide}
-							{...SnackService.props}
-						/>
 					</div>
-				</MuiThemeProvider>
-			</Router>
-		) : null;
+				</Router>
+			</MuiThemeProvider>
+		);
 	}
 }
 

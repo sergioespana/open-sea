@@ -30,6 +30,7 @@
     "auth0-js": "^8.10.1",
     "classnames": "^2.2.5",
     "dlv": "^1.1.0",
+    "firebase": "^4.6.0",
     "js-yaml": "^3.10.0",
     "linkstate": "^1.1.0",
     "material-ui": "^1.0.0-beta.17",
