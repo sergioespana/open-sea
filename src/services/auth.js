@@ -18,6 +18,7 @@ class AuthService extends Service {
 	isAuthed =  () => this.user !== false;
 
 	onAuthStateChanged = (user) => {
+		console.log('onAuthStateChanged');
 		this.user = user || false;
 		if (this.loading) this.loading = false;
 		this.$update();

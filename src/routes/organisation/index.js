@@ -1,18 +1,41 @@
-import { h } from 'preact';
-import { Redirect, BrowserRouter as Router, Route } from 'react-router-dom';
+import { h, Component } from 'preact';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { find } from 'lodash';
+import Main from '../../components/Main';
 
-import Overview from './overview';
+import Dashboard from './dashboard';
+import Data from './data';
 import Settings from './settings';
+import Assistant from './assistant';
 import Sharing from './sharing';
 
-const Organisation = ({ match: { params: { org } } }) => (
-	<Router basename={org}>
-		<div id="main">
-			<Route path="/" exact render={() => <Redirect to="/overview" />} />
-			<Route path="/settings" />
-			<Route path="/sharing" />
-		</div>
-	</Router>
-);
+class Organisation extends Component {
+	componentWillMount() {
+		// TODO: Move this check to ./dashboard.js and ./data.js
+		let { mobxStores: { store } } = this.context,
+			{ match: { params: { org } } } = this.props;
+		
+		if (!find(store.organisations[org], 'model')) {
+			store.showSnackbar(
+				'No model exists on the server for this organisation.',
+				4000,
+				() => console.log('TODO'),
+				'upload'
+			);
+		}
+	}
+
+	render = () => (
+		<Main>
+			<Switch>
+				<Route path="/:org/assistant" component={Assistant} />
+				<Route path="/:org/data" component={Data} />
+				<Route path="/:org/sharing" component={Sharing} />
+				<Route path="/:org/settings" component={Settings} />
+				<Route path="/:org" component={Dashboard} />
+			</Switch>
+		</Main>
+	)
+}
 
 export default Organisation;

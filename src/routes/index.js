@@ -1,27 +1,29 @@
 import { h } from 'preact';
-import { Link } from 'react-router-dom';
-import { CircularProgress } from 'material-ui/Progress';
+import { observer } from 'mobx-react';
+import { map } from 'lodash';
 import Container from '../components/Container';
+import Main from '../components/Main';
+import Hero from '../components/Hero';
+import Card, { CardTitle, CardContent } from '../components/Card';
+import Grid from '../components/Grid';
 
-const Dashboard = (props, { services: { AuthService, OrgService } }) => {
-	return (
-		<div id="main">
-			<Container>
-				<p>Organisations you manage:</p>
-				{ OrgService.loading ? (
-					<CircularProgress />
-				) : (
-					<ul>
-						{ OrgService.collection.map((org) => (
-							<li>
-								<Link to={`${org.id}/overview`}>{ org.id }</Link>
-							</li>
-						)) }
-					</ul>
-				) }
-			</Container>
-		</div>
-	);
-};
+const Home = (props, { mobxStores: { store } }) => (
+	<Main>
+		<Hero />
+		<Container>
+			<p>Your organisations</p>
+			<Grid gutter={25}>
+				{ map(store.organisations, (org, id) => (
+					<Card to={`/${id}`}>
+						<CardTitle
+							primary={org.name}
+							secondary={org._role}
+						/>
+					</Card>
+				)) }
+			</Grid>
+		</Container>
+	</Main>
+);
 
-export default Dashboard;
+export default observer(Home);

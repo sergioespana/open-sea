@@ -1,9 +1,19 @@
-import { h } from 'preact';
+import { h, Component } from 'preact';
+import { Redirect } from 'react-router-dom';
+import { observer } from 'mobx-react';
 
-const Logout = () => (
-	<div id="main">
-		<h1>Logout</h1>
-	</div>
-);
+@observer class Logout extends Component {
+	componentDidMount() {
+		let { store } = this.context.mobxStores;
+		return store.signOut();
+	}
+	
+	render() {
+		let { store } = this.context.mobxStores;
+		return store.isAuthed ? (
+			<h1>Logging out...</h1>
+		) : <Redirect to="/login" />;
+	}
+}
 
 export default Logout;

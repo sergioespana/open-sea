@@ -1,72 +1,62 @@
 import { h, Component } from 'preact';
-import PropTypes from 'proptypes';
-import { injector } from 'react-services-injector';
-import { Redirect, BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import { CircularProgress } from 'material-ui/Progress';
+import styled from 'styled-components';
+import Dropzone from 'react-dropzone';
 
-// Components
-import Header from './Header';
-import Drawer from './Drawer';
-import Observer from './Observer';
-import PrivateRoute from './PrivateRoute';
-import PublicRoute from './PublicRoute';
-
-// Routes
-import Signup from '../routes/signup';
-import Login from '../routes/login';
-import Logout from '../routes/logout';
-import Dashboard from '../routes';
-import Organisation from '../routes/organisation';
-
-const theme = createMuiTheme();
+const Overlay = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 20;
+`;
 
 class App extends Component {
 	state = {
-		appHasScrolled: false,
-		drawerIsOpen: false
+		dragging: false
 	}
 
-	onAppScroll = (changes) => this.setState({ appHasScrolled: changes[0].isIntersecting });
+	handleDragEnter = () => this.setState({ dragging: true });
 
-	toggleDrawer = () => this.setState({ drawerIsOpen: !this.state.drawerIsOpen });
+	handleDragLeave = () => this.setState({ dragging: false });
 
-	getChildContext() {
-		return { services: this.services };
-	}
+	handleDrop = (accepted, rejected) => {
+		this.handleDragLeave();
 
-	render = (props, { appHasScrolled, drawerIsOpen }) => {
-		let { AuthService } = this.services;
-		return AuthService.loading ? (
-			<CircularProgress />
-		) : (
-			<MuiThemeProvider theme={theme}>
-				<Router>
-					<div id="app">
-						<Header hasScrolled={appHasScrolled} toggleDrawer={this.toggleDrawer} />
-						<Drawer isOpen={drawerIsOpen} toggleDrawer={this.toggleDrawer} />
+		let { mobxStores: { store } } = this.context;
 
-						<Switch>
-							<PublicRoute path="/signup" component={Signup} />
-							<PublicRoute path="/login" component={Login} />
+		if (rejected.length > 0) return store.showSnackbar('Incorrect file type.', 4000);
+		if (accepted.length <= 0) return store.showSnackbar('An unexpected error occurred.', 4000);
 
-							<Route path="/logout" component={Logout} />
+		store.parseFile(accepted[0]);
+	};
 
-							<PrivateRoute path="/" exact component={Dashboard} />
-
-							<PrivateRoute path="/:org" component={Organisation} />
-						</Switch>
-
-						<Observer cb={this.onAppScroll} />
-					</div>
-				</Router>
-			</MuiThemeProvider>
+	render = ({ children, ...props }, { dragging }) => {
+		let { router: { route: { location: { pathname } } } } = this.context,
+			org = pathname.split('/')[1];
+		return (
+			<Dropzone
+				id="app"
+				accept=".yml"
+				disableClick
+				multiple={false}
+				style={{}}
+				onDragEnter={this.handleDragEnter}
+				onDragLeave={this.handleDragLeave}
+				onDrop={this.handleDrop}
+				{...props}
+			>
+				{ dragging && <Overlay /> }
+				{ children }
+			</Dropzone>
 		);
 	}
 }
 
-App.childContextTypes = {
-	services: PropTypes.object
-};
-
-export default injector.connect(App);
+export default styled(App)`
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	min-height: 100vh;
+`;

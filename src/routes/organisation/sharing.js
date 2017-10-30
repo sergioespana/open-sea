@@ -1,7 +1,10 @@
 import { h } from 'preact';
+import Container from '../../components/Container';
 
 const Sharing  = () => (
-	<h1>Sharing</h1>
+	<Container>
+		<h1>Sharing</h1>
+	</Container>
 );
 
 export default Sharing;
