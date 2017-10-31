@@ -43,6 +43,8 @@ class Store {
 			delete this.listeners[path];
 		}
 	}
+	
+	_wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	toggleDrawer = () => {
 		this.drawerIsOpen = !this.drawerIsOpen;
@@ -60,8 +62,6 @@ class Store {
 		action: null,
 		actionMessage: null
 	};
-
-	_wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	showSnackbar = async (message, autohide = 4000, action = null, actionMessage = null) => {
 		if (!message || message === '') return;
