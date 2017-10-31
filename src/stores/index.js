@@ -61,8 +61,17 @@ class Store {
 		actionMessage: null
 	};
 
-	showSnackbar = (message, autohide = 4000, action = null, actionMessage = null) => {
+	_wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+	showSnackbar = async (message, autohide = 4000, action = null, actionMessage = null) => {
 		if (!message || message === '') return;
+
+		if (this.snackbar.open) {
+			if (this.snackbar.message === message) return;
+			
+			clearTimeout(this.snackbarTimeout);
+			await this.hideSnackbar();
+		}
 
 		merge(this.snackbar, {
 			open: true,
@@ -71,21 +80,23 @@ class Store {
 			actionMessage
 		});
 
-		if (autohide > 0) setTimeout(this.hideSnackbar, autohide);
+		if (autohide > 0) this.snackbarTimeout = setTimeout(this.hideSnackbar, autohide);
 	}
 
-	hideSnackbar = () => {
+	hideSnackbar = async () => {
 		this.snackbar.doClose = true;
 
-		setTimeout(() => {
-			this.snackbar = {
-				open: false,
-				doClose: false,
-				message: '',
-				action: null,
-				actionMessage: null
-			};
-		}, 450);
+		await this._wait(195);
+
+		this.snackbar = {
+			open: false,
+			doClose: false,
+			message: '',
+			action: null,
+			actionMessage: null
+		};
+
+		return Promise.resolve();
 	}
 
 	doSnackbarAction = () => {
