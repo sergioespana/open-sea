@@ -221,19 +221,26 @@ class Store {
 			valid = ajv.validate(schema, model);
 
 		if (valid) {
-			this.showSnackbar('Saving model...', 0);
+			this._storeModel(model);
+			return;
 		}
-		else {
-			let error = ajv.errors[0],
-				fieldPath = trim(error.dataPath, '.'),
-				field = get(model, fieldPath),
-				objectPath = fieldPath.split('.')[0],
-				object = get(model, objectPath),
-				objectType = trimEnd(objectPath.split('[')[0], 's'),
-				message = `Field "${field}" in ${objectType} "${object.id}" ${error.message}.`;
 
-			this.showSnackbar(message);
-		}
+		this._displayModelError(ajv.errors[0]);
+	}
+	
+	_displayModelError = (error) => {
+		let fieldPath = trim(error.dataPath, '.'),
+			field = get(model, fieldPath),
+			objectPath = fieldPath.split('.')[0],
+			object = get(model, objectPath),
+			objectType = trimEnd(objectPath.split('[')[0], 's'),
+			message = `Field "${field}" in ${objectType} "${object.id}" ${error.message}.`;
+
+		this.showSnackbar(message);
+	}
+
+	_storeModel = () => {
+
 	}
 }
 
