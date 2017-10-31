@@ -1,13 +1,27 @@
-import { h } from 'preact';
+import { h, Component } from 'preact';
 import Container from '../../components/Container';
 
-// TODO: Convert to "normal" component
-// TODO: Do model present check in componentWillMount (possibly also componentWillReceiveProps)
+class Data extends Component {
+	componentWillMount() {
+		let { mobxStores: { store } } = this.context,
+			{ match: { params: { org } } } = this.props;
+		
+		store.checkOrgModelPresent(org);
+	}
+	
+	componentWillReceiveProps(nextProps) {
+		let { mobxStores: { store } } = this.context,
+			oldOrg = this.props.match.params.org,
+			newOrg = nextProps.match.params.org;
+		
+		if (oldOrg !== newOrg) store.checkOrgModelPresent(newOrg);
+	}
 
-const Data  = () => (
-	<Container>
-		<h1>Data</h1>
-	</Container>
-);
+	render = () => {
+		<Container>
+			<h1>Overview</h1>
+		</Container>
+	}
+}
 
 export default Data;

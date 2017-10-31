@@ -1,6 +1,6 @@
 import { observable, computed } from 'mobx';
 import { auth, db, googleAuthProvider } from '../lib/firebase';
-import { assign, merge, isEmpty, set, map, trim, trimEnd, get } from 'lodash';
+import { assign, merge, isEmpty, set, map, trim, trimEnd, get, find } from 'lodash';
 import AJV from 'ajv';
 import delve from 'dlv';
 import mathjs from 'mathjs';
@@ -181,6 +181,17 @@ class Store {
 		if (this.orgCount === this.orgLimit && this.appIsLoading === true) this.appIsLoading = false;
 	}
 	
+	checkOrgModelPresent = (id) => {
+		if (find(this.organisations[id], 'model') === undefined) {
+			this.showSnackbar(
+				'No model exists on the server for this organisation.',
+				4000,
+				() => console.log('TODO'),
+				'upload'
+			);
+		};
+	}
+
 	
 	/* ==================================== */	
 	/* =============== YAML =============== */
