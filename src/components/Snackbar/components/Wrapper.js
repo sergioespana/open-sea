@@ -18,8 +18,8 @@ const Wrapper = styled.div`
 	align-items: center;
 	font-size: 14px;
 	animation-name: ${props => props.doClose ? 'snackbarDisappear' : 'snackbarAppear' };
-	animation-duration: 400ms;
-	animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+	animation-duration: ${props => props.doClose ? '195ms' : '225ms' };
+	animation-timing-function: ${props => props.doClose ? 'cubic-bezier(0.0, 0.0, 0.2, 1)' : 'cubic-bezier(0.4, 0.0, 0.2, 1)' };
 
 	@keyframes snackbarAppear {
 		from { transform: translate3d(-50%, 100%, 0); }
