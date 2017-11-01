@@ -9,7 +9,7 @@ import Action from './components/Action';
 const Snackbar = (props, { mobxStores: { store } }) => (
 	<Portal into="body">
 		{ store.snackbar.open ? (
-			<Wrapper doClose={store.snackbar.doClose}>
+			<Wrapper doClose={store.snackbar.doClose} onClick={store.hideSnackbar}>
 				{ store.snackbar.message && <Content>{ store.snackbar.message }</Content> }
 				{ store.snackbar.action && store.snackbar.actionMessage && <Action onClick={store.doSnackbarAction}>{ store.snackbar.actionMessage }</Action> }
 			</Wrapper>
