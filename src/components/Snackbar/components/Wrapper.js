@@ -25,6 +25,7 @@ const Wrapper = styled.div`
 		max-width: 568px;
 		height: 48px;
 		left: 50%;
+		width: auto;
 		border-radius: 2px;
 		transform: ${props => props.doClose ? 'translate3d(-50%, 100%, 0)' : 'translate3d(-50%, 0, 0)' };
 		animation-name: ${props => props.doClose ? 'snackbarDisappearDesktop' : 'snackbarAppearDesktop' };

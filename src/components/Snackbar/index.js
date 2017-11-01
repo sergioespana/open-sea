@@ -11,7 +11,7 @@ const Snackbar = (props, { mobxStores: { store } }) => (
 		{ store.snackbar.open ? (
 			<Wrapper doClose={store.snackbar.doClose} onClick={store.hideSnackbar}>
 				{ store.snackbar.message && <Content>{ store.snackbar.message }</Content> }
-				{ store.snackbar.action && store.snackbar.actionMessage && <Action onClick={store.doSnackbarAction}>{ store.snackbar.actionMessage }</Action> }
+				{ store.snackbar.action && store.snackbar.actionMessage && <Action action={store.snackbar.action}>{ store.snackbar.actionMessage }</Action> }
 			</Wrapper>
 		) : null }
 	</Portal>

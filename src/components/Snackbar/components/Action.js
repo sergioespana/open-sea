@@ -1,7 +1,14 @@
 import { h } from 'preact';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-const Action = styled.button`
+const Action = ({ action, children, ...props }) => typeof action === 'string' ? (
+	<Link to={action} {...props}>{ children }</Link>
+) : (
+	<button onClick={action} {...props}>{ children }</button>
+);
+
+export default styled(Action)`
 	border: none;
 	font-family: inherit;
 	font-size: inherit;
@@ -16,5 +23,3 @@ const Action = styled.button`
 		margin: 0 0 0 48px;
 	}
 `;
-
-export default Action;
