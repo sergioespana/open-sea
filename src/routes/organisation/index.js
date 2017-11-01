@@ -1,6 +1,7 @@
 import { h } from 'preact';
 import { Route, Switch } from 'react-router-dom';
 import Main from '../../components/Main';
+import Drawer from '../../components/Drawer';
 
 import Dashboard from './dashboard';
 import Data from './data';
@@ -9,7 +10,8 @@ import Assistant from './assistant';
 import Sharing from './sharing';
 
 const Organisation = () => (
-	<Main>
+	<Main hasDrawer>
+		<Route path="/:org" component={Drawer} />
 		<Switch>
 			<Route path="/:org/assistant" component={Assistant} />
 			<Route path="/:org/data" component={Data} />
