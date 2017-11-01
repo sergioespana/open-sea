@@ -7,8 +7,5 @@ const App = ({ children, ...props }) => (
 );
 
 export default styled(App)`
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
 	min-height: 100vh;
 `;
