@@ -15,11 +15,9 @@ const Wrapper = styled.aside`
 	transform: ${props => props.open ? 'translate3d(0, 0, 0)' : 'translate3d(-110%, 0, 0)' };
 	
 	@media (min-width: 601px) {
-		position: relative;
-		flex: 0 0 255px;
 		box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-		z-index: auto;
 		transform: translate3d(0, 0, 0);
+		z-index: auto;
 	}
 `;
 
