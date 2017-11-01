@@ -15,34 +15,38 @@ class CustomDropzone extends Component {
 	handleDrop = (accepted, rejected) => {
 		this.handleDragLeave();
 
-		let { mobxStores: { store } } = this.context;
+		let {
+			mobxStores: { store },
+			router: { route : { match : { params: { org } } } }
+		} = this.context;
 
 		if (rejected.length > 0) return store.showSnackbar('Incorrect file type.', 4000);
 		if (accepted.length <= 0) return store.showSnackbar('An unexpected error occurred.', 4000);
 
-		store.parseFile(accepted[0]);
+		store.storeModel(org, accepted[0]);
 	};
 
-	render = ({ children, ...props }, { dragging }) => {
-		let { router: { route: { location: { pathname } } } } = this.context,
-			org = pathname.split('/')[1];
-		return (
-			<Dropzone
-				id="app"
-				accept=".yml"
-				disableClick
-				multiple={false}
-				style={{}}
-				onDragEnter={this.handleDragEnter}
-				onDragLeave={this.handleDragLeave}
-				onDrop={this.handleDrop}
-				{...props}
-			>
-				{ dragging && <Overlay /> }
-				{ children }
-			</Dropzone>
-		);
-	}
+	render = ({ children, ...props }, { dragging }) => (
+		<Dropzone
+			accept=".yml"
+			disableClick
+			multiple={false}
+			onDragEnter={this.handleDragEnter}
+			onDragLeave={this.handleDragLeave}
+			onDrop={this.handleDrop}
+			{...props}
+		>
+			{ dragging && <Overlay /> }
+			{ children }
+		</Dropzone>
+	);
 }
 
-export default CustomDropzone;
+export default styled(CustomDropzone)`
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	min-height: inherit;
+	padding: inherit;
+`;
