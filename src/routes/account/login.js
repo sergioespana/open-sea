@@ -1,7 +1,7 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
-import Main from '../components/Main';
-import Container from '../components/Container';
+import Main from '../../components/Main';
+import Container from '../../components/Container';
 
 export default class Login extends Component {
 	state = {
@@ -47,7 +47,7 @@ export default class Login extends Component {
 				<button onClick={this.signInWithGoogle}>Log in with Google</button>
 				<br />
 				<br />
-				<p>No account yet? <Link to="/signup">Sign up</Link></p>
+				<p>No account yet? <Link to="/account/create">Sign up</Link></p>
 			</Container>
 		</Main>
 	);

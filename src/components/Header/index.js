@@ -27,7 +27,7 @@ const Header = (props, { router: { history: { push } }, mobxStores: { store } })
 	<Wrapper>
 		<MenuButton onClick={store.toggleDrawer} />
 		<Title><Link to="/">open<strong>SEA</strong></Link></Title>
-		{ store.isAuthed && <Logout><Link to="/logout">logout</Link></Logout> }
+		{ store.isAuthed && <Logout><Link to="/account/logout">logout</Link></Logout> }
 	</Wrapper>
 );
 

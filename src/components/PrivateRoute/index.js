@@ -12,7 +12,7 @@ const PrivateRoute = ({ component: Component, ...rest }, { mobxStores: { store }
 			) : (
 				<Redirect
 					to={{
-						pathname: '/login',
+						pathname: '/account/login',
 						state: { from: props.location }
 					}}
 				/>

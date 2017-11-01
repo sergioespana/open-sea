@@ -12,7 +12,7 @@ import { observer } from 'mobx-react';
 		let { store } = this.context.mobxStores;
 		return store.isAuthed ? (
 			<h1>Logging out...</h1>
-		) : <Redirect to="/login" />;
+		) : <Redirect to="/account/login" />;
 	}
 }
 
