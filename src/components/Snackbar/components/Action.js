@@ -8,12 +8,12 @@ const Action = styled.button`
 	font-weight: 500;
 	text-transform: uppercase;
 	background-color: transparent;
-	padding: 0 0 0 24px;
+	margin: 0 0 0 24px;
 	cursor: pointer;
 	color: #90CAF9;
 
 	@media (min-width: 601px) {
-		padding: 0 0 0 48px;
+		margin: 0 0 0 48px;
 	}
 `;
 
