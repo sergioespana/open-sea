@@ -11,8 +11,8 @@ import PublicRoute from './components/PublicRoute';
 // Components
 import App from './components/App';
 import Header from './components/Header';
-import Drawer from './components/Drawer';
 import Snackbar, { SnackbarAction } from './components/Snackbar';
+import CircularProgress from './components/CircularProgress';
 
 // Routes
 import Signup from './routes/signup';
@@ -21,26 +21,25 @@ import Logout from './routes/logout';
 import Home from './routes';
 import Organisation from './routes/organisation';
 
-const SEAMan = () => store.appIsLoading ? (
-	<h1>Loading...</h1>
-) : (
+const SEAMan = () => (
 	<Provider store={store}>
 		<Router>
 			<App id="app">
-				<Route path="/:org?" component={Header} />
-				<Route path="/:org?" component={Drawer} />
-				
-				<Switch>
-					<PublicRoute path="/signup" component={Signup} />
-					<PublicRoute path="/login" component={Login} />
+				<Header />
+				{ store.appIsLoading ? (
+					<CircularProgress centerParent />
+				) : (
+					<Switch>
+						<PublicRoute path="/signup" component={Signup} />
+						<PublicRoute path="/login" component={Login} />
 
-					<Route path="/logout" component={Logout} />
+						<Route path="/logout" component={Logout} />
 
-					<PrivateRoute path="/" exact component={Home} />
+						<PrivateRoute path="/" exact component={Home} />
 
-					<Route path="/:org" component={Organisation} />
-				</Switch>
-
+						<Route path="/:org" component={Organisation} />
+					</Switch>
+				) }
 				<Snackbar />
 			</App>
 		</Router>

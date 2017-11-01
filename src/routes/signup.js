@@ -1,5 +1,6 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
+import Main from '../components/Main';
 import Container from '../components/Container';
 
 export default class Signup extends Component {
@@ -31,7 +32,7 @@ export default class Signup extends Component {
 	}
 	
 	render = (props, { email, pass, error }) => (
-		<div id="main">
+		<Main>
 			<Container>
 				<h1>Signup</h1>
 				{ error && <p>{ error.message }</p> }
@@ -48,6 +49,6 @@ export default class Signup extends Component {
 				<br />
 				<p>Already have an account? <Link to="/login">Log in</Link></p>
 			</Container>
-		</div>
+		</Main>
 	);
 }

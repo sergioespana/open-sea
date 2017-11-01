@@ -1,3 +1,7 @@
+// TODO: Split up into multiple stores:
+// - fbStore for everything Firebase (auth, keeping organisastions in sync with the db)
+// - snackStore for snackbars
+
 import { observable, computed } from 'mobx';
 import { auth, db, googleAuthProvider } from '../lib/firebase';
 import { assign, merge, isEmpty, set, map, trim, trimEnd, get, find } from 'lodash';
@@ -120,19 +124,20 @@ class Store {
 			return;
 		}
 		
-		let uid = res.uid,
-			user = await db.collection('users').doc(res.uid).get();
-		
-		let currentUser = assign({},
-			user.data(),
-			{ uid }
-		);
-		
+		let uid = res.uid;
+
 		if (isEmpty(this.currentUser)) {
-			this.currentUser = currentUser;
 			this._initOrgs(uid);
+
+			let user = await db.collection('users').doc(res.uid).get();
+
+			let currentUser = assign({},
+				user.data(),
+				{ uid }
+			);
+
+			this.currentUser = currentUser;
 		}
-		else this.currentUser = currentUser;
 	}
 	
 	signIn = (method, email = '', pass = '') => {
@@ -149,6 +154,13 @@ class Store {
 	
 	signOut = () => {
 		this._unsetListener();
+
+		this.organisations = {};
+		this.orgCount = 0;
+		this.orgLimit = 0;
+
+		this.hideSnackbar();
+
 		return auth.signOut();
 	}
 	
@@ -162,8 +174,9 @@ class Store {
 	orgCount = 0;
 	orgLimit = 0;
 	
-	_initOrgs = () => {
-		this._setListener(`users/${this.currentUser.uid}/organisations`, this._handleUserOrgsSnapshot);
+	_initOrgs = (uid) => {
+		this.appIsLoading = true;
+		this._setListener(`users/${uid}/organisations`, this._handleUserOrgsSnapshot);
 	}
 	
 	_handleUserOrgsSnapshot = (snapshot) => {
@@ -225,10 +238,10 @@ class Store {
 			return;
 		}
 
-		this._displayModelError(ajv.errors[0]);
+		this._displayModelError(model, ajv.errors[0]);
 	}
 	
-	_displayModelError = (error) => {
+	_displayModelError = (model, error) => {
 		let fieldPath = trim(error.dataPath, '.'),
 			field = get(model, fieldPath),
 			objectPath = fieldPath.split('.')[0],
