@@ -1,5 +1,7 @@
 import { h, Component } from 'preact';
+import { map } from 'lodash';
 import Container from '../../components/Container';
+import InputField from '../../components/InputField';
 
 class Data extends Component {
 	componentWillMount() {
@@ -17,10 +19,34 @@ class Data extends Component {
 		if (oldOrg !== newOrg) store.checkOrgModelPresent(newOrg);
 	}
 
-	render = () => {
-		<Container>
-			<h1>Overview</h1>
-		</Container>
+	render = ({ match: { params: { org } } }) => {
+		let { mobxStores: { store } } = this.context;
+
+		if (!store.checkOrgModelPresent(org, false)) return (
+			<Container>
+				<h1>No model placeholder</h1>
+				<p>TODO: Replace with image</p>
+			</Container>
+		)
+
+		let organisation = store.organisations[org],
+			metrics = organisation.model.metrics;
+
+		return (
+			<Container slim>
+				{ Object.keys(metrics).map((id) => {
+					let metric = metrics[id];
+					return (
+						<InputField
+							fullWidth
+							label={metric.name}
+							help={metric.help}
+							type={metric.type}
+						/>
+					);
+				}) }
+			</Container>
+		);
 	}
 }
 
