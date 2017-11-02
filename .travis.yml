@@ -8,15 +8,14 @@ branches:
     - next
 
 deploy:
-  - provider: surge
-    project: build/
-    domain: seaman.surge.sh
-    skip_cleanup: true
+  - skip_cleanup: true
+    provider: firebase
+    token: $FIREBASE_TOKEN
     on:
       branch: master
-  - provider: surge
+  - skip_cleanup: true
+    provider: surge
     project: build/
     domain: seaman-next.surge.sh
-    skip_cleanup: true
     on:
       branch: next
