@@ -161,7 +161,7 @@ class Store {
 	signOut = () => {
 		this._unsetListener();
 
-		this.organisations = {};
+		this.organisations.clear();
 		this.orgCount = 0;
 		this.orgLimit = 0;
 
@@ -176,7 +176,7 @@ class Store {
 	/* ==================================== */	
 	
 	
-	@observable organisations = {};
+	@observable organisations = observable.map({});
 	orgCount = 0;
 	orgLimit = 0;
 	
@@ -194,25 +194,30 @@ class Store {
 			path = `organisations/${id}`;
 			
 			if (type === 'added') {
-				set(this.organisations, id, { _id: id, _role: doc.data().role });
+				this.organisations.set(id, observable.map({ _id: id, _role: doc.data().role }));
 				this._setListener(path, this._handleOrgSnapshot);
 			}
 			
 			if (type === 'removed') {
+				this.organisations.delete(id);
 				this._unsetListener(path);
 			}
 		});
 	}
 	
 	_handleOrgSnapshot = (doc) => {
-		if (!doc.exists) return;
+		if (!doc.exists) {
+			if (this.organisations.has(doc.id)) this.organisations.delete(doc.id);
+			return;
+		}
+
 		this.orgCount++;
-		merge(this.organisations[doc.id], doc.data());
+		this.organisations.get(doc.id).merge(doc.data());
 		if (this.orgCount === this.orgLimit && this.appIsLoading === true) this.appIsLoading = false;
 	}
 	
 	checkOrgModelPresent = (id, notify = true) => {
-		let modelPresent = this.organisations[id].model !== undefined;
+		let modelPresent = this.organisations.get(id).has('model');
 		if (notify) {
 			let message = 'No model exists on the server for this organisation';
 			

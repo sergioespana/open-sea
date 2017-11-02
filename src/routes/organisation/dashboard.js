@@ -1,7 +1,8 @@
 import { h, Component } from 'preact';
+import { observer } from 'mobx-react';
 import Container from '../../components/Container';
 
-class Overview extends Component {
+@observer class Overview extends Component {
 	componentWillMount() {
 		let { mobxStores: { store } } = this.context,
 			{ match: { params: { org } } } = this.props;
@@ -17,8 +18,9 @@ class Overview extends Component {
 		if (oldOrg !== newOrg) store.checkOrgModelPresent(newOrg);
 	}
 
-	render = ({ match: { params: { org } } }) => {
-		let { mobxStores: { store } } = this.context;
+	render = () => {
+		let { match: { params: { org } } } = this.props,
+			{ mobxStores: { store } } = this.context;
 
 		if (!store.checkOrgModelPresent(org, false)) return (
 			<Container>
@@ -27,8 +29,8 @@ class Overview extends Component {
 			</Container>
 		)
 
-		let organisation = store.organisations[org],
-			indicators = organisation.model.indicators;
+		let organisation = store.organisations.get(org),
+			indicators = organisation.get('model').indicators;
 
 		return (
 			<Container>

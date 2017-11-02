@@ -1,5 +1,6 @@
 import { h } from 'preact';
-import { Route, Switch } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import Main from '../../components/Main';
 import Drawer from '../../components/Drawer';
 import Dropzone from '../../components/Dropzone';
@@ -10,7 +11,7 @@ import Settings from './settings';
 import Assistant from './assistant';
 import Sharing from './sharing';
 
-const Organisation = ({ match: { params: { org } } }) => (
+const Organisation = ({ match: { params: { org } } }, { mobxStores: { store } }) => store.organisations.has(org) ? (
 	<Main hasDrawer>
 		<Dropzone>
 			<Route path="/:org" component={Drawer} />
@@ -23,6 +24,8 @@ const Organisation = ({ match: { params: { org } } }) => (
 			</Switch>
 		</Dropzone>
 	</Main>
+) : (
+	<Redirect to="/" />
 );
 
-export default Organisation;
+export default observer(Organisation);

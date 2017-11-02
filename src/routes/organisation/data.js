@@ -1,9 +1,9 @@
 import { h, Component } from 'preact';
+import { observer } from 'mobx-react';
 import { map } from 'lodash';
 import Container from '../../components/Container';
-import InputField from '../../components/InputField';
 
-class Data extends Component {
+@observer class Data extends Component {
 	componentWillMount() {
 		let { mobxStores: { store } } = this.context,
 			{ match: { params: { org } } } = this.props;
@@ -19,8 +19,9 @@ class Data extends Component {
 		if (oldOrg !== newOrg) store.checkOrgModelPresent(newOrg);
 	}
 
-	render = ({ match: { params: { org } } }) => {
-		let { mobxStores: { store } } = this.context;
+	render = () => {
+		let { match: { params: { org } } } = this.props,
+			{ mobxStores: { store } } = this.context;
 
 		if (!store.checkOrgModelPresent(org, false)) return (
 			<Container>
@@ -29,18 +30,16 @@ class Data extends Component {
 			</Container>
 		)
 
-		let organisation = store.organisations[org],
-			metrics = organisation.model.metrics;
+		let organisation = store.organisations.get(org),
+			metrics = organisation.get('model').metrics;
 
 		return (
 			<Container slim>
 				{ Object.keys(metrics).map((id) => {
 					let metric = metrics[id];
 					return (
-						<InputField
-							fullWidth
-							label={metric.name}
-							help={metric.help}
+						<input
+							placeholder={metric.name}
 							type={metric.type}
 						/>
 					);
