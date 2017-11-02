@@ -1,6 +1,5 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
-import Main from '../../components/Main';
 import Container from '../../components/Container';
 
 export default class Signup extends Component {
@@ -32,23 +31,21 @@ export default class Signup extends Component {
 	}
 	
 	render = (props, { email, pass, error }) => (
-		<Main>
-			<Container>
-				<h1>Signup</h1>
-				{ error && <p>{ error.message }</p> }
-				<form onSubmit={this.createUserWithEmailAndPassword}>
-					<input type="email" placeholder="Email" value={email} onInput={this.linkState('email', 'target.value')} /><br />
-					<input type="password" placeholder="Password" value={pass} onInput={this.linkState('pass', 'target.value')} /><br />
-					<br />
-					<button type="submit">Sign up</button>
-				</form>
+		<Container>
+			<h1>Signup</h1>
+			{ error && <p>{ error.message }</p> }
+			<form onSubmit={this.createUserWithEmailAndPassword}>
+				<input type="email" placeholder="Email" value={email} onInput={this.linkState('email', 'target.value')} /><br />
+				<input type="password" placeholder="Password" value={pass} onInput={this.linkState('pass', 'target.value')} /><br />
 				<br />
-				<br />
-				<button onClick={this.signUpWithGoogle}>Sign up with Google</button>
-				<br />
-				<br />
-				<p>Already have an account? <Link to="/account/login">Log in</Link></p>
-			</Container>
-		</Main>
+				<button type="submit">Sign up</button>
+			</form>
+			<br />
+			<br />
+			<button onClick={this.signUpWithGoogle}>Sign up with Google</button>
+			<br />
+			<br />
+			<p>Already have an account? <Link to="/account/login">Log in</Link></p>
+		</Container>
 	);
 }
