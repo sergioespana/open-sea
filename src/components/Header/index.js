@@ -1,6 +1,5 @@
 import { h } from 'preact';
 import { Link } from 'react-router-dom';
-import { map } from 'lodash';
 import styled from 'styled-components';
 
 import Wrapper from './components/Wrapper';

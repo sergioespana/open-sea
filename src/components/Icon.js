@@ -5,7 +5,7 @@ const Icon = ({ icon }) => {
 		category = split[0].toLowerCase(),
 		name = split.slice(1, split.length).join('_'),
 		path = `material-design-icons/${category}/svg/production/ic_${name}_24px.svg`,
-		svg = null;
+		svg = path;
 	return svg;
 };
 

@@ -7,7 +7,7 @@ import CardContent from './components/CardContent';
 
 const Card = ({ to, children, ...props }) => to ? (
 	<Link to={to} {...props}>{ children }</Link>
-	) : (
+) : (
 	<div {...props}>{ children }</div>
 );
 

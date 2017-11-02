@@ -7,25 +7,14 @@ import Menu, { MenuItem } from '../Menu';
 import Icon from './components/Icon';
 // import Option from './components/Option';
 
-const Option = (props) => <div role="option" {...props} />; 
+const Option = (props) => <div role="option" {...props} />;
 
 class Select extends Component {
 	state = {
 		open: false,
 		options: []
 	}
-
-	componentWillMount() {
-		this.componentWillReceiveProps(this.props);
-	}
 	
-	componentWillReceiveProps(props) {
-		let { children, value } = props,
-			options = children.map((child) => child.attributes);
-
-		this.setState({ options });
-	}
-
 	handleClickOpen = (event) => {
 		if (this.state.open === false) {
 			let rect = event.target.getBoundingClientRect();
@@ -36,7 +25,7 @@ class Select extends Component {
 			window.addEventListener('click', this.handleRequestClose);
 		}
 	}
-
+	
 	handleSelect = (event) => {
 		this.setState({ open: false });
 
@@ -46,7 +35,7 @@ class Select extends Component {
 		
 		if (onChange && newValue !== value) onChange(newValue);
 	}
-
+	
 	handleRequestClose = (event) => {
 		let base = this.base,
 			target = event.target;
@@ -59,11 +48,22 @@ class Select extends Component {
 
 	findValueIndex = (value) => findIndex(this.state.options, ['value', value]) || 0;
 
+	componentWillMount() {
+		this.componentWillReceiveProps(this.props);
+	}
+	
+	componentWillReceiveProps(props) {
+		let { children } = props,
+			options = children.map((child) => child.attributes);
+
+		this.setState({ options });
+	}
+
 	render = ({ value, ...props }, { open, options }) => (
 		<Wrapper {...props} onClick={this.handleClickOpen}>
 			{ options[this.findValueIndex(value)].text }
 			<Icon />
-			{ open && ( 
+			{ open && (
 				<Portal into="body">
 					<Menu pos={open}>
 						{ map(options, (option, index) => (

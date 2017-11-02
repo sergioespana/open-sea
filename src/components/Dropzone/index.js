@@ -17,7 +17,7 @@ class CustomDropzone extends Component {
 
 		let {
 			mobxStores: { store },
-			router: { route : { match : { params: { org } } } }
+			router: { route: { match: { params: { org } } } }
 		} = this.context;
 
 		if (rejected.length > 0) return store.showSnackbar('Incorrect file type.', 4000);

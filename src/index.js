@@ -6,12 +6,11 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider, observer } from 'mobx-react';
 import store from './stores';
 import PrivateRoute from './components/PrivateRoute';
-import PublicRoute from './components/PublicRoute';
 
 // Components
 import App from './components/App';
 import Header from './components/Header';
-import Snackbar, { SnackbarAction } from './components/Snackbar';
+import Snackbar from './components/Snackbar';
 import CircularProgress from './components/CircularProgress';
 
 // Routes

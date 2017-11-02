@@ -27,10 +27,7 @@ import Container from '../../components/Container';
 				<h1>No model placeholder</h1>
 				<p>TODO: Replace with image</p>
 			</Container>
-		)
-
-		let organisation = store.organisations.get(org),
-			indicators = organisation.get('model').indicators;
+		);
 
 		return (
 			<Container>

@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import styled from 'styled-components';
 
 import Wrapper from './components/Wrapper';
 import Item from './components/Item';

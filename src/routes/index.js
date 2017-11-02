@@ -5,24 +5,24 @@ import { toJS } from 'mobx';
 import Container from '../components/Container';
 import Main from '../components/Main';
 import Hero from '../components/Hero';
-import Card, { CardTitle, CardContent } from '../components/Card';
+import Card, { CardTitle } from '../components/Card';
 import Grid from '../components/Grid';
 
 const Home = (props, { mobxStores: { store } }) => (
-		<Main>
+	<Main>
 		<Hero />
 		<Container>
-		<p>Your organisations</p>
-		<Grid gutter={25}>
-			{ map(toJS(store.organisations), (org, id) => (
-				<Card to={`/${id}`}>
-					<CardTitle
-						primary={org.name}
-						secondary={org._role}
-					/>
-				</Card>
-			)) }
-		</Grid>
+			<p>Your organisations</p>
+			<Grid gutter={25}>
+				{ map(toJS(store.organisations), (org, id) => (
+					<Card to={`/${id}`}>
+						<CardTitle
+							primary={org.name}
+							secondary={org._role}
+						/>
+					</Card>
+				)) }
+			</Grid>
 		</Container>
 	</Main>
 );

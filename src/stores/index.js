@@ -4,10 +4,8 @@
 
 import { observable, computed } from 'mobx';
 import { auth, db, googleAuthProvider } from '../lib/firebase';
-import { assign, merge, isEmpty, set, map, trim, trimEnd, get } from 'lodash';
+import { assign, merge, isEmpty, map, trim, trimEnd, get } from 'lodash';
 import AJV from 'ajv';
-import delve from 'dlv';
-import mathjs from 'mathjs';
 import yaml from 'js-yaml';
 import schema from './schema.json';
 
@@ -189,9 +187,9 @@ class Store {
 		this.orgLimit = snapshot.size;
 		snapshot.docChanges.forEach((change) => {
 			let type = change.type,
-			doc = change.doc,
-			id = doc.id,
-			path = `organisations/${id}`;
+				doc = change.doc,
+				id = doc.id,
+				path = `organisations/${id}`;
 			
 			if (type === 'added') {
 				this.organisations.set(id, observable.map({ _id: id, _role: doc.data().role }));
@@ -223,7 +221,8 @@ class Store {
 			
 			if (modelPresent) {
 				if (this.snackbar.open && this.snackbar.message === message) return this.hideSnackbar();
-			} else {
+			}
+			else {
 				this.showSnackbar(
 					'No model exists on the server for this organisation',
 					4000,
