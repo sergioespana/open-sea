@@ -15,7 +15,7 @@ deploy:
       branch: master
   - skip_cleanup: true
     provider: surge
-    project: build/
+    project: ./build/
     domain: seaman-next.surge.sh
     on:
       branch: next
