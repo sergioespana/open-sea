@@ -24,17 +24,8 @@ class Store {
 		auth.onAuthStateChanged(this._onAuthStateChanged);
 	}
 	
-	_setListener = (str, handler) => {
-		let path = str.split('/'),
-			ref = db;
-
-		path.forEach((item, index) => {
-			let even = index === 0 || index %2 === 0;
-			if (even) ref = ref.collection(item);
-			else ref = ref.doc(item);
-		});
-
-		this.listeners[path] = ref.onSnapshot(handler);
+	_setListener = (path, handler) => {
+		this.listeners[path] = this._getRef(path).onSnapshot(handler);
 	}
 
 	_unsetListener = (path) => {
@@ -47,8 +38,23 @@ class Store {
 			delete this.listeners[path];
 		}
 	}
+
+	_getRef = (str) => {
+		let path = str.split('/'),
+			ref = db;
+
+		path.forEach((item, index) => {
+			let even = index === 0 || index %2 === 0;
+			if (even) ref = ref.collection(item);
+			else ref = ref.doc(item);
+		});
+
+		return ref;
+	}
 	
 	_wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+	_setDocument = (path, obj, merge = true) => this._getRef(path).set(obj, { merge });
 
 	toggleDrawer = () => {
 		this.drawerIsOpen = !this.drawerIsOpen;
