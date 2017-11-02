@@ -237,39 +237,48 @@ class Store {
 	/* =============== YAML =============== */
 	/* ==================================== */	
 	
-	
-	parseFile = (file) => {
+	storeModel = (org, file) => {
 		let fr = new FileReader();
-		fr.onload = this._parseStringToModel;
+		fr.onload = (event) => this._parseFile(org, event);
 		fr.readAsText(file);
 	}
 
-	_parseStringToModel = (event) => {
-		let str = event.target.result,
-			model = yaml.safeLoad(str),
-			valid = ajv.validate(schema, model);
+	_parseFile = async (org, event) => {
+		let str = event.target.result || false;
 
-		if (valid) {
-			this._storeModel(model);
-			return;
+		if (str) {
+			let model = yaml.safeLoad(str) || {},
+				valid = this.validateModel(model);
+			
+			if (valid) {
+				this.showSnackbar('Saving model...', 0);
+
+				await this._setDocument(`organisations/${org}`, { model });
+
+				return this.showSnackbar(
+					'Model saved',
+					4000,
+					() => console.log('TODO'),
+					'undo'
+				);
+			}
+
+			return this.showSnackbar(this._buildErrorMessage(model, ajv.errors[0]), 6000);
 		}
 
-		this._displayModelError(model, ajv.errors[0]);
+		this.showSnackbar('Unable to read the selected file');
 	}
-	
-	_displayModelError = (model, error) => {
+
+	validateModel = (model) => ajv.validate(schema, model);
+
+	_buildErrorMessage = (model, error) => {
 		let fieldPath = trim(error.dataPath, '.'),
 			field = get(model, fieldPath),
 			objectPath = fieldPath.split('.')[0],
 			object = get(model, objectPath),
-			objectType = trimEnd(objectPath.split('[')[0], 's'),
-			message = `Field "${field}" in ${objectType} "${object.id}" ${error.message}.`;
+			objectType = trimEnd(objectPath.split('[')[0], 's');
 
-		this.showSnackbar(message);
-	}
-
-	_storeModel = () => {
-
+		return `Field "${field}" in ${objectType} "${object.id}" ${error.message}`;
 	}
 }
 
