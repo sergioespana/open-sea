@@ -2,10 +2,8 @@ language: node_js
 node_js:
   - stable
 
-branches:
-  only:
-    - master
-    - next
+script:
+  - yarn build
 
 deploy:
   skip_cleanup: true
