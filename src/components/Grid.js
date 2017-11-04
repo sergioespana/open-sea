@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Grid = styled.div`
 	display: grid;
-	grid-template-columns: ${props => `repeat(${props.cols || 4}, ${100 / (props.cols ? props.cols : 4)}%)`};
+	grid-template-columns: repeat(auto-fill, calc(25% - ${props => `${props.gutter || 20}px`}));
 	grid-gap: ${props => `${props.gutter || 20}px`};
 `;
 
