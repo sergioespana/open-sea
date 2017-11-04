@@ -14,6 +14,7 @@ export default styled(Action)`
 	font-size: inherit;
 	font-weight: 500;
 	text-transform: uppercase;
+	text-decoration: none;
 	background-color: transparent;
 	margin: 0 0 0 24px;
 	cursor: pointer;
