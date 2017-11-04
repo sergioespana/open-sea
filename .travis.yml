@@ -1,11 +1,9 @@
 language: node_js
 node_js:
-  - stable
+  - "8"
 
-branches:
-  only:
-    - master
-    - next
+script:
+  - yarn build
 
 deploy:
   skip_cleanup: true
@@ -13,3 +11,8 @@ deploy:
   token: $FIREBASE_TOKEN
   on:
     branch: master
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

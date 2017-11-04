@@ -1,8 +1,14 @@
 import firebase from 'firebase';
-import config from './config.json';
 require('firebase/firestore');
 
-firebase.initializeApp(config);
+firebase.initializeApp({
+	apiKey: "AIzaSyBZNfmczPY3fG1m04vDJ0St4eLBcpcLmek",
+	authDomain: "seaman-auth.firebaseapp.com",
+	databaseURL: "https://seaman-auth.firebaseio.com",
+	projectId: "seaman-auth",
+	storageBucket: "seaman-auth.appspot.com",
+	messagingSenderId: "623156714980"
+});
 
 export default firebase;
 export const auth = firebase.auth();
