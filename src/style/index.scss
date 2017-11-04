@@ -1,20 +1,27 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+
 html, body {
-	height: 100%;
 	width: 100%;
 	padding: 0;
 	margin: 0;
-	background: #FAFAFA;
-	font-family: 'Helvetica Neue', arial, sans-serif;
+	font-family: 'Roboto', sans-serif;
 	font-weight: 400;
 	color: #444;
+	background: #fff;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*,
+*:before,
+*:after {
 	box-sizing: border-box;
 }
 
-#app {
-	height: 100%;
+*:focus {
+	outline: none;
+}
+
+body > * {
+	position: relative;
 }

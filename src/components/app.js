@@ -1,18 +1,42 @@
-import { h, Component } from 'preact';
-import { Router } from 'preact-router';
+import { h } from 'preact';
+import styled from 'styled-components';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Provider, observer } from 'mobx-react';
+import store from '../stores';
+import PrivateRoute from './PrivateRoute';
 
+// Components
 import Header from './Header';
-import Home from '../routes';
+import Snackbar from './Snackbar';
+import CircularProgress from './CircularProgress';
 
-export default class App extends Component {
-	render() {
-		return (
-			<div id="app">
+// Routes
+import Home from '../routes';
+import Account from '../routes/account';
+import Organisation from '../routes/organisation';
+
+const Container = styled.div`
+	min-height: 100vh;
+`;
+
+const App = () => (
+	<Provider store={store}>
+		<Router>
+			<Container id="app">
 				<Header />
-				<Router>
-					<Home path="/" />
-				</Router>
-			</div>
-		);
-	}
-}
+				{ store.appIsLoading ? (
+					<CircularProgress centerParent />
+				) : (
+					<Switch>
+						<PrivateRoute path="/" exact component={Home} />
+						<Route path="/account" component={Account} />
+						<Route path="/:org" component={Organisation} />
+					</Switch>
+				) }
+				<Snackbar />
+			</Container>
+		</Router>
+	</Provider>
+);
+
+export default observer(App);
