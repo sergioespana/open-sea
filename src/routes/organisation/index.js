@@ -11,7 +11,7 @@ import Settings from './settings';
 import Assistant from './assistant';
 import Sharing from './sharing';
 
-const Organisation = ({ match: { params: { org } } }, { mobxStores: { store } }) => store.organisations.has(org) ? (
+const Organisation = ({ match: { params: { org } } }, { mobxStores: { OrgStore } }) => OrgStore.organisations.has(org) ? (
 	<Main hasDrawer>
 		<Dropzone>
 			<Route path="/:org" component={Drawer} />

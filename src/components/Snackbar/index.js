@@ -6,12 +6,12 @@ import Wrapper from './components/Wrapper';
 import Content from './components/Content';
 import Action from './components/Action';
 
-const Snackbar = (props, { mobxStores: { store } }) => (
+const Snackbar = (props, { mobxStores: { SnackStore } }) => (
 	<Portal into="body">
-		{ store.snackbar.open ? (
-			<Wrapper doClose={store.snackbar.doClose} onClick={store.hideSnackbar}>
-				{ store.snackbar.message && <Content>{ store.snackbar.message }</Content> }
-				{ store.snackbar.action && store.snackbar.actionMessage && <Action action={store.snackbar.action}>{ store.snackbar.actionMessage }</Action> }
+		{ SnackStore.isOpen ? (
+			<Wrapper doClose={SnackStore.snackbar.get('doClose')} onClick={SnackStore.hide}>
+				{ SnackStore.snackbar.get('message') && <Content>{ SnackStore.snackbar.get('message') }</Content> }
+				{ SnackStore.snackbar.get('action') && SnackStore.snackbar.get('actionMessage') && <Action action={SnackStore.snackbar.get('action')}>{ SnackStore.snackbar.get('actionMessage') }</Action> }
 			</Wrapper>
 		) : null }
 	</Portal>

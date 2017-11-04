@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Wrapper from './components/Wrapper';
 import Menu, { MenuItem } from '../Menu';
 
-const Drawer = ({ match: { params: { org } }, open }, { mobxStores: { store: { drawerIsOpen } } }) => org ? (
+const Drawer = ({ match: { params: { org } }, open }, { mobxStores: { AppStore: { drawerIsOpen } } }) => org ? (
 	<Wrapper open={drawerIsOpen}>
 		<Menu inline>
 			<MenuItem to={`/${org}/assistant`}>Assistant</MenuItem>

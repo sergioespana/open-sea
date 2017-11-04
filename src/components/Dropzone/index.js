@@ -16,14 +16,14 @@ class CustomDropzone extends Component {
 		this.handleDragLeave();
 
 		let {
-			mobxStores: { store },
+			mobxStores: { YAMLStore },
 			router: { route: { match: { params: { org } } } }
 		} = this.context;
 
 		if (rejected.length > 0) return store.showSnackbar('Incorrect file type.', 4000);
 		if (accepted.length <= 0) return store.showSnackbar('An unexpected error occurred.', 4000);
 
-		store.storeModel(org, accepted[0]);
+		YAMLStore.storeModel(org, accepted[0]);
 	};
 
 	render = ({ children, ...props }, { dragging }) => (

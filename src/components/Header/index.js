@@ -22,11 +22,11 @@ const Logout = styled.p`
 	margin-right: 20px;
 `;
 
-const Header = (props, { router: { history: { push } }, mobxStores: { store } }) => (
+const Header = (props, { router: { history: { push } }, mobxStores: { AppStore, AuthStore } }) => (
 	<Wrapper>
-		<MenuButton onClick={store.toggleDrawer} />
+		<MenuButton onClick={AppStore.toggleDrawer} />
 		<Title><Link to="/">open<strong>SEA</strong></Link></Title>
-		{ store.isAuthed && <Logout><Link to="/account/logout">logout</Link></Logout> }
+		{ AuthStore.isAuthed && <Logout><Link to="/account/logout">logout</Link></Logout> }
 	</Wrapper>
 );
 

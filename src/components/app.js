@@ -2,7 +2,7 @@ import { h } from 'preact';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider, observer } from 'mobx-react';
-import store from '../stores';
+import * as stores from '../stores';
 import PrivateRoute from './PrivateRoute';
 
 // Components
@@ -20,11 +20,11 @@ const Container = styled.div`
 `;
 
 const App = () => (
-	<Provider store={store}>
+	<Provider {...stores}>
 		<Router>
 			<Container id="app">
 				<Header />
-				{ store.appIsLoading ? (
+				{ stores.AppStore.isLoading ? (
 					<CircularProgress centerParent />
 				) : (
 					<Switch>

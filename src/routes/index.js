@@ -8,13 +8,13 @@ import Hero from '../components/Hero';
 import Card, { CardTitle } from '../components/Card';
 import Grid from '../components/Grid';
 
-const Home = (props, { mobxStores: { store } }) => (
+const Home = (props, { mobxStores: { OrgStore } }) => (
 	<Main>
 		<Hero />
 		<Container>
 			<p>Your organisations</p>
 			<Grid gutter={25}>
-				{ map(toJS(store.organisations), (org, id) => (
+				{ map(toJS(OrgStore.organisations), (org, id) => (
 					<Card to={`/${id}`}>
 						<CardTitle
 							primary={org.name}
