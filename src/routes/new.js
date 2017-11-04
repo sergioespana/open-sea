@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import slug from 'slug';
 import Main from '../components/Main';
 import Container from '../components/Container';
+import Input from '../components/Input';
 
 class New extends Component {
 	state = {
@@ -15,18 +16,26 @@ class New extends Component {
 	onSubmit = (event) => {
 		event.preventDefault();
 		let { id, name } = this.state,
-			{ mobxStores: { OrgStore } } = this.context;
+			{ mobxStores: { OrgStore },
+				router: { history: { push } } } = this.context;
 			
-		OrgStore.createNew(id, name);
+		OrgStore.createNew(id, name).then(() => push('/')).catch();
 	}
 
 	render = (props, { id, name }) => (
 		<Main>
-			<Container>
-				<h3>Organisation name</h3>
+			<Container slim>
 				<form onSubmit={this.onSubmit}>
-					<input type="text" placeholder="Name" value={name} onInput={this.onInput} style={{ display: 'block' }} required />
-					<p>{ id !== '' && `Your organisation ID will be ${id}` }</p>
+					<Input
+						fullWidth
+						type="text"
+						label="Organisation name"
+						help={id !== '' ? `Your organisation ID will be ${id}` : null}
+						value={name}
+						onInput={this.onInput}
+					/>
+					<br />
+					<br />
 					<button type="submit">Create</button>
 					<Link to="/">Cancel</Link>
 				</form>

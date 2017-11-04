@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import { observer } from 'mobx-react';
 import { map } from 'lodash';
 import Container from '../../components/Container';
+import Input from '../../components/Input';
 
 @observer class Data extends Component {
 	componentWillMount() {
@@ -36,8 +37,10 @@ import Container from '../../components/Container';
 		return (
 			<Container slim>
 				{ map(metrics, (metric) => (
-					<input
-						placeholder={metric.name}
+					<Input
+						fullWidth
+						label={metric.name}
+						help={metric.help}
 						type={metric.type}
 					/>
 				)) }

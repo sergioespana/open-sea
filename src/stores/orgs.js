@@ -32,12 +32,16 @@ class OrganisationStore {
 
 	createNew = async (id, name) => {
 		let org = await fbStore.getDoc(`organisations/${id}`);
-		if (org.exists) return snackStore.show(`${name} already exists`);
+		if (org.exists) {
+			snackStore.show(`${name} already exists`);
+			return Promise.reject();
+		}
 
 		snackStore.show('Creating organisation...', 0);
 		await fbStore.setDoc(`organisations/${id}`, { name, created: new Date() });
 		await fbStore.setDoc(`users/${authStore.user.get('uid')}/organisations/${id}`, { role: 'owner' });
-		snackStore.show('Saved organisation', 4000, () => console.log('TODO: Undo organisation creation'), 'UNDO');
+		snackStore.show('Saved organisation', 4000, `/${id}`, 'VIEW');
+		return Promise.resolve();
 	}
 
 	limit = 0;
