@@ -1,4 +1,5 @@
 import { observable } from 'mobx';
+import authStore from './auth';
 import appStore from './app';
 import fbStore from './firebase';
 import snackStore from './snack';
@@ -27,6 +28,16 @@ class OrganisationStore {
 		}
 
 		return modelPresent;
+	}
+
+	createNew = async (id, name) => {
+		let org = await fbStore.getDoc(`organisations/${id}`);
+		if (org.exists) return snackStore.show(`${name} already exists`);
+
+		snackStore.show('Creating organisation...', 0);
+		await fbStore.setDoc(`organisations/${id}`, { name, created: new Date() });
+		await fbStore.setDoc(`users/${authStore.user.get('uid')}/organisations/${id}`, { role: 'owner' });
+		snackStore.show('Saved organisation', 4000, () => console.log('TODO: Undo organisation creation'), 'UNDO');
 	}
 
 	limit = 0;
