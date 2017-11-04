@@ -13,6 +13,7 @@ import CircularProgress from './CircularProgress';
 // Routes
 import Home from '../routes';
 import Account from '../routes/account';
+import New from '../routes/new';
 import Organisation from '../routes/organisation';
 
 const Container = styled.div`
@@ -30,6 +31,7 @@ const App = () => (
 					<Switch>
 						<PrivateRoute path="/" exact component={Home} />
 						<Route path="/account" component={Account} />
+						<Route path="/new" component={New} />
 						<Route path="/:org" component={Organisation} />
 					</Switch>
 				) }

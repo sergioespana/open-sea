@@ -14,6 +14,9 @@ const Home = (props, { mobxStores: { OrgStore } }) => (
 		<Container>
 			<p>Your organisations</p>
 			<Grid gutter={25}>
+				<Card to="/new">
+					<CardTitle primary="Create new" />
+				</Card>
 				{ map(toJS(OrgStore.organisations), (org, id) => (
 					<Card to={`/${id}`}>
 						<CardTitle
