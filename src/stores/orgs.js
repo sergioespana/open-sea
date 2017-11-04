@@ -33,6 +33,8 @@ class OrganisationStore {
 	count = 0;
 
 	_onUserOrganisationsSnapshot = (snapshot) => {
+		if (snapshot.empty) return appStore.isLoading = false;
+		
 		this.limit = snapshot.size;
 		snapshot.docChanges.forEach((change) => {
 			let { type, doc } = change,

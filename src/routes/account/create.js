@@ -11,22 +11,22 @@ export default class Signup extends Component {
 
 	createUserWithEmailAndPassword = (e) => {
 		e.preventDefault();
-		let { store } = this.context.mobxStores,
+		let { AuthStore } = this.context.mobxStores,
 			{ email, pass, error } = this.state;
 
 		if (error) this.setState({ error: null });
 		
-		return store.signUp(email, pass)
+		return AuthStore.signUp({ email, pass })
 			.catch((error) => this.setState({ error }));
 	}
 	
 	signUpWithGoogle = (event) => {
-		let { store } = this.context.mobxStores,
+		let { AuthStore } = this.context.mobxStores,
 			{ error } = this.state;
 
 		if (error) this.setState({ error: null });
 
-		return store.signUp('google')
+		return AuthStore.signUp('google')
 			.catch((error) => this.setState({ error }));
 	}
 	

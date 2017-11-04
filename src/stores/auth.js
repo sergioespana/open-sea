@@ -1,8 +1,8 @@
 import { observable, computed } from 'mobx';
-import isEmpty from 'lodash/isEmpty';
 import appStore from './app';
 import fbStore from './firebase';
 import orgStore from './orgs';
+import snackStore from './snack';
 
 class AuthStore {
 
@@ -17,16 +17,26 @@ class AuthStore {
 	}
 
 	_handleAuthStateChanged = (user) => {
-		if (!user) return this.user.clear();
+		if (!user) {
+			this.user.clear();
+			appStore.isLoading = false;
+			return;
+		}
 
-		let { uid } = user;
+		let { uid, email, emailVerified } = user;
 
 		if (this.user.size === 0) {
 			orgStore.initialise(uid);
 		}
 
 		this.user.set('uid', uid);
+		this.user.set('email', email);
+		this._storeLogin(uid, email);
+
+		if (!emailVerified) snackStore.show('Please verify your e-mail address to confirm your account');
 	}
+
+	_storeLogin = (uid, email) => fbStore.setDoc(`users/${uid}`, { lastLogin: new Date(), email });
 
 	signIn = (arg) => {
 		if (typeof arg === 'string') {
@@ -36,7 +46,6 @@ class AuthStore {
 		
 		if (typeof arg === 'object') {
 			let { email, pass } = arg;
-			if (!email || !pass) return Promise.reject();
 			return this.auth.signInWithEmailAndPassword(arg.email, arg.pass);
 		}
 		
@@ -51,7 +60,6 @@ class AuthStore {
 		
 		if (typeof arg === 'object') {
 			let { email, pass } = arg;
-			if (!email || !pass) return Promise.reject();
 			return this.auth.createUserWithEmailAndPassword(arg.email, arg.pass);
 		}
 		
@@ -61,7 +69,7 @@ class AuthStore {
 	signOut = () => {
 		fbStore.removeListener();
 		orgStore.organisations.clear();
-		return auth.signOut();
+		return this.auth.signOut();
 	}
 }
 

@@ -4,13 +4,13 @@ import { observer } from 'mobx-react';
 
 @observer class Logout extends Component {
 	componentDidMount() {
-		let { store } = this.context.mobxStores;
-		return store.signOut();
+		let { AuthStore } = this.context.mobxStores;
+		return AuthStore.signOut();
 	}
 	
 	render() {
-		let { store } = this.context.mobxStores;
-		return store.isAuthed ? (
+		let { AuthStore } = this.context.mobxStores;
+		return AuthStore.isAuthed ? (
 			<h1>Logging out...</h1>
 		) : <Redirect to="/account/login" />;
 	}
