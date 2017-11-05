@@ -6,10 +6,8 @@ import Drawer from '../../components/Drawer';
 import Dropzone from '../../components/Dropzone';
 
 import Dashboard from './dashboard';
-import Data from './data';
 import Settings from './settings';
 import Assistant from './assistant';
-import Sharing from './sharing';
 
 const Organisation = ({ match: { params: { org } } }, { mobxStores: { OrgStore } }) => OrgStore.organisations.has(org) ? (
 	<Main hasDrawer>
@@ -17,8 +15,6 @@ const Organisation = ({ match: { params: { org } } }, { mobxStores: { OrgStore }
 			<Route path="/:org" component={Drawer} />
 			<Switch>
 				<Route path="/:org/assistant" component={Assistant} />
-				<Route path="/:org/data" component={Data} />
-				<Route path="/:org/sharing" component={Sharing} />
 				<Route path="/:org/settings" component={Settings} />
 				<Route path="/:org" component={Dashboard} />
 			</Switch>
