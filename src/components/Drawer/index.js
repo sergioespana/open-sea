@@ -8,8 +8,6 @@ const Drawer = ({ match: { params: { org } }, open }, { mobxStores: { AppStore: 
 		<Menu inline>
 			<MenuItem to={`/${org}/assistant`}>Assistant</MenuItem>
 			<MenuItem to={`/${org}`}>Dashboard</MenuItem>
-			<MenuItem to={`/${org}/data`}>Data</MenuItem>
-			<MenuItem to={`/${org}/sharing`}>Sharing</MenuItem>
 			<MenuItem to={`/${org}/settings`}>Settings</MenuItem>
 		</Menu>
 	</Wrapper>
