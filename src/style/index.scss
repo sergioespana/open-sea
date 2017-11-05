@@ -12,6 +12,10 @@ html, body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body {
+	overflow-y: scroll;
+}
+
 *,
 *:before,
 *:after {
