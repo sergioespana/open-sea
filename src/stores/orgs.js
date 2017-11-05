@@ -38,10 +38,21 @@ class OrganisationStore {
 		}
 
 		snackStore.show('Creating organisation...', 0);
-		await fbStore.setDoc(`organisations/${id}`, { name, created: new Date() });
+		await fbStore.setDoc(`organisations/${id}`, { name, created: new Date(), public: false });
 		await fbStore.setDoc(`users/${authStore.user.get('uid')}/organisations/${id}`, { role: 'owner' });
 		snackStore.show('Saved organisation', 4000, `/${id}`, 'VIEW');
 		return Promise.resolve();
+	}
+
+	togglePublic = async (id, notify = true) => {
+		let org = this.organisations.get(id),
+			currentSetting = org.get('public');
+
+		await fbStore.setDoc(`organisations/${id}`, { public: !currentSetting });
+
+		if (notify) {
+			snackStore.show(`Organisation is ${currentSetting ? 'no longer' : 'now'} public`, 4000, () => this.togglePublic(id, false), 'UNDO');
+		}
 	}
 
 	limit = 0;
