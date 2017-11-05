@@ -1,33 +1,25 @@
 import { h } from 'preact';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import Avatar from '../Avatar';
 
 import Wrapper from './components/Wrapper';
+import Container from './components/Container';
 import MenuButton from './components/MenuButton';
 import Title from './components/Title';
 
-// import ProjectSelect from './components/ProjectSelect';
-// import { Option } from '../Select';
-// <ProjectSelect value={org} onChange={(value) => push(`/${value}`)}>
-// 	<Option value="" text="See all" />
-// 	{ map(store.organisations, (org, id) => (
-// 		<Option value={id} text={ org.name } />
-// 	)) }
-// </ProjectSelect>
-
-const Logout = styled.p`
-	margin: 0;
-	position: absolute;
-	right: 0;
-	margin-right: 20px;
-`;
-
-const Header = (props, { router: { history: { push } }, mobxStores: { AppStore, AuthStore } }) => (
-	<Wrapper>
-		<MenuButton onClick={AppStore.toggleDrawer} />
-		<Title><Link to="/">open<strong>SEA</strong></Link></Title>
-		{ AuthStore.isAuthed && <Logout><Link to="/account/logout">logout</Link></Logout> }
-	</Wrapper>
-);
+const Header = (props, { router: { history: { push } }, mobxStores: { AppStore, AuthStore } }) => {
+	let name = AuthStore.user.get('name');
+	return (
+		<Wrapper>
+			<Container>
+				<MenuButton onClick={AppStore.toggleDrawer} />
+				<Title><Link to="/">open<strong>SEA</strong></Link></Title>
+			</Container>
+			<Container>
+				{ AuthStore.isAuthed && <Link to="/account" style={{ textDecoration: 'none' }}><Avatar src={AuthStore.user.get('avatar')}>{ name ? name.full : 'AC' }</Avatar></Link> }
+			</Container>
+		</Wrapper>
+	);
+};
 
 export default Header;

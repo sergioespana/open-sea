@@ -12,6 +12,7 @@ const Wrapper = styled.header`
 	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: center;
+	justify-content: space-between;
 	background-color: rgb(59, 120, 231);
 	z-index: 10;
 	box-shadow: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.2), 0 1px 8px 0 rgba(0,0,0,.12);
