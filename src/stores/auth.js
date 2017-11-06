@@ -104,8 +104,9 @@ class AuthStore {
 		let currentSetting = this.user.get('notifications') || false;
 
 		if (Notification.permission !== 'granted') {
+			snackStore.show('Please grant notification permission', 0);
 			let permission = await Notification.requestPermission();
-			if (permission === 'denied') return snackStore.show('Unable to turn on push notifications as permission request was denied');
+			if (permission === 'denied') return snackStore.show('Permission was denied');
 		}
 
 		this.user.set('notifications', !currentSetting);
