@@ -8,17 +8,21 @@ import Hero from '../components/Hero';
 import Card, { CardTitle } from '../components/Card';
 import Grid from '../components/Grid';
 
-const Home = (props, { mobxStores: { OrgStore } }) => (
+const Home = (props, { mobxStores: { OrgStore, DialogStore } }) => (
 	<Main>
 		<Hero />
 		<Container>
 			<p>Your organisations</p>
 			<Grid gutter={25}>
-				<Card to="/new">
+				<Card onClick={() => DialogStore.show('Create an organisation', 'TODO', [
+					{ message: 'Cancel' },
+					{ message: 'Create' }
+				])}
+				>
 					<CardTitle primary="Create new" />
 				</Card>
 				{ map(toJS(OrgStore.organisations), (org, id) => (
-					<Card to={`/${id}`}>
+					<Card to={`/organisation/${id}`}>
 						<CardTitle
 							primary={org.name}
 							secondary={org._role}

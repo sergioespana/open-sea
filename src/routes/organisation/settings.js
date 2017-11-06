@@ -5,15 +5,15 @@ import Container from '../../components/Container';
 import Avatar from '../../components/Avatar';
 import { SettingsGroup, SettingsItem } from '../../components/Settings';
 
-const Settings = ({ match: { params: { org } } }, { mobxStores: { OrgStore, AuthStore } }) => {
-	let organisation = OrgStore.organisations.get(org),
+const Settings = ({ match: { params: { id } } }, { mobxStores: { OrgStore, AuthStore, DialogStore } }) => {
+	let organisation = OrgStore.organisations.get(id),
 		isOwner = organisation.get('_role') === 'owner',
-		dashUrl = `${window.location.protocol}//${window.location.host}/${org}`,
+		dashUrl = `${window.location.protocol}//${window.location.host}/${id}`,
 		user = AuthStore.user;
 	
 	return (
 		<Container slim>
-			<SettingsGroup title="Organisation">
+			<SettingsGroup title="General">
 				<SettingsItem
 					primary={organisation.get('name')}
 					secondary={organisation.get('_id')}
@@ -37,7 +37,7 @@ const Settings = ({ match: { params: { org } } }, { mobxStores: { OrgStore, Auth
 					primary="Make public"
 					secondary={organisation.get('public') ? <span>Organisation's dashboard is currently available to everyone <a href={dashUrl}>here</a></span> : null}
 					enabled={organisation.get('public')}
-					onClick={() => OrgStore.togglePublic(org)}
+					onClick={() => OrgStore.togglePublic(id)}
 					hide={!isOwner}
 				/>
 			</SettingsGroup>
