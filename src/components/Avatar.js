@@ -15,8 +15,8 @@ const Avatar = ({ src, children, ...props }) => {
 
 export default styled(Avatar)`
 	position: relative;
-	width: 40px;
-	height: 40px;
+	width: ${props => props.size || 40}px;
+	height: ${props => props.size || 40}px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
