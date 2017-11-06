@@ -2,16 +2,44 @@ import { h } from 'preact';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-const Item = ({ to, children, ...props }) => to ? (
-	<Link to={to} {...props}>{ children }</Link>
+const TextContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	flex: auto;
+
+	p {
+		margin: 0;
+
+		:last-child {
+			color: rgb(117, 117, 117);
+		}
+	}
+`;
+
+const Item = ({ to, primary, secondary, icon, ...props }) => to ? (
+	<Link to={to} {...props}>
+		{ icon }
+		<TextContainer>
+			<p>{ primary }</p>
+			<p>{ secondary }</p>
+		</TextContainer>
+	</Link>
 ) : (
-	<div {...props}> { children }</div>
+	<div {...props}>
+		{ icon }
+		<TextContainer>
+			<p>{ primary }</p>
+			<p>{ secondary }</p>
+		</TextContainer>
+	</div>
 );
 
 export default styled(Item)`
 	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 	align-items: center;
-	height: 32px;
+	height: ${props => props.secondary ? 64 : 32}px;
 	padding: 0 24px;
 	color: #444;
 	text-decoration: none;

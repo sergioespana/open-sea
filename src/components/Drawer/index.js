@@ -3,14 +3,14 @@ import { observer } from 'mobx-react';
 import Wrapper from './components/Wrapper';
 import Menu, { MenuItem } from '../Menu';
 
-const Drawer = ({ match: { params: { org } }, open }, { mobxStores: { AppStore: { drawerIsOpen } } }) => org ? (
+const Drawer = ({ match: { params: { id } }, open }, { mobxStores: { AppStore: { drawerIsOpen } } }) => (
 	<Wrapper open={drawerIsOpen}>
 		<Menu inline>
-			<MenuItem to={`/${org}/assistant`}>Assistant</MenuItem>
-			<MenuItem to={`/${org}`}>Dashboard</MenuItem>
-			<MenuItem to={`/${org}/settings`}>Settings</MenuItem>
+			<MenuItem to={`/${id}/assistant`} primary="Assistant" />
+			<MenuItem to={`/${id}/overview`} primary="Overview" />
+			<MenuItem to={`/${id}/settings`} primary="Settings" />
 		</Menu>
 	</Wrapper>
-) : null;
+);
 
 export default observer(Drawer);
