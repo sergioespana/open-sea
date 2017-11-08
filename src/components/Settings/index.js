@@ -14,8 +14,8 @@ import ItemIcon from './components/ItemIcon';
 
 const SettingsGroup = ({ title, hide, children }) => !hide ? (
 	<GroupWrapper>
-		<GroupTitle>{ title }</GroupTitle>
-		<InnerGroupWrapper>{ children }</InnerGroupWrapper>
+		{ title && <GroupTitle>{ title }</GroupTitle> }
+		{ children && <InnerGroupWrapper>{ children }</InnerGroupWrapper> }
 	</GroupWrapper>
 ) : null;
 
