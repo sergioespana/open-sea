@@ -16,6 +16,7 @@ export {
 	CardContent
 };
 export default styled(Card)`
+	position: relative;
 	display: inline-block;
 	text-decoration: none;
 	color: inherit;
