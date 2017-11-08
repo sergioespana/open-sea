@@ -1,7 +1,7 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
-import Container from '../../components/Container';
-import Input from '../../components/Input';
+import Container from '../components/Container';
+import Input from '../components/Input';
 
 export default class Signup extends Component {
 	state = {

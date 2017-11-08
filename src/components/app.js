@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider, observer } from 'mobx-react';
 import * as stores from '../stores';
 import PrivateRoute from './PrivateRoute';
+import PublicRoute from './PublicRoute';
 
 // Components
 import Header from './Header';
@@ -12,6 +13,9 @@ import Dialog from './Dialog';
 import CircularProgress from './CircularProgress';
 
 // Routes
+import Login from '../routes/login';
+import Signup from '../routes/signup';
+import Logout from '../routes/logout';
 import Home from '../routes';
 import Account from '../routes/account';
 import Organisation from '../routes/organisation';
@@ -29,6 +33,10 @@ const App = () => (
 					<CircularProgress centerParent />
 				) : (
 					<Switch>
+						<PublicRoute path="/login" exact component={Login} />
+						<PublicRoute path="/signup" exact component={Signup} />
+						<Route path="/logout" exact component={Logout} />
+
 						<PrivateRoute path="/" exact component={Home} />
 						<Route path="/account" component={Account} />
 						<Route path="/organisation/:id" component={Organisation} />
