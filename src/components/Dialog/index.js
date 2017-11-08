@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Portal from 'preact-portal';
 import map from 'lodash/map';
 
+import Button from '../Button';
+
 const Overlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -107,7 +109,7 @@ const Dialog = (props, { mobxStores: { DialogStore } }) => {
 							<DialogActions>
 								{ map(actions, (action) => (
 									<ActionContainer onClick={DialogStore.hide}>
-										<button onClick={action.handler}>{ action.message }</button>
+										<Button onClick={action.handler}>{ action.message }</Button>
 									</ActionContainer>
 								)) }
 							</DialogActions>
