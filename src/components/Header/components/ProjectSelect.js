@@ -19,8 +19,7 @@ const ProjectSelect = ({ history, match: { params: { id } }, ...rest }, { mobxSt
 						to={`/organisation/${key}`}
 						onClick={DialogStore.hide}
 						primary={org.name}
-						secondary={key}
-						icon={<Avatar src={org.logo} style={{ marginRight: 20 }}>{ org.name }</Avatar>}
+						icon={<Avatar src={org.logo}>{ org.name }</Avatar>}
 					/>
 				)) }
 			</Menu>

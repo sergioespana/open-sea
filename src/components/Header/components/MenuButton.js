@@ -28,8 +28,4 @@ export default styled(MenuButton)`
 	:hover {
 		background-color: rgba(255, 255, 255, 0.2);
 	}
-
-	@media (min-width: 601px) {
-		display: none;
-	}
 `;

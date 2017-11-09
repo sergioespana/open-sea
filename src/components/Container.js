@@ -2,9 +2,25 @@ import { h } from 'preact';
 import styled from 'styled-components';
 
 const Container = styled.div`
-	margin: ${props => props.slim ? '0 auto' : '0 20px' };
-	max-width: ${props => props.slim ? '640px' : 'none' };
-	padding: ${props => props.slim ? '0 20px' : 'initial' };
+	margin: 0 20px;
+	
+	@media (min-width: 1025px) {
+		margin: 0 96px;
+	}
+
+	${props => props.slim && `
+		@media (min-width: 697px) {
+			margin: 0 auto;
+			max-width: 640px;
+		}
+	`};
+
+	${props => props.medium && `
+		@media (min-width: 957px) {
+			margin: 0 auto;
+			max-width: 900px;
+		}
+	`};
 `;
 
 export default Container;
