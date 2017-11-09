@@ -1,27 +1,29 @@
 import { h } from 'preact';
-import { observer } from 'mobx-react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
-import Main from '../../components/Main';
-import Drawer from '../../components/Drawer';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-import Overview from './overview';
-import Settings from './settings';
 import Assistant from './assistant';
+import Overview from './overview';
+import Reports from './reports';
+import Sharing from './sharing';
+import Archive from './archive';
+import Trash from './trash';
+import Settings from './settings';
 
-const Organisation = ({ match: { params: { id } } }, { mobxStores: { OrgStore } }) => OrgStore.organisations.has(id) ? (
-	<Router basename="/organisation">
-		<Main hasDrawer>
-			<Route path="/:id" component={Drawer} />
-			<Switch>
-				<Redirect from="/:id" exact to={`/${id}/overview`} />
-				<Route path="/:id/assistant" component={Assistant} />
-				<Route path="/:id/overview" component={Overview} />
-				<Route path="/:id/settings" component={Settings} />
-			</Switch>
-		</Main>
-	</Router>
+const Organisation = ({ match: { params: { id } } }, { mobxStores: { OrgStore: { organisations } } }) => organisations.has(id) ? (
+	<Switch>
+		<Route path="/organisation/:id/assistant" component={Assistant} />
+		<Route path="/organisation/:id/overview" component={Overview} />
+		<Route path="/organisation/:id/reports" component={Reports} />
+		<Route path="/organisation/:id/sharing" component={Sharing} />
+		
+		<Route path="/organisation/:id/archive" component={Archive} />
+		<Route path="/organisation/:id/trash" component={Trash} />
+		<Route path="/organisation/:id/settings" component={Settings} />
+		
+		<Redirect to={`/organisation/${id}/overview`} />
+	</Switch>
 ) : (
 	<Redirect to="/" />
 );
 
-export default observer(Organisation);
+export default Organisation;

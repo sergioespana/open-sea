@@ -12,9 +12,9 @@ const Dashboard = (props, { mobxStores: { AuthStore } }) => (
 				primary={AuthStore.user.get('name').first}
 				secondary={AuthStore.user.get('email')}
 				prefix={<Avatar src={AuthStore.user.get('avatar')}>{ AuthStore.user.get('name').full }</Avatar>}
-				suffix={<Link to="/account/logout">Sign out</Link>}
+				suffix={<Link to="/logout">Sign out</Link>}
 			/>
-			<SettingsItem primary="Update profile" to="/account/profile" />
+			<SettingsItem primary="Update profile" to="/settings/profile" />
 			<SettingsItem primary="Reset password" onClick={AuthStore.resetPassword} />
 		</SettingsGroup>
 		<SettingsGroup title="Notifications">

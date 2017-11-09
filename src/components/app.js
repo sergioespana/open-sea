@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider, observer } from 'mobx-react';
 import * as stores from '../stores';
-import PrivateRoute from './PrivateRoute';
-import PublicRoute from './PublicRoute';
 
 // Components
 import Header from './Header';
+import Drawer from './Drawer';
+import Sidebar from './Sidebar';
 import Snackbar from './Snackbar';
 import Dialog from './Dialog';
 import CircularProgress from './CircularProgress';
@@ -17,7 +17,7 @@ import Login from '../routes/login';
 import Signup from '../routes/signup';
 import Logout from '../routes/logout';
 import Home from '../routes';
-import Account from '../routes/account';
+import Settings from '../routes/settings';
 import Organisation from '../routes/organisation';
 
 const Container = styled.div`
@@ -29,17 +29,19 @@ const App = () => (
 		<Router>
 			<Container id="app">
 				<Header />
+				<Drawer />
+				<Sidebar />
 				{ stores.AppStore.isLoading ? (
 					<CircularProgress centerParent />
 				) : (
 					<Switch>
-						<PublicRoute path="/login" exact component={Login} />
-						<PublicRoute path="/signup" exact component={Signup} />
+						<Route path="/login" exact component={Login} />
+						<Route path="/signup" exact component={Signup} />
 						<Route path="/logout" exact component={Logout} />
 
-						<PrivateRoute path="/" exact component={Home} />
-						<Route path="/account" component={Account} />
+						<Route path="/" exact component={Home} />
 						<Route path="/organisation/:id" component={Organisation} />
+						<Route path="/settings" component={Settings} />
 					</Switch>
 				) }
 				<Snackbar />

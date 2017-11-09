@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { Route, Switch } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import PrivateRoute from '../../components/PrivateRoute';
 import Main from '../../components/Main';
 
@@ -9,8 +9,8 @@ import Profile from './profile';
 const Account = () => (
 	<Main>
 		<Switch>
-			<Route path="/account/profile" component={Profile} />
-			<PrivateRoute path="/account" component={Dashboard} />
+			<PrivateRoute path="/settings/profile" component={Profile} />
+			<PrivateRoute path="/settings" component={Dashboard} />
 		</Switch>
 	</Main>
 );

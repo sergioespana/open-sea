@@ -18,7 +18,7 @@ const Header = (props, { router: { history: { push } }, mobxStores: { AppStore, 
 				<Route path="/organisation/:id" component={ProjectSelect} />
 			</Container>
 			<Container>
-				{ AuthStore.isAuthed && <Link to="/account" style={{ textDecoration: 'none' }}><Avatar size={30} src={AuthStore.user.get('avatar')}>{ name ? name.full : 'AC' }</Avatar></Link> }
+				{ AuthStore.isAuthed && <Link to="/settings/profile" style={{ textDecoration: 'none' }}><Avatar size={32} src={AuthStore.user.get('avatar')}>{ name ? name.full : 'AC' }</Avatar></Link> }
 			</Container>
 		</Wrapper>
 	);

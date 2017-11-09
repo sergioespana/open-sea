@@ -2,12 +2,12 @@ import { h } from 'preact';
 import Main from '../../components/Main';
 import Container from '../../components/Container';
 
-const Overview = ({ match: { params: { id } } }, { mobxStores: { OrgStore } }) => (
+const Sharing = ({ match: { params: { id } } }, { mobxStores: { OrgStore } }) => (
 	<Main>
 		<Container>
-			<h1>Overview</h1>
+			<h1>Sharing</h1>
 		</Container>
 	</Main>
 );
 
-export default Overview;
+export default Sharing;
