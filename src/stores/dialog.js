@@ -15,6 +15,7 @@ class DialogService {
 	show = async (title, content, actions, simple = false) => {
 		if (this.dialog.get('open')) return;
 
+		document.body.style.overflow = 'hidden';
 		this._set({
 			title,
 			content,
@@ -23,8 +24,9 @@ class DialogService {
 			simple
 		});
 	}
-
+	
 	hide = async () => {
+		document.body.style.overflow = null;
 		this.dialog.set('doClose', true);
 		await wait(195);
 		this._reset();
