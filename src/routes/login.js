@@ -1,7 +1,6 @@
 import { h, Component } from 'preact';
 import { Link } from 'react-router-dom';
 import Container from '../components/Container';
-import Input from '../components/Input';
 
 export default class Login extends Component {
 	state = {
@@ -36,17 +35,15 @@ export default class Login extends Component {
 			<h1>Login</h1>
 			{ error && <p>{ error.message }</p> }
 			<form onSubmit={this.signInWithEmailAndPassword}>
-				<Input
-					fullWidth
+				<input
 					type="email"
-					label="Email"
+					placeholder="Email"
 					value={email}
 					onInput={this.linkState('email', 'target.value')}
 				/>
-				<Input
-					fullWidth
+				<input
 					type="password"
-					label="Password"
+					placeholder="Password"
 					value={pass}
 					onInput={this.linkState('pass', 'target.value')}
 				/>

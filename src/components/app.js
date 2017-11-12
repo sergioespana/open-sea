@@ -6,11 +6,6 @@ import * as stores from '../stores';
 
 // Components
 import Header from './Header';
-import Drawer from './Drawer';
-import Sidebar from './Sidebar';
-import Snackbar from './Snackbar';
-import Dialog from './Dialog';
-import CircularProgress from './CircularProgress';
 
 // Routes
 import Login from '../routes/login';
@@ -29,10 +24,8 @@ const App = () => (
 		<Router>
 			<Container id="app">
 				<Header />
-				<Drawer />
-				<Sidebar />
 				{ stores.AppStore.isLoading ? (
-					<CircularProgress centerParent />
+					<h1>Loading...</h1>
 				) : (
 					<Switch>
 						<Route path="/login" exact component={Login} />
@@ -44,8 +37,6 @@ const App = () => (
 						<Route path="/settings" component={Settings} />
 					</Switch>
 				) }
-				<Snackbar />
-				<Dialog />
 			</Container>
 		</Router>
 	</Provider>
