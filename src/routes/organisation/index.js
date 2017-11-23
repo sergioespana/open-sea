@@ -1,31 +1,33 @@
-import { h } from 'preact';
-import { observer } from 'mobx-react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import Main from '../../components/Main';
-import Drawer from '../../components/Drawer';
-import Dropzone from '../../components/Dropzone';
-
-import Dashboard from './dashboard';
-import Data from './data';
-import Settings from './settings';
+import { inject, observer } from 'mobx-react';
+import { Switch, Route } from 'react-router-dom';
 import Assistant from './assistant';
+import BottomNavigation from 'components/BottomNavigation';
+import CenterProgress from 'components/CenterProgress';
+import New from './new';
+import Overview from './overview';
+import React from 'react';
+import Report from './report';
+import Reports from './reports';
+import Settings from './settings';
 import Sharing from './sharing';
 
-const Organisation = ({ match: { params: { org } } }, { mobxStores: { store } }) => store.organisations.has(org) ? (
-	<Main hasDrawer>
-		<Dropzone>
-			<Route path="/:org" component={Drawer} />
-			<Switch>
-				<Route path="/:org/assistant" component={Assistant} />
-				<Route path="/:org/data" component={Data} />
-				<Route path="/:org/sharing" component={Sharing} />
-				<Route path="/:org/settings" component={Settings} />
-				<Route path="/:org" component={Dashboard} />
-			</Switch>
-		</Dropzone>
-	</Main>
-) : (
-	<Redirect to="/" />
-);
+const Organisation = inject('OrganisationsStore')(observer(({ OrganisationsStore, match: { params: { id } } }) => OrganisationsStore.loading ? (
+	<CenterProgress />
+) : [
+	<Switch key={0}>
+		<Route path="/:id/assistant" component={Assistant} />
+		<Route path="/:id" exact component={Overview} />
+		<Route path="/:id/reports" component={Reports} />
+		<Route path="/:id/sharing" component={Sharing} />
 
-export default observer(Organisation);
+		<Route path="/:id/archive" />
+		<Route path="/:id/trash" />
+		<Route path="/:id/settings" component={Settings} />
+
+		<Route path="/:id/new" component={New} />
+		<Route path="/:id/:rep" component={Report} />
+	</Switch>,
+	<BottomNavigation key={1} id={id} />
+]));
+
+export default Organisation;

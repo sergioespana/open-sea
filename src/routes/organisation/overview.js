@@ -1,10 +1,10 @@
 import Main from 'components/Main';
 import React from 'react';
 
-const Settings = () => (
+const Overview = () => (
 	<Main container>
-		<h1>Settings</h1>
+		<h1>Overview</h1>
 	</Main>
 );
 
-export default Settings;
+export default Overview;

@@ -1,10 +1,10 @@
-import { h } from 'preact';
-import Container from '../../components/Container';
+import Main from 'components/Main';
+import React from 'react';
 
-const Sharing  = () => (
-	<Container>
+const Sharing = () => (
+	<Main container>
 		<h1>Sharing</h1>
-	</Container>
+	</Main>
 );
 
 export default Sharing;

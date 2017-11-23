@@ -1,9 +1,0 @@
-{
-  "name": "SEAMan - Socio-environmental Auditing Manager",
-  "short_name": "SEAMan",
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#fff",
-  "theme_color": "#fff"
-}
