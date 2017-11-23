@@ -1,19 +1,11 @@
-import { h, Component } from 'preact';
+import { inject, observer } from 'mobx-react';
+import React, { Component } from 'react';
+import CenterProgress from 'components/CenterProgress';
 import { Redirect } from 'react-router-dom';
-import { observer } from 'mobx-react';
 
-@observer class Logout extends Component {
-	componentDidMount() {
-		let { AuthStore } = this.context.mobxStores;
-		return AuthStore.signOut();
-	}
-	
-	render() {
-		let { AuthStore } = this.context.mobxStores;
-		return AuthStore.isAuthed ? (
-			<h1>Logging out...</h1>
-		) : <Redirect to="/account/login" />;
-	}
+@inject('AuthStore') @observer class Logout extends Component {
+	componentDidMount = () => this.props.AuthStore.authed && this.props.AuthStore.logout();
+	render = () => this.props.AuthStore.authed ? <CenterProgress /> : <Redirect to="/login" />;
 }
 
 export default Logout;

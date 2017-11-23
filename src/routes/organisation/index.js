@@ -1,29 +1,33 @@
-import { h } from 'preact';
-import { Redirect, Route, Switch } from 'react-router-dom';
-
+import { inject, observer } from 'mobx-react';
+import { Switch, Route } from 'react-router-dom';
 import Assistant from './assistant';
+import BottomNavigation from 'components/BottomNavigation';
+import CenterProgress from 'components/CenterProgress';
+import New from './new';
 import Overview from './overview';
+import React from 'react';
+import Report from './report';
 import Reports from './reports';
-import Sharing from './sharing';
-import Archive from './archive';
-import Trash from './trash';
 import Settings from './settings';
+import Sharing from './sharing';
 
-const Organisation = ({ match: { params: { id } } }, { mobxStores: { OrgStore: { organisations } } }) => organisations.has(id) ? (
-	<Switch>
-		<Route path="/organisation/:id/assistant" component={Assistant} />
-		<Route path="/organisation/:id/overview" component={Overview} />
-		<Route path="/organisation/:id/reports" component={Reports} />
-		<Route path="/organisation/:id/sharing" component={Sharing} />
-		
-		<Route path="/organisation/:id/archive" component={Archive} />
-		<Route path="/organisation/:id/trash" component={Trash} />
-		<Route path="/organisation/:id/settings" component={Settings} />
-		
-		<Redirect to={`/organisation/${id}/overview`} />
-	</Switch>
-) : (
-	<Redirect to="/" />
-);
+const Organisation = inject('OrganisationsStore')(observer(({ OrganisationsStore, match: { params: { id } } }) => OrganisationsStore.loading ? (
+	<CenterProgress />
+) : [
+	<Switch key={0}>
+		<Route path="/:id/assistant" component={Assistant} />
+		<Route path="/:id" exact component={Overview} />
+		<Route path="/:id/reports" component={Reports} />
+		<Route path="/:id/sharing" component={Sharing} />
+
+		<Route path="/:id/archive" />
+		<Route path="/:id/trash" />
+		<Route path="/:id/settings" component={Settings} />
+
+		<Route path="/:id/new" component={New} />
+		<Route path="/:id/:rep" component={Report} />
+	</Switch>,
+	<BottomNavigation key={1} id={id} />
+]));
 
 export default Organisation;

@@ -1,26 +1,11 @@
-import { h } from 'preact';
+import container from 'styles/container';
+import { createElement } from 'react';
 import styled from 'styled-components';
 
-const Container = styled.div`
-	margin: 0 20px;
-	
-	@media (min-width: 1025px) {
-		margin: 0 96px;
-	}
+const Component = ({ component = 'div', children, ...props }) => createElement(component, { ...props }, children);
 
-	${props => props.slim && `
-		@media (min-width: 697px) {
-			margin: 0 auto;
-			max-width: 640px;
-		}
-	`};
-
-	${props => props.medium && `
-		@media (min-width: 957px) {
-			margin: 0 auto;
-			max-width: 900px;
-		}
-	`};
+const Container = styled(Component)`
+	${container}
 `;
 
 export default Container;

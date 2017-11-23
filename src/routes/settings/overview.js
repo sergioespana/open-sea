@@ -2,9 +2,9 @@ import Main from 'components/Main';
 import React from 'react';
 
 const Overview = () => (
-	<Main container>
+	<Main>
 		<h1>Overview</h1>
-	</Main>
+	</Main >
 );
 
 export default Overview;

@@ -1,51 +1,70 @@
-import { h, Component } from 'preact';
-import { Link } from 'react-router-dom';
-import Container from '../components/Container';
+import { inject, observer } from 'mobx-react';
+import { Link, Redirect } from 'react-router-dom';
+import React, { Component } from 'react';
+import Button from 'material-styled-components/Button';
+import linkState from 'linkstate';
+import Main from 'components/Main';
 
-export default class Signup extends Component {
+// TODO: Show indeterminate horizontal loader when signing up
+
+@inject('AuthStore') @observer class Signup extends Component {
 	state = {
 		email: '',
-		pass: '',
-		error: null
+		password: ''
 	}
 
-	createUserWithEmailAndPassword = (e) => {
-		e.preventDefault();
-		let { AuthStore } = this.context.mobxStores,
-			{ email, pass, error } = this.state;
-
-		if (error) this.setState({ error: null });
+	handleFormSubmit = (event) => {
+		event.preventDefault();
 		
-		return AuthStore.signUp({ email, pass })
-			.catch((error) => this.setState({ error }));
+		const { AuthStore } = this.props,
+			{ email, password } = this.state;
+		
+		AuthStore.createUserWithEmailAndPassword(email, password);
 	}
-	
-	signUpWithGoogle = (event) => {
-		let { AuthStore } = this.context.mobxStores,
-			{ error } = this.state;
 
-		if (error) this.setState({ error: null });
+	render() {
+		const { email, password } = this.state,
+			{ AuthStore } = this.props;
 
-		return AuthStore.signUp('google')
-			.catch((error) => this.setState({ error }));
-	}
-	
-	render = (props, { email, pass, error }) => (
-		<Container slim>
-			<h1>Signup</h1>
-			{ error && <p>{ error.message }</p> }
-			<form onSubmit={this.createUserWithEmailAndPassword}>
-				<input type="email" placeholder="Email" value={email} onInput={this.linkState('email', 'target.value')} /><br />
-				<input type="password" placeholder="Password" value={pass} onInput={this.linkState('pass', 'target.value')} /><br />
+		return AuthStore.authed ? (
+			<Redirect to="/" />
+		) : (
+			<Main container slim style={{ textAlign: 'center' }}>
+				<h1>Sign up for a new account</h1>
 				<br />
-				<button type="submit">Sign up</button>
-			</form>
-			<br />
-			<br />
-			<button onClick={this.signUpWithGoogle}>Sign up with Google</button>
-			<br />
-			<br />
-			<p>Already have an account? <Link to="/account/login">Log in</Link></p>
-		</Container>
-	);
+				<form onSubmit={this.handleFormSubmit}>
+					<input
+						type="email"
+						placeholder="Email"
+						value={email}
+						onInput={linkState(this, 'email')}
+						disabled={AuthStore.busy}
+						required
+					/><br />
+					<br />
+					<input
+						type="password"
+						placeholder="Password"
+						value={password}
+						onInput={linkState(this, 'password')}
+						disabled={AuthStore.busy}
+						required
+					/><br />
+					<br />
+					<Button type="submit" primary raised disabled={AuthStore.busy}>Sign up</Button>
+				</form>
+				<br />
+				<br />
+				<p>--- Or ---</p>
+				<br />
+				<br />
+				<Button raised onClick={AuthStore.signUpWithGoogle} disabled={AuthStore.busy}>Sign up with Google</Button>
+				<br />
+				<br />
+				<p>Already have an account? <Link to="/login">Log in</Link></p>
+			</Main>
+		);
+	}
 }
+
+export default Signup;

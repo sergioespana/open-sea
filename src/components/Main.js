@@ -1,14 +1,12 @@
-import { h } from 'preact';
+import container from 'styles/container';
 import styled from 'styled-components';
 
 const Main = styled.main`
 	padding-top: 48px;
 	min-height: 100vh;
-	background-color: ${props => props.bg || 'none' };
-	
-	@media (min-width: 601px) {
-		padding-left: ${props => props.hasDrawer ? 255 : 0 }px;
-	}
+	${props => props.bg ? `background: ${props.bg};` : null}
+
+	${props => props.container && container}
 `;
 
 export default Main;

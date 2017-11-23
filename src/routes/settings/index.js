@@ -1,17 +1,13 @@
-import { h } from 'preact';
 import { Route, Switch } from 'react-router-dom';
-import Main from '../../components/Main';
-
-import Dashboard from './dashboard';
+import Overview from './overview';
 import Profile from './profile';
+import React from 'react';
 
-const Account = () => (
-	<Main>
-		<Switch>
-			<Route path="/settings/profile" component={Profile} />
-			<Route path="/settings" component={Dashboard} />
-		</Switch>
-	</Main>
+const Settings = () => (
+	<Switch>
+		<Route path="/settings" exact component={Overview} />
+		<Route path="/settings/profile" component={Profile} />
+	</Switch>
 );
 
-export default Account;
+export default Settings;

@@ -1,12 +1,9 @@
-import { h } from 'preact';
-import Main from '../../components/Main';
-import Container from '../../components/Container';
+import Main from 'components/Main';
+import React from 'react';
 
-const Sharing = ({ match: { params: { id } } }, { mobxStores: { OrgStore } }) => (
-	<Main>
-		<Container>
-			<h1>Sharing</h1>
-		</Container>
+const Sharing = () => (
+	<Main container>
+		<h1>Sharing</h1>
 	</Main>
 );
 

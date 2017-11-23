@@ -1,14 +1,10 @@
-import { h } from 'preact';
-import Main from '../../components/Main';
-import { observer } from 'mobx-react';
-import Container from '../../components/Container';
+import Main from 'components/Main';
+import React from 'react';
 
-const Settings = ({ match: { params: { id } } }, { mobxStores: { OrgStore, AuthStore, DialogStore } }) => (
-	<Main bg="#eee">
-		<Container slim>
-			<h1>Settings</h1>
-		</Container>
+const Settings = () => (
+	<Main container>
+		<h1>Settings</h1>
 	</Main>
 );
 
-export default observer(Settings);
+export default Settings;
