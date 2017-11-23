@@ -24,12 +24,6 @@ module.exports = {
 		}
 	},
 	plugins: [
-		new CopyWebpackPlugin([
-			{
-				from: path.resolve(__dirname, 'src/assets'),
-				to: path.resolve(__dirname, 'build/assets')
-			}
-		]),
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, 'src/index.html'),
 			minify: { collapseWhitespace: true }
