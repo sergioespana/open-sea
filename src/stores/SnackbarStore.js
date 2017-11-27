@@ -14,6 +14,8 @@ class SnackbarStore {
 		if (!message || message === '') return;
 
 		if (this.snackbar.get('open')) {
+			if (this.snackbar.get('message') === message) return;
+			
 			this.hide();
 			await delay(225);
 		}
