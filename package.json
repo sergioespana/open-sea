@@ -25,16 +25,20 @@
 		"babel-preset-react": "^6.24.1",
 		"babel-preset-stage-0": "^6.24.1",
 		"copy-webpack-plugin": "^4.2.1",
+		"css-loader": "^0.28.7",
 		"eslint": "^4.11.0",
 		"eslint-config-synacor": "^2.0.2",
 		"html-webpack-plugin": "^2.30.1",
+		"progress-bar-webpack-plugin": "^1.10.0",
 		"rimraf": "^2.6.2",
 		"webpack": "^3.8.1",
-		"webpack-dev-server": "^2.9.4"
+		"webpack-dev-server": "^2.9.4",
+		"workbox-webpack-plugin": "^2.1.2"
 	},
 	"dependencies": {
 		"delay": "^2.0.0",
 		"firebase": "^4.6.2",
+		"frappe-charts": "^0.0.8",
 		"linkstate": "^1.1.0",
 		"lodash": "^4.17.4",
 		"material-styled-components": "^0.2.0",

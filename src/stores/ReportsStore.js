@@ -1,8 +1,11 @@
 import { toJS, observable } from 'mobx';
 import FirebaseStore from './FirebaseStore';
+import get from 'lodash/get';
 import math from 'mathjs';
+import set from 'lodash/set';
 import slug from 'slug';
 import SnackbarStore from './SnackbarStore';
+import unset from 'lodash/unset';
 
 class ReportsStore {
 
@@ -52,26 +55,49 @@ class ReportsStore {
 		this.busy = false;
 	}
 
-	getMetricValue = (org, rep, path) => {
+	getData = (org, rep, path) => {
 		if (!this.reports.has(org)) return '';
-		if (!this.reports.get(org).has(rep)) return '';
-		if (!this.reports.get(org).get(rep).has('data')) return '';
-		if (path) return this.reports.get(org).get(rep).get('data').get(path) || '';
-		return this.reports.get(org).get(rep).get('data');
+		
+		const organisation = this.reports.get(org);
+		if (!organisation.has(rep)) return '';
+
+		const report = organisation.get(rep);
+		if (!report.has('data')) return '';
+
+		const data = report.get('data');
+		if (path) return toJS(get(data, path)) || '';
+		return toJS(data);
 	}
 
 	linkMetric = (org, rep, path) => (event) => {
 		const { target: { value } } = event,
 			report = this.reports.get(org).get(rep);
-		if (!report.has('data')) report.set('data', observable.map({}));
-		return report.get('data').set(path, value);
+
+		if (!report.has('data')) report.set('data', {});
+
+		let data = this.getData(org, rep);
+		if (value === '' || value === null) unset(data, path);
+		else set(data, path, value);
+		
+		return report.set('data', data);
+	}
+
+	saveData = (org, rep) => async (event) => {
+		const data = this.getData(org, rep);
+		
+		if (!data) return;
+
+		this.busy = true;
+		SnackbarStore.show('Saving data...', 0);
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data });
+		SnackbarStore.show('Saved data');
 	}
 	
 	computeIndicator = (org, rep, { type, value }) => {
-		const data = toJS(this.getMetricValue(org, rep));
+		const data = toJS(this.getData(org, rep));
 		try {
 			if (type === 'number') return math.eval(value, data);
-			if (type === 'percentage') return `${math.round(math.eval(value, data), 2)}%`;
+			if (type === 'percentage') return math.round(math.eval(value, data), 2);
 			return `Can't output type "${type}" yet`;
 		}
 		catch (error) {

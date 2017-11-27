@@ -11,7 +11,7 @@ import Reports from './reports';
 import Settings from './settings';
 import Sharing from './sharing';
 
-const Organisation = inject('OrganisationsStore')(observer(({ OrganisationsStore, match: { params: { id } } }) => OrganisationsStore.loading ? (
+const Organisation = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => OrganisationsStore.loading || ReportsStore.loading ? (
 	<CenterProgress />
 ) : [
 	<Switch key={0}>
