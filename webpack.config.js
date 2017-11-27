@@ -24,6 +24,12 @@ module.exports = {
 		}
 	},
 	plugins: [
+		new CopyWebpackPlugin([
+			{
+				from: path.resolve(__dirname, 'src/manifest.json'),
+				to: path.resolve(__dirname, 'build/manifest.json')
+			}
+		]),
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, 'src/index.html'),
 			minify: { collapseWhitespace: true }

@@ -1,0 +1,8 @@
+{
+	"name": "openSEA",
+	"short_name": "openSEA",
+	"start_url": ".",
+	"display": "standalone",
+	"background_color": "#fff",
+	"description": "An open socio-environmental auditing tool"
+}
