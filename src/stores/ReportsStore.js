@@ -96,9 +96,27 @@ class ReportsStore {
 	computeIndicator = (org, rep, { type, value }) => {
 		const data = toJS(this.getData(org, rep));
 		try {
-			if (type === 'number') return math.eval(value, data);
-			if (type === 'percentage') return math.round(math.eval(value, data), 2);
-			return `Can't output type "${type}" yet`;
+			let output;
+			if (type === 'number' || type === 'percentage') {
+				const countRegex = /(count\(([^)]+)\))/ig,
+					match = countRegex.exec(value);
+
+				if (match) {
+					let toReplace = match[1],
+						dataRef = match[2],
+						dataObj = data[dataRef],
+						toReplaceWith = dataObj ? dataObj.length : 0;
+					
+					value = value.replace(toReplace, toReplaceWith);
+				}
+
+				output = math.eval(value, data);
+				if (type === 'percentage') output = math.round(output, 2);
+			}
+			else if (type === 'text') output = data[value];
+			else if (type === 'list') output = data[value].length;
+
+			return output || null;
 		}
 		catch (error) {
 			return null;
