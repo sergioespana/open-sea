@@ -2,6 +2,7 @@ import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import Button from 'material-styled-components/Button';
 import Container from 'components/Container';
+import Input from 'components/Input';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 
@@ -11,13 +12,13 @@ import map from 'lodash/map';
 			report = ReportsStore.findById(id, rep, true);
 
 		return (
-			<Container>
+			<Container slim>
 				<h2>Metrics</h2>
 				{ map(report.model ? report.model.metrics : {}, (metric, key) => (
 					<div key={key}>
 						<h4 style={{ margin: 0 }}>{ metric.name }</h4>
 						<p style={{ margin: 0 }}>{ metric.help }</p>
-						<input
+						<Input
 							type={metric.type}
 							placeholder={metric.name}
 							value={ReportsStore.getData(id, rep, key)}
