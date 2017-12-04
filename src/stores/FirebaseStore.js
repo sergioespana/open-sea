@@ -13,12 +13,12 @@ class FirebaseStore {
 
 	constructor() {
 		this.firebase.initializeApp({
-			apiKey: 'AIzaSyBZNfmczPY3fG1m04vDJ0St4eLBcpcLmek',
-			authDomain: 'seaman-auth.firebaseapp.com',
-			databaseURL: 'https://seaman-auth.firebaseio.com',
-			projectId: 'seaman-auth',
-			storageBucket: 'seaman-auth.appspot.com',
-			messagingSenderId: '623156714980'
+			apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
+			authDomain: 'open-sea.firebaseapp.com',
+			databaseURL: 'https://open-sea.firebaseio.com',
+			projectId: 'open-sea',
+			storageBucket: 'open-sea.appspot.com',
+			messagingSenderId: '543244209934'
 		});
 
 		this.db = this.firebase.firestore();
