@@ -2,7 +2,7 @@
 	"name": "open-sea",
 	"version": "0.4.0",
 	"description": "The first open socio-environmental auditing tool",
-	"homepage": "https://www.open-sea.org",
+	"homepage": "https://open-sea.org",
 	"bugs": "https://github.com/nielsrowinbik/open-sea/issues",
 	"license": "GPL-3.0",
 	"author": "Niels Bik <hey@nielsbik.nl> (https://nielsbik.nl)",
