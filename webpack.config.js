@@ -43,7 +43,7 @@ module.exports = {
 		}),
 		new webpack.HotModuleReplacementPlugin(),
 		new ProgressBarWebpackPlugin({
-			format: '\u001b[90m\u001b[44mBuild\u001b[49m\u001b[39m [:bar] \u001b[32m\u001b[1m:percent\u001b[22m\u001b[39m (:elapseds) \u001b[2m:msg\u001b[22m',
+			format: 'Build [:bar] \u001b[32m\u001b[1m:percent\u001b[22m\u001b[39m (:elapseds) \u001b[2m:msg\u001b[22m',
 			renderThrottle: 100,
 			summary: false,
 			clear: true
