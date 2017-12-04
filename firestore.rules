@@ -1,19 +1,13 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
+    match /users/{userId=**} {
       allow read;
       allow write: if request.auth.uid == userId;
-      match /organisations/{orgId} {
-      	allow read, write;
-      }
     }
-    match /organisations/{orgId} {
-    	allow read, write: if request.auth.uid != null;
-      
-    	allow create: if exists(/databases/$(database)/organisations/$(orgId)) == false;
-      allow read: if exists(/database/$(database)/users/request.auth.uid/organisations/$(orgId));
-      allow update: if get(/database/$(database)/users/request.auth.uid/organisations/$(orgId)).data.role in ["owner", "administrator"];
-      allow delete: if get(/database/$(database)/user/request.auth.uid/organisations/$(orgId)).data.role == "owner";
+    match /organisations/{orgId=**} {
+      allow read: if resource.data.public == true;
+      allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/organisations/$(orgId));
+      allow write;
     }
   }
 }

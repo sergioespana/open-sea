@@ -11,7 +11,7 @@
 			"type": "number"
 		},
 		"release": {
-			"forma": "date",
+			"format": "date",
 			"type": "string"
 		},
 		"metrics": {
@@ -29,7 +29,8 @@
 						"enum": [
 							"text",
 							"number",
-							"list"
+							"list",
+							"likert"
 						]
 					}
 				},
@@ -62,6 +63,7 @@
 								"enum": [
 									"text",
 									"number",
+									"percentage",
 									"list"
 								]
 							}

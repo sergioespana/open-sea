@@ -1,8 +1,11 @@
 import { toJS, observable } from 'mobx';
 import FirebaseStore from './FirebaseStore';
+import get from 'lodash/get';
 import math from 'mathjs';
+import set from 'lodash/set';
 import slug from 'slug';
 import SnackbarStore from './SnackbarStore';
+import unset from 'lodash/unset';
 
 class ReportsStore {
 
@@ -52,27 +55,68 @@ class ReportsStore {
 		this.busy = false;
 	}
 
-	getMetricValue = (org, rep, path) => {
+	getData = (org, rep, path) => {
 		if (!this.reports.has(org)) return '';
-		if (!this.reports.get(org).has(rep)) return '';
-		if (!this.reports.get(org).get(rep).has('data')) return '';
-		if (path) return this.reports.get(org).get(rep).get('data').get(path) || '';
-		return this.reports.get(org).get(rep).get('data');
+		
+		const organisation = this.reports.get(org);
+		if (!organisation.has(rep)) return '';
+
+		const report = organisation.get(rep);
+		if (!report.has('data')) return '';
+
+		const data = report.get('data');
+		if (path) return toJS(get(data, path)) || '';
+		return toJS(data);
 	}
 
 	linkMetric = (org, rep, path) => (event) => {
 		const { target: { value } } = event,
 			report = this.reports.get(org).get(rep);
-		if (!report.has('data')) report.set('data', observable.map({}));
-		return report.get('data').set(path, value);
+
+		if (!report.has('data')) report.set('data', {});
+
+		let data = this.getData(org, rep);
+		if (value === '' || value === null) unset(data, path);
+		else set(data, path, value);
+		
+		return report.set('data', data);
+	}
+
+	saveData = (org, rep) => async (event) => {
+		const data = this.getData(org, rep);
+		
+		if (!data) return;
+
+		this.busy = true;
+		SnackbarStore.show('Saving data...', 0);
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data });
+		SnackbarStore.show('Saved data');
 	}
 	
 	computeIndicator = (org, rep, { type, value }) => {
-		const data = toJS(this.getMetricValue(org, rep));
+		const data = toJS(this.getData(org, rep));
 		try {
-			if (type === 'number') return math.eval(value, data);
-			if (type === 'percentage') return `${math.round(math.eval(value, data), 2)}%`;
-			return `Can't output type "${type}" yet`;
+			let output;
+			if (type === 'number' || type === 'percentage') {
+				const countRegex = /(count\(([^)]+)\))/ig,
+					match = countRegex.exec(value);
+
+				if (match) {
+					let toReplace = match[1],
+						dataRef = match[2],
+						dataObj = data[dataRef],
+						toReplaceWith = dataObj ? dataObj.length : 0;
+					
+					value = value.replace(toReplace, toReplaceWith);
+				}
+
+				output = math.eval(value, data);
+				if (type === 'percentage') output = math.round(output, 2);
+			}
+			else if (type === 'text') output = data[value];
+			else if (type === 'list') output = data[value].length;
+
+			return output || null;
 		}
 		catch (error) {
 			return null;
@@ -89,13 +133,14 @@ class ReportsStore {
 	count = 0;
 
 	_onRepScopeChanged = (snapshot) => {
+		this.limit = snapshot.size;
+		
 		if (snapshot.empty) {
 			this.count++;
-			if (this.count === this.limit) this.loading = false;
+			if (this.count >= this.limit) this.loading = false;
 			return;
 		}
 
-		this.limit = snapshot.size;
 		snapshot.docChanges.forEach(this._handleRepScopeChanged);
 	}
 

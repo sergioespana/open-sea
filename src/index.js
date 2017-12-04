@@ -5,6 +5,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 injectGlobal`
+	@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+
 	html, body {
 		${ font(400, 16, 20) }
 		margin: 0;
@@ -31,5 +33,13 @@ injectGlobal`
 		text-decoration: none;
 	}
 `;
+
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		navigator.serviceWorker.register('/sw.js').catch(registrationError => {
+			console.log('SW registration failed: ', registrationError);
+		});
+	});
+}
 
 ReactDOM.render(<App />, document.body);
