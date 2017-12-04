@@ -5,6 +5,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 injectGlobal`
+	@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+
 	html, body {
 		${ font(400, 16, 20) }
 		margin: 0;
