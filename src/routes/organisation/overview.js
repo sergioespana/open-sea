@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Chart from 'components/Chart';
 import findKey from 'lodash/findKey';
 import Grid from 'components/Grid';
+import includes from 'lodash/includes';
 import Main from 'components/Main';
 import map from 'lodash/map';
 
@@ -23,6 +24,8 @@ import map from 'lodash/map';
 			<Main container>
 				<Grid childMinWidth={400}>
 					{ map(indicators, (indicator, key) => {
+						if (!includes(['number', 'percentage', 'list', 'likert'], indicator.type)) return null;
+
 						const labels = map(reports, (report) => report.name),
 							values = Object.keys(reports).map((repId) => ReportsStore.computeIndicator(id, repId, indicator)),
 							data = {
@@ -38,8 +41,11 @@ import map from 'lodash/map';
 								key={key}
 								title={indicator.name}
 								data={data}
+								colors={['#80CBC4']}
+								format_tooltip_y={d => indicator.type === 'percentage'? d + '%' : d}
 							/>
 						);
+
 					}) }
 				</Grid>
 			</Main>

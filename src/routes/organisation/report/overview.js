@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom';
 		const { ReportsStore, SnackbarStore, match: { params: { id, rep } } } = this.props,
 			report = ReportsStore.findById(id, rep);
 
-		if (!report.has('data')) return SnackbarStore.show('Unable to show report: not enough data');
+		if (!report.has('data')) return SnackbarStore.show('Unable to show report, please input some data first');
 	}
 
 	render() {
