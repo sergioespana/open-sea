@@ -9,6 +9,12 @@ import map from 'lodash/map';
 
 @inject('ReportsStore') @observer class Overview extends Component {
 
+	formatTooltip = (indicator) => (value) => {
+		if (!value) value = 0;
+		if (indicator.type === 'percentage') return `${value}%`;
+		return value;
+	}
+
 	render() {
 		const { ReportsStore, match: { params: { id } } } = this.props,
 			reports = ReportsStore.findById(id, null, true);
@@ -42,7 +48,7 @@ import map from 'lodash/map';
 								title={indicator.name}
 								data={data}
 								colors={['#80CBC4']}
-								format_tooltip_y={d => indicator.type === 'percentage'? d + '%' : d}
+								format_tooltip_y={this.formatTooltip(indicator)}
 							/>
 						);
 
