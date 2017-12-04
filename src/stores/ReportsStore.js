@@ -133,13 +133,14 @@ class ReportsStore {
 	count = 0;
 
 	_onRepScopeChanged = (snapshot) => {
+		this.limit = snapshot.size;
+		
 		if (snapshot.empty) {
 			this.count++;
-			if (this.count === this.limit) this.loading = false;
+			if (this.count >= this.limit) this.loading = false;
 			return;
 		}
 
-		this.limit = snapshot.size;
 		snapshot.docChanges.forEach(this._handleRepScopeChanged);
 	}
 
