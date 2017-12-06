@@ -1,3 +1,4 @@
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import App from './app';
 import { font } from 'material-styled-components/mixins/typography';
 import { injectGlobal } from 'styled-components';
@@ -34,12 +35,6 @@ injectGlobal`
 	}
 `;
 
-if ('serviceWorker' in navigator) {
-	window.addEventListener('load', () => {
-		navigator.serviceWorker.register('/sw.js').catch(registrationError => {
-			console.log('SW registration failed: ', registrationError);
-		});
-	});
-}
+OfflinePluginRuntime.install();
 
 ReactDOM.render(<App />, document.body);

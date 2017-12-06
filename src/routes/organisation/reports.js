@@ -7,7 +7,6 @@ import Main from 'components/Main';
 import MdAdd from 'react-icons/lib/md/add';
 import moment from 'moment';
 import React from 'react';
-import { toJS } from 'mobx';
 
 const Overview = inject('ReportsStore')(observer(({ ReportsStore, match: { params: { id } } }) => ReportsStore.loading ? (
 	<CenterProgress />
@@ -19,7 +18,7 @@ const Overview = inject('ReportsStore')(observer(({ ReportsStore, match: { param
 				primary="Create new"
 				icon={<MdAdd />}
 			/>
-			{ Object.keys(toJS(ReportsStore.reports.get(id))).reverse().map((key) => {
+			{ Object.keys(ReportsStore.findById(id, null, true)).reverse().map((key) => {
 				let report = ReportsStore.findById(id, key, true),
 					name = report.name,
 					created = moment(report.created).fromNow();
