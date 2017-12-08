@@ -1,8 +1,10 @@
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import Chart from 'components/Chart';
 import Container from 'components/Container';
 import map from 'lodash/map';
 import { Redirect } from 'react-router-dom';
+import toNumber from 'lodash/toNumber';
 
 @inject('ReportsStore', 'SnackbarStore') @observer class Overview extends Component {
 	componentDidMount() {
@@ -21,11 +23,28 @@ import { Redirect } from 'react-router-dom';
 
 		return (
 			<Container>
-				{ map(model ? model.indicators : {}, (indicator, key) => (
-					<div key={key}>
-						<span><strong>{ indicator.name }:</strong> { ReportsStore.computeIndicator(id, rep, indicator) }</span>
-					</div>
-				)) }
+				{ map(model ? model.reportItems : {}, (item, key) => {
+					if (item.chart) {
+						const labels = item.data.map(ind => model.indicators[ind].name);
+						const data = {
+							labels,
+							datasets: [{
+								values: item.data.map(ind => toNumber(ReportsStore.computeIndicator(id, rep, model.indicators[ind])))
+							}]
+						};
+
+						return (
+							<Chart
+								title={item.name}
+								key={key}
+								type={item.chart === 'pie' ? 'percentage' : item.chart}
+								data={data}
+							/>
+						);
+					}
+
+					return null;
+				}) }
 			</Container>
 		);
 	}

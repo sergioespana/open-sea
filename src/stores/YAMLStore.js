@@ -9,7 +9,10 @@ class YAMLStore {
 	ajv;
 
 	constructor() {
-		this.ajv = new AJV({ coerceTypes: true });
+		this.ajv = new AJV({
+			coerceTypes: true,
+			useDefaults: true
+		});
 	}
 
 	parse = (str) => yaml.safeLoad(str);

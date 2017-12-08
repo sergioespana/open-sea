@@ -1,6 +1,7 @@
 import { inject, observer } from 'mobx-react';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 import React, { Component } from 'react';
+import Button from 'material-styled-components/Button';
 import Container from 'components/Container';
 import Data from './data';
 import Main from 'components/Main';
@@ -29,7 +30,7 @@ import Settings from './settings';
 				<Container>
 					<h1>{ report.get('name') }</h1>
 					<nav>
-						<Link to={`/${id}/${rep}`}>Report</Link> - <Link to={`/${id}/${rep}/data`}>Data</Link> - <Link to={`/${id}/${rep}/settings`}>Settings</Link>
+						<Link to={`/${id}/${rep}`}><Button primary>Report</Button></Link><Link to={`/${id}/${rep}/data`}><Button primary>Data</Button></Link><Link to={`/${id}/${rep}/settings`}><Button primary>Settings</Button></Link>
 					</nav>
 				</Container>
 				<Switch>

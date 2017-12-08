@@ -5,6 +5,7 @@ import Container from 'components/Container';
 import Input from 'components/Input';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
+import slug from 'slug';
 
 @inject('ReportsStore', 'SnackbarStore') @observer class Data extends Component {
 	render() {
@@ -13,9 +14,11 @@ import map from 'lodash/map';
 
 		return (
 			<Container slim>
-				<h2>Metrics</h2>
 				{ map(report.model ? report.model.metrics : {}, (metric, key) => (
-					<div key={key}>
+					<div
+						key={key}
+						id={slug(metric.name).toLowerCase()}
+					>
 						<h4 style={{ margin: 0 }}>{ metric.name }</h4>
 						<p style={{ margin: 0 }}>{ metric.help }</p>
 						<Input
