@@ -4,12 +4,29 @@ import React, { Component } from 'react';
 import Button from 'material-styled-components/Button';
 import Container from 'components/Container';
 import Data from './data';
+import findLastKey from 'lodash/findLastKey';
 import Main from 'components/Main';
 import Overview from './overview';
 import Placeholder from 'components/Placeholder';
 import Settings from './settings';
 
-@inject('ReportsStore') @observer class Report extends Component {
+@inject('ReportsStore', 'SnackbarStore') @observer class Report extends Component {
+	componentDidMount() {
+		const { ReportsStore, SnackbarStore, match: { params: { id, rep } } } = this.props,
+			report = ReportsStore.findById(id, rep),
+			reports = ReportsStore.findById(id, null, true),
+			reportKeys = Object.keys(reports);
+
+		if (report.has('model') || reportKeys.length <= 1) return;
+
+		const mostRecentId = findLastKey(reports, 'model');
+		if (mostRecentId) SnackbarStore.show(`Model from a previous report (${reports[mostRecentId].name}) is available`, 0, 'USE', ReportsStore.copyModel(id, mostRecentId, rep));
+	}
+
+	componentWillUnmount() {
+		this.props.SnackbarStore.hide();
+	}
+
 	render() {
 		const { ReportsStore, match: { params: { id, rep } } } = this.props,
 			report = ReportsStore.findById(id, rep);

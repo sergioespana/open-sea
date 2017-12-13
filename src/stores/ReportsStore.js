@@ -55,6 +55,13 @@ class ReportsStore {
 		this.busy = false;
 	}
 
+	copyModel = (org, from, to) => (event) => {
+		const fromReport = this.findById(org, from),
+			toReport = this.findById(org, to);
+
+		toReport.set('model', fromReport.get('model'));
+	}
+
 	getData = (org, rep, path) => {
 		if (!this.reports.has(org)) return '';
 		
@@ -168,7 +175,10 @@ class ReportsStore {
 	}
 
 	_onReportData = (doc) => {
-		if (!doc.exists) return this._removeReportListener(doc);
+		if (!doc.exists) {
+			this.count++;
+			return this._removeReportListener(doc);
+		}
 
 		const id = doc.id,
 			org = doc._key.path.segments[1];
