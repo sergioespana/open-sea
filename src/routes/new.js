@@ -30,7 +30,7 @@ import slug from 'slug';
 				<Container slim>
 					<h1>Create organisation</h1>
 					<form onSubmit={this.onSubmit}>
-						<input type="text" value={name} onInput={linkState(this, 'name', 'target.value')} />
+						<input type="text" value={name} onChange={linkState(this, 'name', 'target.value')} />
 						<p>Your organisation's ID will be <strong>{ sluggedName }</strong></p>
 						<Link to="/"><Button>Cancel</Button></Link>
 						<Button primary raised type="submit" disabled={disableButton}>Create</Button>

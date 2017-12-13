@@ -30,7 +30,7 @@ import slug from 'slug';
 				<Container slim>
 					<h1>Create report</h1>
 					<form onSubmit={this.onSubmit}>
-						<input type="text" value={name} onInput={linkState(this, 'name', 'target.value')} />
+						<input type="text" value={name} onChange={linkState(this, 'name', 'target.value')} />
 						<p>Your report's ID will be <strong>{ sluggedName }</strong></p>
 						<Button onClick={history.goBack}>Cancel</Button>
 						<Button primary raised type="submit" disabled={disableButton}>Create</Button>
