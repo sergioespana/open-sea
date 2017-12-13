@@ -1,11 +1,14 @@
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import Chart from 'components/Chart';
-import findKey from 'lodash/findKey';
+import Container from 'components/Container';
+import findLastKey from 'lodash/findLastKey';
 import Grid from 'components/Grid';
 import includes from 'lodash/includes';
+import { Link } from 'react-router-dom';
 import Main from 'components/Main';
 import map from 'lodash/map';
+import Placeholder from 'components/Placeholder';
 
 @inject('ReportsStore') @observer class Overview extends Component {
 
@@ -19,9 +22,18 @@ import map from 'lodash/map';
 		const { ReportsStore, match: { params: { id } } } = this.props,
 			reports = ReportsStore.findById(id, null, true);
 
-		const mostRecentId = findKey(reports, 'model');
+		const mostRecentId = findLastKey(reports, 'model');
 
-		if (!mostRecentId) return null;
+		if (!mostRecentId) return (
+			<Main bg="#eee">
+				<Container>
+					<Placeholder>
+						<h1>No reports with data to show</h1>
+						<p>To get started, <Link to={`/${id}/new`}>create a report</Link> or add data to an existing report.</p>
+					</Placeholder>
+				</Container>
+			</Main>
+		);
 
 		const mostRecentObj = reports[mostRecentId],
 			indicators = mostRecentObj.model.indicators;
