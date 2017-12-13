@@ -29,7 +29,8 @@ import Settings from './settings';
 
 	render() {
 		const { ReportsStore, match: { params: { id, rep } } } = this.props,
-			report = ReportsStore.findById(id, rep);
+			report = ReportsStore.findById(id, rep),
+			canSeeOverview = report.has('data');
 
 		if (!report.has('model')) return (
 			<Main bg="#eee">
@@ -47,7 +48,7 @@ import Settings from './settings';
 				<Container>
 					<h1>{ report.get('name') }</h1>
 					<nav>
-						<Link to={`/${id}/${rep}`}><Button primary>Report</Button></Link><Link to={`/${id}/${rep}/data`}><Button primary>Data</Button></Link><Link to={`/${id}/${rep}/settings`}><Button primary>Settings</Button></Link>
+						<Link to={`/${id}/${rep}`}><Button primary disabled={!canSeeOverview}>Report</Button></Link><Link to={`/${id}/${rep}/data`}><Button primary>Data</Button></Link><Link to={`/${id}/${rep}/settings`}><Button primary>Settings</Button></Link>
 					</nav>
 				</Container>
 				<Switch>
