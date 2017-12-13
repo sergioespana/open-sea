@@ -59,7 +59,8 @@ class ReportsStore {
 		const fromReport = this.findById(org, from),
 			toReport = this.findById(org, to);
 
-		toReport.set('model', fromReport.get('model'));
+		const model = this.findById(org, from).get('model');
+		return this.addModelToReport(org, to, model);
 	}
 
 	getData = (org, rep, path) => {
