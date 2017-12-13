@@ -38,3 +38,5 @@ injectGlobal`
 OfflinePluginRuntime.install();
 
 ReactDOM.render(<App />, document.body);
+
+if (module.hot) module.hot.accept();
