@@ -1,11 +1,25 @@
 import { observable } from 'mobx';
 
 class MVCStore {
-	@observable loading = true;
-	@observable drawerOpen = false;
+	@observable navExpanded;
+	@observable createDrawerOpen = false;
+	@observable searchDrawerOpen = false;
 
-	toggleDrawer = () => {
-		this.drawerOpen = !this.drawerOpen;
+	constructor() {
+		this.navExpanded = window.localStorage.getItem('navExpanded') === 'true';
+	}
+
+	toggleExpanded = () => {
+		this.navExpanded = !this.navExpanded;
+		window.localStorage.setItem('navExpanded', this.navExpanded);
+	}
+
+	toggleCreateDrawer = () => {
+		this.createDrawerOpen = !this.createDrawerOpen;
+	}
+
+	toggleSearchDrawer = () => {
+		this.searchDrawerOpen = !this.searchDrawerOpen;
 	}
 }
 

@@ -84,11 +84,11 @@ class AuthStore {
 			return;
 		}
 
-		const { uid, email, emailVerified, photoURL: avatar } = user;
+		const { uid, email, emailVerified, displayName: name, photoURL: avatar } = user;
 
 		if (!this.authed) OrganisationsStore.init(uid);
 
-		FirebaseStore.setDoc(`users/${uid}`, { lastLogin: new Date(), email, emailVerified, avatar });
+		FirebaseStore.setDoc(`users/${uid}`, { lastLogin: new Date(), email, emailVerified, name, avatar });
 		FirebaseStore.addListener(`users/${uid}`, this._onUserData);
 	}
 

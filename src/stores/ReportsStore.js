@@ -50,7 +50,7 @@ class ReportsStore {
 		// TODO: Check for existing model and ask to overwrite through a dialog
 		this.busy = true;
 		SnackbarStore.show(`Saving model...`, 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { model });
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { model, updated: new Date() });
 		SnackbarStore.show(`Saved model`);
 		this.busy = false;
 	}
@@ -97,7 +97,7 @@ class ReportsStore {
 
 		this.busy = true;
 		SnackbarStore.show('Saving data...', 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data });
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data, updated: new Date() });
 		SnackbarStore.show('Saved data');
 	}
 	

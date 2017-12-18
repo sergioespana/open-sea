@@ -1,13 +1,16 @@
-import { Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import Overview from './overview';
 import Profile from './profile';
 import React from 'react';
 
 const Settings = () => (
-	<Switch>
-		<Route path="/settings" exact component={Overview} />
-		<Route path="/settings/profile" component={Profile} />
-	</Switch>
+	<BrowserRouter basename="/settings">
+		<Switch>
+			<Redirect from="/" exact to="/overview" />
+			<Route path="/overview" component={Overview} />
+			<Route path="/profile" component={Profile} />
+		</Switch>
+	</BrowserRouter>
 );
 
 export default Settings;

@@ -7,7 +7,7 @@ const PrivateRoute = inject('AuthStore')(observer(({ AuthStore, ...props }) => A
 ) : (
 	<Redirect
 		to={{
-			pathname: '/login',
+			pathname: '/account/login',
 			state: { from: props.location }
 		}}
 	/>
