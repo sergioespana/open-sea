@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
 import Button from 'components/Button';
+import Helmet from 'react-helmet';
 import { inject } from 'mobx-react';
 import Input from 'components/Input';
 import { Link } from 'react-router-dom';
@@ -30,6 +31,7 @@ import slug from 'slug';
 
 		return (
 			<Main>
+				<Helmet title="Create an organisation" />
 				<StandaloneForm
 					title="Create a new organisation"
 					onSubmit={this.onSubmit}

@@ -1,11 +1,15 @@
 import Container from 'components/Container';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import Main from 'components/Main';
 import Placeholder from 'components/Placeholder';
 import React from 'react';
 
 const Overview = () => (
 	<Main>
+		<Helmet>
+			<title>home / overview</title>
+		</Helmet>
 		<Header title="Dashboard" />
 		<Container>
 			<Placeholder>

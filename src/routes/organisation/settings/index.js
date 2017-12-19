@@ -1,13 +1,16 @@
+import { inject, observer } from 'mobx-react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import SideList, { Group, Heading, ListItem } from 'components/SideList';
 import Container from 'components/Container';
 import Details from './details';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import Main from 'components/Main';
 import React from 'react';
 
-const Settings = ({ match: { params: { id } } }) => (
+const Settings = inject('OrganisationsStore')(observer(({ OrganisationsStore, match: { params: { id } } }) => (
 	<Main>
+		<Helmet title={`${OrganisationsStore.findById(id, true).name} / settings`} />
 		<Header title="Settings" />
 		<Container flex>
 			<SideList>
@@ -29,6 +32,6 @@ const Settings = ({ match: { params: { id } } }) => (
 			</Switch>
 		</Container>
 	</Main>
-);
+)));
 
 export default Settings;

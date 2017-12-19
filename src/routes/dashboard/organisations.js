@@ -1,6 +1,7 @@
 import { inject, observer } from 'mobx-react';
 import Container from 'components/Container';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import Main from 'components/Main';
 import MdLock from 'react-icons/lib/md/lock';
@@ -10,6 +11,9 @@ import Table from 'components/Table';
 
 const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore }) => (
 	<Main>
+		<Helmet>
+			<title>home / organisations</title>
+		</Helmet>
 		<Header title="Organisations" />
 		<Container>
 			<Table

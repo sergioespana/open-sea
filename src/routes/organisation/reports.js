@@ -1,14 +1,16 @@
 import { inject, observer } from 'mobx-react';
 import Container from 'components/Container';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import Main from 'components/Main';
 import moment from 'moment';
 import React from 'react';
 import Table from 'components/Table';
 
-const Overview = inject('ReportsStore')(observer(({ ReportsStore, match: { params: { id } } }) => (
+const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => (
 	<Main>
+		<Helmet title={`${OrganisationsStore.findById(id, true).name} / reports`} />
 		<Header title="Reports" />
 		<Container>
 			<Table

@@ -5,13 +5,14 @@ import Container from 'components/Container';
 import findLastKey from 'lodash/findLastKey';
 import Grid from 'components/Grid';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import includes from 'lodash/includes';
 import { Link } from 'react-router-dom';
 import Main from 'components/Main';
 import map from 'lodash/map';
 import Placeholder from 'components/Placeholder';
 
-@inject('ReportsStore') @observer class Overview extends Component {
+@inject('OrganisationsStore', 'ReportsStore') @observer class Overview extends Component {
 
 	formatTooltip = (indicator) => (value) => {
 		if (!value) value = 0;
@@ -20,13 +21,14 @@ import Placeholder from 'components/Placeholder';
 	}
 
 	render() {
-		const { ReportsStore, match: { params: { id } } } = this.props,
+		const { OrganisationsStore, ReportsStore, match: { params: { id } } } = this.props,
 			reports = ReportsStore.findById(id, null, true);
 
 		const mostRecentId = findLastKey(reports, 'model');
 
 		return (
 			<Main>
+				<Helmet title={`${OrganisationsStore.findById(id, true).name} / overview`} />
 				<Header title="Overview" />
 				<Container>
 					{ !mostRecentId ? (

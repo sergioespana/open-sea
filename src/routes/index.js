@@ -4,6 +4,7 @@ import Account from 'routes/account';
 import Create from 'routes/create';
 import CreateDrawer from 'components/CreateDrawer';
 import Dashboard from 'routes/dashboard';
+import Helmet from 'react-helmet';
 import MainNavigation from 'components/MainNavigation';
 import Organisation from 'routes/organisation';
 import React from 'react';
@@ -12,6 +13,8 @@ import Snackbar from 'components/Snackbar';
 
 const Main = inject('AuthStore', 'MVCStore', 'OrganisationsStore', 'ReportsStore')(observer(({ AuthStore, MVCStore, OrganisationsStore, ReportsStore }) => (
 	<React.Fragment>
+		<Helmet defaultTitle="openSEA" titleTemplate="%s — openSEA" />
+
 		<MainNavigation curPath={window.location.pathname} />
 		
 		{ !AuthStore.loading && !AuthStore.authed ? (

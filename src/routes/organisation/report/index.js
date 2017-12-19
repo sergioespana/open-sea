@@ -6,6 +6,7 @@ import Container from 'components/Container';
 import Data from './data';
 import findLastKey from 'lodash/findLastKey';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import Main from 'components/Main';
 import Overview from './overview';
 import Placeholder from 'components/Placeholder';
@@ -34,9 +35,10 @@ import Placeholder from 'components/Placeholder';
 
 		return (
 			<Main>
+				<Helmet title={`${organisation.name} / ${report.get('name')}`} />
 				<Header
 					breadcrumbs={[
-						<Link to={`/${id}/overview`}>{ organisation.name }</Link>,
+						<Link to={`/${id}/reports`}>{ organisation.name }</Link>,
 						<Link to={`/${id}/${rep}`}>{ report.get('name') }</Link>
 					]}
 					title={report.get('name')}
