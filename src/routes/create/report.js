@@ -12,14 +12,14 @@ import slug from 'slug';
 @inject('OrganisationsStore', 'ReportsStore') class New extends PureComponent {
 	state = {
 		name: 'My Report',
-		org: null
+		org: ''
 	}
 
 	onSubmit = (event) => {
 		event.preventDefault();
 		let { ReportsStore } = this.props,
 			{ name, org } = this.state;
-
+		
 		return ReportsStore.create(org, name);
 	}
 
@@ -30,7 +30,7 @@ import slug from 'slug';
 		let sluggedName = slug(name).toLowerCase();
 		if (sluggedName === '') sluggedName = 'my-report';
 		
-		const disableButton = sluggedName === 'my-report';
+		const disableButton = sluggedName === 'my-report' || org === '';
 
 		return (
 			<Main>

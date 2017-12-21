@@ -67,7 +67,8 @@ const createFormElement = ({ help, label, options, src, type, ...props }) => {
 			return (
 				<React.Fragment>
 					<legend>{ label }</legend>
-					<select>
+					<select {...props}>
+						<option value="" />
 						{ options.map((option) => <option value={option.value}>{ option.text }</option>) }
 					</select>
 					{ help && <p>{ help }</p> }

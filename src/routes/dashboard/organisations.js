@@ -29,7 +29,7 @@ const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ Organi
 						org.role === 'owner' ? <Link to="/account/profile">You</Link> : null,
 						updated ? moment().diff(updated) > 86400000 ? updated.format('DD-MM-YYYY') : updated.fromNow() : 'Never',
 						reports ? reports.size : 'Counting...',
-						org.public ? null : <MdLock width={16} height={16} />
+						org.isPublic ? null : <MdLock width={16} height={16} />
 					];
 				})}
 				filters={[ 'Owner', 'Network' ]}
