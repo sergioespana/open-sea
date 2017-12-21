@@ -26,7 +26,7 @@ class App extends Component {
 	}
 	
 	render() {
-		return (
+		return stores.AuthStore.loading ? null : (
 			<Provider {...stores}>
 				<ThemeProvider theme={theme}>
 					<BrowserRouter>
