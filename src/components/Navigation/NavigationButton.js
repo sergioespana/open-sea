@@ -25,23 +25,46 @@ const TextWrapper = styled.span`
 
 const loading = css`
 	pointer-events: none;
-	
-	* {
-		display: none;
+	${({ large }) => large && 'padding-left: 8px;'}
+
+	span,
+	svg {
+		background-color: currentColor;
+		opacity: ${({ bright }) => bright ? 0.6 : 0.3};
+		height: ${({ bright }) => bright ? 32 : 24}px;
+
+		& > *:not(img) {
+			visibility: hidden;
+		}
+
+		& > img {
+			display: none;
+		}
 	}
 
-	:before {
-		filter: none !important;
-		opacity: ${({ bright }) => bright ? 0.6 : 0.3} !important;
-		transform: scale(${({ bright }) => bright ? 0.65 : 0.5});
+	span:first-child,
+	svg {
+		border-radius: 50%;
+		min-width: ${({ bright }) => bright ? 32 : 24}px;
+	}
+
+	span:not(:first-child),
+	span:only-child {
+		width: 100%;
+		border-radius: 3px;
+		${({ large }) => !large && 'margin-left: 16px;'}
+	}
+
+	span:last-child {
+		height: ${({ bright }) => bright ? 20 : 12}px;
 	}
 `;
 
-const NavigationButton = styled(({ accent, children, icon, large, round, width, ...props }) => createElement(
+const NavigationButton = styled(({ accent, bright, children, icon, large, loading, round, width, ...props }) => createElement(
 	props.to ? Link : 'button',
 	props,
 	icon ? <IconWrapper>{ icon }</IconWrapper> : null,
-	typeof children === 'string' ? <TextWrapper>{ children }</TextWrapper> : children
+	typeof children === 'string' || !children ? <TextWrapper>{ children }</TextWrapper> : children
 ))`
 	width: ${({ round }) => round ? '44px' : '100%'};
 	height: ${({ large }) => large ? 56 : 44}px;
@@ -50,8 +73,9 @@ const NavigationButton = styled(({ accent, children, icon, large, round, width, 
 	cursor: pointer;
 	font-size: 0.875rem;
 	font-weight: ${({ large }) => large ? 500 : 'normal'};
+	line-height: ${({ large }) => large ? '2rem' : 'normal'};
 	max-width: 100%;
-	padding: ${({ round, large }) => round ? 0 : large ? '8px 4px' : '8px 12px'};
+	padding: ${({ round, large }) => round ? 0 : large ? '8px 12px 8px 4px' : '8px 12px'};
 	border: none;
 	border-radius: ${({ round }) => round ? '50%' : '3px'};
 	display: inline-flex;
