@@ -38,7 +38,7 @@ import { withRouter } from 'react-router-dom';
 						<NavigationButton round onClick={MVCStore.toggleSearchDrawer}><MdArrowBack width={24} height={24} /></NavigationButton>
 					</NavigationContainer>
 				</NavigationMain>
-				<NavigationMain color="#ffffff">
+				<NavigationMain color="#ffffff" width={486}>
 					<NavigationContainer fullWidth>
 						<NavigationHeader />
 						<form onSubmit={this.onSubmit} style={{ width: '100%' }}>

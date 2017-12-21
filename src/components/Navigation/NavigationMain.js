@@ -2,7 +2,7 @@ import { readableColor, mix } from 'polished';
 import styled from 'styled-components';
 
 const NavigationMain = styled.div`
-	width: 64px;
+	width: ${({ width = 64 }) => width}px;
 	flex-shrink: 0;
 	flex-grow: 0;
 	padding: 16px 0;
@@ -15,8 +15,8 @@ const NavigationMain = styled.div`
 	transition: background-color 150ms ease;
 
 	&:not(:first-child) {
-		flex: auto;
-		width: auto;
+		/* flex: auto; */
+		/* width: auto; */
 		align-items: flex-start;
 	}
 `;

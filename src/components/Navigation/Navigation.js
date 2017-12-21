@@ -14,7 +14,7 @@ const Navigation = styled((props) => {
 	);
 })`
 	display: flex;
-	width: ${({ expanded }) => expanded ? 300 : 64}px;
+	width: auto;
     flex-shrink: 0;
 	position: relative;
 

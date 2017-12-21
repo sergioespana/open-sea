@@ -20,7 +20,7 @@ const Aside = styled.aside`
 	top: 0;
 	bottom: 0;
 	left: 0;
-	width: ${({ wide }) => wide ? 550 : 350}px;
+	width: auto;
 	z-index: 11;
 	display: flex;
 	transition: transform 225ms ${({ visible }) => visible ? `cubic-bezier(0.4, 0, 0.2, 1)` : `cubic-bezier(0, 0, 0.2, 1)`};

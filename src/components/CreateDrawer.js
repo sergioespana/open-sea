@@ -24,7 +24,7 @@ const CreateDrawer = inject('MVCStore')(observer(({ MVCStore }) => (
 				<NavigationButton round onClick={MVCStore.toggleCreateDrawer}><MdArrowBack width={24} height={24} /></NavigationButton>
 			</NavigationContainer>
 		</NavigationMain>
-		<NavigationMain color="#ffffff">
+		<NavigationMain color="#ffffff" width={286}>
 			<NavigationContainer fullWidth>
 				<NavigationHeader />
 				<NavigationButton disabled />
