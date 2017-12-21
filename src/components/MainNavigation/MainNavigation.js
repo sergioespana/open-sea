@@ -13,12 +13,15 @@ const MainNavigation = inject('MVCStore')(observer(({ curPath, MVCStore }) => {
 	const isAccountRoute = matchPath(curPath, { path: '/account' }) !== null;
 	const isCreateRoute = matchPath(curPath, { path: '/create' }) !== null;
 	const isDashboardRoute = matchPath(curPath, { path: '/dashboard' }) !== null;
+	const isLoginRoute = matchPath(curPath, '/account/(signin|logout|signup)') !== null;
 	const isSearchRoute = matchPath(curPath, { path: '/search' }) !== null;
 	const organisationMatch = matchPath(curPath, { path: '/:org' }),
 		isOrganisationRoute = (organisationMatch && !isAccountRoute && !isCreateRoute && !isDashboardRoute && !isSearchRoute) || false;
 	const navExpanded = MVCStore.navExpanded;
 	const mainColour = (isOrganisationRoute && !navExpanded) || isCreateRoute || isSearchRoute ? '#f5f5f5' : 'primary';
 	const expandedColour = isOrganisationRoute ? '#f5f5f5' : 'primary';
+
+	if (isLoginRoute) return null;
 
 	return (
 		<Navigation

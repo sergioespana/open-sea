@@ -5,10 +5,14 @@ import Create from 'routes/create';
 import CreateDrawer from 'components/CreateDrawer';
 import Dashboard from 'routes/dashboard';
 import Helmet from 'react-helmet';
+import Login from 'routes/account/login';
+import Logout from 'routes/account/logout';
 import MainNavigation from 'components/MainNavigation';
 import Organisation from 'routes/organisation';
+import PrivateRoute from 'components/PrivateRoute';
 import React from 'react';
 import SearchDrawer from 'components/SearchDrawer';
+import Signup from 'routes/account/signup';
 import Snackbar from 'components/Snackbar';
 
 const Main = inject('AuthStore', 'MVCStore', 'OrganisationsStore', 'ReportsStore')(observer(({ AuthStore, MVCStore, OrganisationsStore, ReportsStore }) => (
@@ -17,20 +21,24 @@ const Main = inject('AuthStore', 'MVCStore', 'OrganisationsStore', 'ReportsStore
 
 		<MainNavigation curPath={window.location.pathname} />
 		
-		{ !AuthStore.loading && !AuthStore.authed ? (
-			<Redirect to="/product" replace />
-		) : OrganisationsStore.loading || ReportsStore.loading ? (
+		{ OrganisationsStore.loading || ReportsStore.loading ? (
 			<Switch>
-				<Route path="/account" component={Account} />
-				<Redirect from="/" exact to="/dashboard/overview" replace />
+				<Redirect from="/" exact to={AuthStore.authed ? '/dashboard/overview' : '/product'} replace />
+				<Route path="/account/signin" component={Login} />
+				<Route path="/account/signup" component={Signup} />
+				<Route path="/account/logout" component={Logout} />
+				<PrivateRoute path="/account" component={Account} />
 			</Switch>
 		) : (
 			<Switch>
-				<Redirect from="/" exact to="/dashboard/overview" replace />
-				<Route path="/account" component={Account} />
-				<Route path="/create" component={Create} />
-				<Route path="/dashboard" component={Dashboard} />
-				<Route path="/search" />
+				<Redirect from="/" exact to={AuthStore.authed ? '/dashboard/overview' : '/product'} replace />
+				<Route path="/account/signin" component={Login} />
+				<Route path="/account/signup" component={Signup} />
+				<Route path="/account/logout" component={Logout} />
+				<PrivateRoute path="/account" component={Account} />
+				<PrivateRoute path="/create" component={Create} />
+				<PrivateRoute path="/dashboard" component={Dashboard} />
+				<PrivateRoute path="/search" />
 				<Route path="/:org" component={Organisation} />
 			</Switch>
 		) }
