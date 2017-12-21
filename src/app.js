@@ -1,54 +1,46 @@
 import * as stores from './stores';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Provider, observer } from 'mobx-react';
-import CenterProgress from './components/CenterProgress';
-import Drawer from 'components/Drawer';
-import Dropzone from 'components/Dropzone';
-import Header from 'components/Header';
-import Home from 'routes';
-import Login from 'routes/login';
-import Logout from 'routes/logout';
-import New from 'routes/new';
-import Organisation from 'routes/organisation';
-import PrivateRoute from 'components/PrivateRoute';
-import React from 'react';
-import Settings from 'routes/settings';
-import Signup from 'routes/signup';
-import Snackbar from 'components/Snackbar';
+import { observer, Provider } from 'mobx-react';
+import React, { Component } from 'react';
+import Main from 'routes';
+import Product from 'routes/product';
 import theme from './theme';
 import ThemeProvider from 'material-styled-components/theme/ThemeProvider';
 
-const App = () => (
-	<Provider {...stores}>
-		<ThemeProvider theme={theme}>
-			<BrowserRouter>
-				<Dropzone id="app">
-					<Header />
-					<Drawer />
+class App extends Component {
 
-					{ stores.AuthStore.loading ? (
-						<CenterProgress />
-					) : (
-						<Switch>
-							<Route path="/login" exact component={Login} />
-							<Route path="/logout" exact component={Logout} />
-							<Route path="/signup" exact component={Signup} />
+	onNetworkStateChanged = () => {
+		const online = navigator.onLine;
+		if (!online) stores.SnackbarStore.show('No internet connection', 0);
+		else stores.SnackbarStore.hide();
+	}
 
-							<Route path="/contact" exact />
-							<Route path="/about" />
-
-							<PrivateRoute path="/" exact component={Home} />
-							<PrivateRoute path="/new" exact component={New} />
-							<PrivateRoute path="/settings" component={Settings} />
-							<Route path="/:id" component={Organisation} />
-						</Switch>
-					) }
-
-					<Snackbar />
-				</Dropzone>
-			</BrowserRouter>
-		</ThemeProvider>
-	</Provider>
-);
+	componentWillMount() {
+		window.addEventListener('online', this.onNetworkStateChanged);
+		window.addEventListener('offline', this.onNetworkStateChanged);
+	}
+	
+	componentWillUnmount() {
+		window.removeEventListener('online', this.onNetworkStateChanged);
+		window.removeEventListener('offline', this.onNetworkStateChanged);
+	}
+	
+	render() {
+		return stores.AuthStore.loading ? null : (
+			<Provider {...stores}>
+				<ThemeProvider theme={theme}>
+					<BrowserRouter>
+						<div id="app">
+							<Switch>
+								<Route path="/product" component={Product} />
+								<Route path="/" component={Main} />
+							</Switch>
+						</div>
+					</BrowserRouter>
+				</ThemeProvider>
+			</Provider>
+		);
+	}
+}
 
 export default observer(App);

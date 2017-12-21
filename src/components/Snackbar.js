@@ -5,9 +5,7 @@ import { toJS } from 'mobx';
 
 const Snackbar = inject('SnackbarStore')(observer(({ SnackbarStore }) => {
 	const snackbar = toJS(SnackbarStore.snackbar);
-	return (
-		<Snack {...snackbar} />
-	);
+	return <Snack {...snackbar} />;
 }));
 
 export default Snackbar;

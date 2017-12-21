@@ -1,39 +1,34 @@
 import { inject, observer } from 'mobx-react';
-import Avatar from 'material-styled-components/Avatar';
-import CenterProgress from 'components/CenterProgress';
-import Grid from 'components/Grid';
-import ImageCard from 'components/ImageCard';
+import Container from 'components/Container';
+import Header from 'components/Header';
+import Helmet from 'react-helmet';
+import { Link } from 'react-router-dom';
 import Main from 'components/Main';
-import MdAdd from 'react-icons/lib/md/add';
 import moment from 'moment';
 import React from 'react';
-import { toJS } from 'mobx';
+import Table from 'components/Table';
 
-const Overview = inject('ReportsStore')(observer(({ ReportsStore, match: { params: { id } } }) => ReportsStore.loading ? (
-	<CenterProgress />
-) : (
-	<Main container>
-		<Grid childMinWidth={200}>
-			<ImageCard
-				to={`/${id}/new`}
-				primary="Create new"
-				icon={<MdAdd />}
+const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => (
+	<Main>
+		<Helmet title={`${OrganisationsStore.findById(id, true).name} / reports`} />
+		<Header title="Reports" />
+		<Container>
+			<Table
+				columns={[ 'Report', 'Created', 'Last updated', 'Status' ]}
+				data={Object.keys(ReportsStore.findById(id, null, true)).map((key) => {
+					const report = ReportsStore.findById(id, key, true),
+						created = moment(report.created),
+						updated = report.updated ? moment(report.updated) : null;
+					return [
+						<Link to={`/${id}/${key}`}>{ report.name }</Link>,
+						moment().diff(created) > 86400000 ? created.format('DD-MM-YYYY') : created.fromNow(),
+						updated ? moment().diff(updated) > 86400000 ? updated.format('DD-MM-YYYY') : updated.fromNow() : 'Never',
+						null
+					];
+				})}
+				filters={[ 'Status' ]}
 			/>
-			{ Object.keys(toJS(ReportsStore.reports.get(id))).reverse().map((key) => {
-				let report = ReportsStore.findById(id, key, true),
-					name = report.name,
-					created = moment(report.created).fromNow();
-				return (
-					<ImageCard
-						key={key}
-						to={`/${id}/${key}`}
-						primary={name}
-						secondary={`Created ${created}`}
-						icon={<Avatar>{ name }</Avatar>}
-					/>
-				);
-			}) }
-		</Grid>
+		</Container>
 	</Main>
 )));
 

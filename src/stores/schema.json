@@ -1,109 +1,62 @@
 {
-	"additionalProperties": false,
+	"type": "object",
 	"properties": {
-		"name": {
-			"type": "string"
-		},
-		"description": {
-			"type": "string"
-		},
-		"version": {
-			"type": "number"
-		},
-		"release": {
-			"format": "date",
-			"type": "string"
-		},
+		"name": { "type": "string" },
+		"description": { "type": "string" },
+		"version": { "type": "string" },
 		"metrics": {
+			"type": "object",
 			"additionalProperties": {
-				"additionalProperties": false,
+				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"help": {
-						"type": "string"
-					},
+					"name": { "type": "string" },
+					"help": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [
-							"text",
-							"number",
-							"list",
-							"likert"
-						]
+						"enum": ["text", "number", "list", "likert" ]
 					}
 				},
-				"required": [
-					"name",
-					"help",
-					"type"
-				],
-				"type": "object"
-			},
-			"type": "object"
+				"required": ["name", "help", "type"]
+			}
 		},
 		"indicators": {
-			"oneOf": [
-				{
-					"items": {
-						"additionalProperties": true,
-						"properties": {
-							"id": {
-								"type": "string"
-							},
-							"name": {
-								"type": "string"
-							},
-							"description": {
-								"type": "string"
-							},
-							"type": {
-								"type": "string",
-								"enum": [
-									"text",
-									"number",
-									"percentage",
-									"list"
-								]
-							}
-						},
-						"required": [
-							"id",
-							"name"
-						],
-						"type": "object"
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"type": {
+						"type": "string",
+						"enum": ["text", "number", "percentage", "list" ]
 					},
-					"type": "array",
-					"uniqueItems": true
+					"value": { "type": "string" }
 				},
-				{
-					"additionalProperties": {
-						"additionalProperties": true,
-						"properties": {
-							"name": {
-								"type": "string"
-							},
-							"description": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"name"
-						],
-						"type": "object"
+				"required": ["name", "type"]
+			}
+		},
+		"reportItems": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"chart": {
+						"type": "string",
+						"enum": ["line", "bar", "scatter", "pie", "percentage"]
 					},
-					"type": "object"
-				}
-			]
+					"data": {
+						"type": "array",
+						"items": { "type": "string" }
+					},
+					"useHistoricData": {
+						"enum": [false, "sum", "average"],
+						"default": false
+					}
+				},
+				"required": ["name", "data", "useHistoricData"]
+			}
 		}
 	},
-	"required": [
-		"name",
-		"version",
-		"release",
-		"metrics",
-		"indicators"
-	],
-	"type": "object"
+	"required": ["metrics", "indicators", "reportItems"]
 }

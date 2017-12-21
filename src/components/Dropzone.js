@@ -40,12 +40,17 @@ const Overlay = styled.div`
 		fr.onload = ({ target: { result } }) => {
 			if (!result) return SnackbarStore.show('Unable to read the file');
 			
-			const model = YAMLStore.parse(result) || {},
-				valid = YAMLStore.validate(model);
-
-			if (!valid) return SnackbarStore.show(YAMLStore.buildErrorMessage(model));
-
-			ReportsStore.addModelToReport(org, rep, model);
+			try {
+				const model = YAMLStore.parse(result) || {},
+					valid = YAMLStore.validate(model);
+	
+				if (!valid) return SnackbarStore.show(YAMLStore.buildErrorMessage(model));
+	
+				ReportsStore.addModelToReport(org, rep, model);
+			}
+			catch (error) {
+				return SnackbarStore.show('Unable to parse the file');
+			}
 		};
 		fr.readAsText(file);
 	}

@@ -1,10 +1,11 @@
 import Container from 'components/Container';
+import Main from 'components/Main';
 import React from 'react';
 
 const Settings = () => (
-	<Container>
-		<h2>Settings</h2>
-	</Container>
+	<Main>
+		<Container />
+	</Main>
 );
 
 export default Settings;

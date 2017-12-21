@@ -23,7 +23,7 @@ class OrganisationsStore {
 		return col;
 	}
 
-	create = async (name) => {
+	create = async (name, options = {}, history) => {
 		this.busy = true;
 
 		const id = slug(name).toLowerCase(),
@@ -39,9 +39,14 @@ class OrganisationsStore {
 			role = 'owner';
 
 		SnackbarStore.show(`Creating ${name}...`, 0);
-		await FirebaseStore.setDoc(`organisations/${id}`, { name, created, public: false });
+		await FirebaseStore.setDoc(`organisations/${id}`, { name, created, ...options });
 		await FirebaseStore.setDoc(`users/${uid}/organisations/${id}`, { role });
-		SnackbarStore.show(`Saved ${name}`, 4000, 'VIEW', () => console.log('TODO: Go to new organisation'));
+		if (history) {
+			SnackbarStore.show(`Saved ${name}`, 4000, 'VIEW', () => history.push(`/${id}`));
+		}
+		else {
+			SnackbarStore.show(`Saved ${name}`);
+		}
 		this.busy = false;
 	}
 

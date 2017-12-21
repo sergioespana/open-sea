@@ -1,95 +1,80 @@
-import { inject, observer } from 'mobx-react';
-import { Link, Route } from 'react-router-dom';
-import List, { ListItem, ListItemText, ListItemIcon } from 'material-styled-components/List';
-import { default as Aside } from 'material-styled-components/Drawer';
-import MdArchive from 'react-icons/lib/md/archive';
-import MdAssessment from 'react-icons/lib/md/assessment';
-import MdAssistant from 'react-icons/lib/md/assistant';
-import MdDashboard from 'react-icons/lib/md/dashboard';
-import MdDelete from 'react-icons/lib/md/delete';
-import MdFeedback from 'react-icons/lib/md/feedback';
-import MdHelp from 'react-icons/lib/md/help';
-import MdPeople from 'react-icons/lib/md/people';
-import MdSettings from 'react-icons/lib/md/settings';
-import React from 'react';
+import React, { Component } from 'react';
+import { createPortal } from 'react-dom';
+import styled from 'styled-components';
+import Transition from 'react-transition-group/Transition';
 
-const OrganisationItems = inject('MVCStore')(observer(({ MVCStore, match: { params: { id } } }) => [
-	<List key={0}>
-		<Link to={`/${id}/assistant`}>
-			<ListItem>
-				<ListItemIcon><MdAssistant width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Assistant" />
-			</ListItem>
-		</Link>
-		<Link to={`/${id}`}>
-			<ListItem>
-				<ListItemIcon><MdDashboard width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Overview" />
-			</ListItem>
-		</Link>
-		<Link to={`/${id}/reports`}>
-			<ListItem>
-				<ListItemIcon><MdAssessment width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Reports" />
-			</ListItem>
-		</Link>
-		<Link to={`/${id}/sharing`}>
-			<ListItem>
-				<ListItemIcon><MdPeople width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Sharing" />
-			</ListItem>
-		</Link>
-	</List>,
-	<List key={1}>
-		<Link to={`/${id}/archive`}>
-			<ListItem>
-				<ListItemIcon><MdArchive width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Archive" />
-			</ListItem>
-		</Link>
-		<Link to={`/${id}/trash`}>
-			<ListItem>
-				<ListItemIcon><MdDelete width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Bin" />
-			</ListItem>
-		</Link>
-		<Link to={`/${id}/settings`}>
-			<ListItem>
-				<ListItemIcon><MdSettings width={24} height={24} /></ListItemIcon>
-				<ListItemText primary="Organisation settings" />
-			</ListItem>
-		</Link>
-	</List>
-]));
+const Overlay = styled.div`
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.54);
+	z-index: 10;
+	transition: opacity 225ms ${({ visible }) => visible ? `cubic-bezier(0.4, 0, 0.2, 1)` : `cubic-bezier(0, 0, 0.2, 1)`};
+	opacity: ${({ visible }) => visible ? 1 : 0};
+`;
 
-const Drawer = inject('MVCStore')(observer(({ MVCStore }) => (
-	<Aside
-		open={MVCStore.drawerOpen}
-		mode="temporary"
-		onRequestClose={MVCStore.toggleDrawer}
-	>
-		<Route path="/:id" component={OrganisationItems} />
-		<List>
-			<Link to="/help">
-				<ListItem>
-					<ListItemIcon><MdHelp width={24} height={24} /></ListItemIcon>
-					<ListItemText primary="Get help" />
-				</ListItem>
-			</Link>
-			<Link to="/contact">
-				<ListItem>
-					<ListItemIcon><MdFeedback width={24} height={24} /></ListItemIcon>
-					<ListItemText primary="Send feedback" />
-				</ListItem>
-			</Link>
-			<Link to="/settings">
-				<ListItem>
-					<ListItemIcon><MdSettings width={24} height={24} /></ListItemIcon>
-					<ListItemText primary="Settings" />
-				</ListItem>
-			</Link>
-		</List>
-	</Aside>
-)));
+const Aside = styled.aside`
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: ${({ wide }) => wide ? 550 : 350}px;
+	z-index: 11;
+	display: flex;
+	transition: transform 225ms ${({ visible }) => visible ? `cubic-bezier(0.4, 0, 0.2, 1)` : `cubic-bezier(0, 0, 0.2, 1)`};
+	transform: ${({ visible }) => visible ? `translate3d(0, 0, 0)` : `translate3d(-100%, 0, 0)`};
+`;
+
+export const DrawerInput = styled.input`
+	width: 100%;
+	height: 40px;
+	border: none;
+	font-family: inherit;
+	font-size: 1.2rem;
+`;
+
+const DrawerComponent = ({ children, onRequestClose, visible, wide, ...props }) => (
+	<React.Fragment>
+		<Overlay onClick={onRequestClose ? onRequestClose : null} visible={visible} />
+		<Aside wide={wide} visible={visible}>{ children }</Aside>
+	</React.Fragment>
+)
+
+class Drawer extends Component {
+	state = {
+		visible: false
+	}
+
+	onEntered = () => {
+		document.body.style.overflow = 'hidden';
+		this.setState({ visible: true });
+	}
+
+	onExit = () => {
+		document.body.style.overflow = null;
+		this.setState({ visible: false });
+	}
+
+	render() {
+		const { open, ...props } = this.props;
+
+		const CompToRender = (
+			<Transition
+				timeout={{ enter: 0, exit: 225 }}
+				in={open}
+				mountOnEnter
+				unmountOnExit
+				onEntered={this.onEntered}
+				onExit={this.onExit}
+			>
+				<DrawerComponent {...this.state} {...props} />
+			</Transition>
+		);
+
+		return createPortal(CompToRender, document.body);
+	}
+}
 
 export default Drawer;

@@ -3,7 +3,8 @@
 	"description": "An open socio-environmental auditing tool",
 	"short_name": "openSEA",
 	"start_url": ".",
-	"display": "standalone",
+	"theme_color": "#00695C",
 	"background_color": "#00695C",
-	"theme_color": "#00695C"
+	"orientation": "portrait",
+	"display": "standalone"
 }

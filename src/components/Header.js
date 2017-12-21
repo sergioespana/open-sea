@@ -1,36 +1,60 @@
-import { inject, observer } from 'mobx-react';
-import AppBar from 'material-styled-components/AppBar';
-import Avatar from 'material-styled-components/Avatar';
-import { Link } from 'react-router-dom';
 import React from 'react';
 import styled from 'styled-components';
 
-const Title = styled((props) => <Link to="/" {...props}>open<strong>SEA</strong></Link>)`
-	color: white;
-	text-decoration: none;
-	font-size: 1.25em;
-	font-weight: 300;
-
-	& > strong { font-weight: 400 }
+const Title = styled((props) => <h1 {...props} />)`
+	margin: 0;
+	font-weight: 500;
+	font-size: 1.5rem;
 `;
 
-const Header = inject('AuthStore', 'MVCStore')(observer(({ AuthStore, MVCStore }) => (
-	<AppBar
-		primary
-		fixed
-		dense
-		title={<Title />}
-		menuAction={MVCStore.toggleDrawer}
-	>
-		{ AuthStore.authed && (
-			<Link to="/settings/profile">
-				<Avatar
-					size={32}
-					src={AuthStore.findById('current', true).avatar}
-				>{ AuthStore.findById('current', true).name }</Avatar>
-			</Link>
-		) }
-	</AppBar>
-)));
+const Breadcrumbs = styled.ol`
+	margin: 0 0 10px 0;
+	padding: 0;
+	list-style: none;
+
+	li {
+		padding: 0 10px 0 0;
+		display: inline;
+		color: #5E6C84;
+		font-size: 0.875rem;
+
+		a:not(:hover) {
+			color: inherit;
+		}
+
+		+ li:before {
+			content: "/";
+			padding-right: 10px;
+		}
+	}
+`;
+
+const Wrapper = styled.div`
+	padding-bottom: 5px;
+	margin: 20px 20px 0 20px;
+	display: flex;
+`;
+
+const PrimaryContainer = styled.div`
+	flex: auto;
+`;
+
+const SecondaryContainer = styled.div``;
+
+const Header = styled(({ breadcrumbs, secondary, title, ...props }) => (
+	<header {...props}>
+		<Wrapper>
+			<PrimaryContainer>
+				{ breadcrumbs && (
+					<Breadcrumbs>
+						{ breadcrumbs.map((breadcrumb) => <li>{ breadcrumb }</li>) }
+					</Breadcrumbs>
+				) }
+				{ title && <Title>{ title }</Title> }
+			</PrimaryContainer>
+			{ secondary && <SecondaryContainer>{ secondary }</SecondaryContainer> }
+		</Wrapper>
+	</header>
+))``;
 
 export default Header;

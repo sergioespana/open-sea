@@ -60,9 +60,6 @@ import Main from 'components/Main';
 				<br />
 				<br />
 				<Button raised onClick={AuthStore.signInWithGoogle} disabled={AuthStore.busy}>Sign in with Google</Button>
-				<br />
-				<br />
-				<p>Don't have an account yet? <Link to="/signup">Sign up</Link></p>
 			</Main>
 		);
 	}

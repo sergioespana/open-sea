@@ -1,6 +1,6 @@
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import Button from 'material-styled-components/Button';
+import Button from 'components/Button';
 import Container from 'components/Container';
 import Input from 'components/Input';
 import isEmpty from 'lodash/isEmpty';
@@ -12,27 +12,22 @@ import map from 'lodash/map';
 			report = ReportsStore.findById(id, rep, true);
 
 		return (
-			<Container slim>
-				<h2>Metrics</h2>
+			<Container>
 				{ map(report.model ? report.model.metrics : {}, (metric, key) => (
-					<div key={key}>
-						<h4 style={{ margin: 0 }}>{ metric.name }</h4>
-						<p style={{ margin: 0 }}>{ metric.help }</p>
-						<Input
-							type={metric.type}
-							placeholder={metric.name}
-							value={ReportsStore.getData(id, rep, key)}
-							onChange={ReportsStore.linkMetric(id, rep, key)}
-							style={{ marginBottom: 24 }}
-						/>
-					</div>
+					<Input
+						key={key}
+						label={metric.name}
+						help={metric.help}
+						type={metric.type}
+						value={ReportsStore.getData(id, rep, key)}
+						onChange={ReportsStore.linkMetric(id, rep, key)}
+					/>
 				)) }
 				<Button
-					primary
-					raised
 					disabled={isEmpty(ReportsStore.getData(id, rep))}
 					onClick={ReportsStore.saveData(id, rep)}
-				>Save</Button>
+					style={{ marginTop: 20 }}
+				>Save report data</Button>
 			</Container>
 		);
 	}

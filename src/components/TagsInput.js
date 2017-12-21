@@ -8,7 +8,8 @@ injectGlobal`
 	${styles}
 
 	.react-tagsinput {
-		border: 1px solid grey;
+		border: none;
+		align-items: center;
 	}
 `;
 

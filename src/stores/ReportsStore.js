@@ -50,9 +50,17 @@ class ReportsStore {
 		// TODO: Check for existing model and ask to overwrite through a dialog
 		this.busy = true;
 		SnackbarStore.show(`Saving model...`, 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { model });
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { model, updated: new Date() });
 		SnackbarStore.show(`Saved model`);
 		this.busy = false;
+	}
+
+	copyModel = (org, from, to) => (event) => {
+		const fromReport = this.findById(org, from),
+			toReport = this.findById(org, to);
+
+		const model = this.findById(org, from).get('model');
+		return this.addModelToReport(org, to, model);
 	}
 
 	getData = (org, rep, path) => {
@@ -89,7 +97,7 @@ class ReportsStore {
 
 		this.busy = true;
 		SnackbarStore.show('Saving data...', 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data });
+		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data, updated: new Date() });
 		SnackbarStore.show('Saved data');
 	}
 	
@@ -168,7 +176,10 @@ class ReportsStore {
 	}
 
 	_onReportData = (doc) => {
-		if (!doc.exists) return this._removeReportListener(doc);
+		if (!doc.exists) {
+			this.count++;
+			return this._removeReportListener(doc);
+		}
 
 		const id = doc.id,
 			org = doc._key.path.segments[1];

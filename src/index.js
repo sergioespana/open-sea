@@ -1,21 +1,18 @@
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import App from './app';
-import { font } from 'material-styled-components/mixins/typography';
 import { injectGlobal } from 'styled-components';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 injectGlobal`
-	@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
-
 	html, body {
-		${ font(400, 16, 20) }
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+		font-size: 16px;
+		line-height: normal;
 		margin: 0;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-	}
-
-	body {
-		overflow-y: scroll;
+		overflow: hidden;
 	}
 
 	*,
@@ -24,22 +21,29 @@ injectGlobal`
 		box-sizing: border-box;
 	}
 
+	*:focus {
+		outline: 0;
+	}
+
 	#app {
-		min-height: 100vh;
+		height: 100vh;
+		display: flex;
 	}
 
 	a {
-		color: inherit;
+		color: #0052CC;
 		text-decoration: none;
+
+		:hover {
+			cursor: pointer;
+			color: #0065FF;
+			text-decoration: underline;
+		}
 	}
 `;
 
-if ('serviceWorker' in navigator) {
-	window.addEventListener('load', () => {
-		navigator.serviceWorker.register('/sw.js').catch(registrationError => {
-			console.log('SW registration failed: ', registrationError);
-		});
-	});
-}
+OfflinePluginRuntime.install();
 
 ReactDOM.render(<App />, document.body);
+
+if (module.hot) module.hot.accept();

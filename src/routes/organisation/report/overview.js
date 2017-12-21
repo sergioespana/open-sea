@@ -1,34 +1,47 @@
 import { inject, observer } from 'mobx-react';
-import React, { Component } from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import Chart from 'components/Chart';
 import Container from 'components/Container';
+import Header from 'components/Header';
+import Main from 'components/Main';
 import map from 'lodash/map';
-import { Redirect } from 'react-router-dom';
+import React from 'react';
+import toNumber from 'lodash/toNumber';
 
-@inject('ReportsStore', 'SnackbarStore') @observer class Overview extends Component {
-	componentDidMount() {
-		const { ReportsStore, SnackbarStore, match: { params: { id, rep } } } = this.props,
-			report = ReportsStore.findById(id, rep);
+const Overview = inject('ReportsStore', 'SnackbarStore')(observer(({ ReportsStore, match: { params: { id, rep } } }) => {
+	const report = ReportsStore.findById(id, rep),
+		model = report.get('model');
 
-		if (!report.has('data')) return SnackbarStore.show('Unable to show report, please input some data first');
-	}
+	if (!report.has('data')) return <Redirect to={`/${id}/${rep}/data`} replace />;
 
-	render() {
-		const { ReportsStore, match: { params: { id, rep } } } = this.props,
-			report = ReportsStore.findById(id, rep),
-			model = report.get('model');
-
-		if (!report.has('data')) return <Redirect to={`/${id}/${rep}/data`} replace />;
-
-		return (
+	return (
+		<Main>
 			<Container>
-				{ map(model ? model.indicators : {}, (indicator, key) => (
-					<div key={key}>
-						<span><strong>{ indicator.name }:</strong> { ReportsStore.computeIndicator(id, rep, indicator) }</span>
-					</div>
-				)) }
+				{ map(model ? model.reportItems : {}, (item, key) => {
+					if (item.chart) {
+						const labels = item.data.map(ind => model.indicators[ind].name);
+						const data = {
+							labels,
+							datasets: [{
+								values: item.data.map(ind => toNumber(ReportsStore.computeIndicator(id, rep, model.indicators[ind])))
+							}]
+						};
+
+						return (
+							<Chart
+								title={item.name}
+								key={key}
+								type={item.chart === 'pie' ? 'percentage' : item.chart}
+								data={data}
+							/>
+						);
+					}
+
+					return null;
+				}) }
 			</Container>
-		);
-	}
-}
+		</Main>
+	);
+}));
 
 export default Overview;
