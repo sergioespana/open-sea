@@ -121,6 +121,9 @@ module.exports = {
 		new WebpackChunkHash(),
 		new UglifyJsWebpackPlugin({ uglifyOptions: { ecma: 8 } }),
 		new OfflinePlugin({
+			externals: [
+				'https://firebasestorage.googleapis.com'
+			],
 			ServiceWorker: {
 				cacheName: 'open-sea-cache',
 				navigateFallbackURL: '/',

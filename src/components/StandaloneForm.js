@@ -5,7 +5,7 @@ export const FormButtonsContainer = styled.div`
 	padding: 32px 0 0;
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: ${({ left }) => left ? 'flex-start' : 'flex-end'};
 
 	a {
 		padding: 5px 10px;

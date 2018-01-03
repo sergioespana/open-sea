@@ -1,112 +1,110 @@
-import { computed, observable, toJS } from 'mobx';
-import FirebaseStore from './FirebaseStore';
-import OrganisationsStore from './OrganisationsStore';
-import ReportsStore from './ReportsStore';
-import SnackbarStore from './SnackbarStore';
+import { action, computed, extendObservable } from 'mobx';
+import { firebase } from './helpers';
+import isBoolean from 'lodash/isBoolean';
+import isEmpty from 'lodash/isEmpty';
 
-class AuthStore {
-	auth = FirebaseStore.auth;
-	providers = FirebaseStore.providers;
+const authActions = (state) => {
+	// TODO: Rework users to be an object of users.
+	// TODO: Move currentUser into users object under id 'current'.
+	// TODO: setCurrentUser --> setUser
+	// TODO: onCurrentUserData --> onUserData
 
-	@observable loading = true;
-	@observable busy = false;
-	users = observable.map({});
+	const findById = (id) => {
+		if (id === 'current') return state.currentUser;
+	};
 
-	@computed get authed() { return this.users.get('current').size > 0; }
+	const startListening = () => {
+		firebase.auth.onAuthStateChanged(onAuthStateChanged);
+	};
 
-	constructor() {
-		this.users.set('current', observable.map({}));
-		this.auth.onAuthStateChanged(this._handleAuthStateChanged);
-	}
+	const onAuthStateChanged = (res) => {
+		// Return an empty user object if res is null. This means we're not logged in.
+		if (res === null) return setCurrentUser({});
+		setLoading(true);
+		const { uid: _uid, email, emailVerified } = res;
+		// Update local user fields and push to database.
+		setCurrentUser({ _uid, email, emailVerified, lastLogin: new Date() }, { updateRemote: true, merge: true });
+		// Start listening for changes to the user so that we can display them locally.
+		// Note: this listener will not be created if it has already been set (when the account
+		// has just been created, for example).
+		firebase.addFirebaseListener(`users/${_uid}`, onCurrentUserData);
+	};
 
-	findById = (id, toObj = false) => {
-		let col = id ? this.users.get(id) : this.users;
-		if (toObj) return toJS(col);
-		return col;
-	}
+	const setCurrentUser = action(async (obj, options = {}) => {
+		const { merge, updateRemote } = options;
 
-	signInWithGoogle = async () => {
-		this.busy = true;
-		try {
-			await this.auth.signInWithPopup(this.providers.google);
+		if (merge) state.currentUser = { ...state.currentUser, ...obj };
+		else state.currentUser = obj;
+
+		if (updateRemote) return await firebase.setDoc(`users/${obj._uid}`, obj);
+		return true;
+	});
+
+	const onCurrentUserData = (doc) => setCurrentUser(doc.data(), { merge: true });
+
+	const createUser = async (email, password, obj) => {
+		const newUser = { email, avatar: '/assets/images/profile-avatar-placeholder.png', created: new Date(), ...obj };
+		const res = await firebase.auth.createUserWithEmailAndPassword(email, password)
+			.catch((error) => error);
+		const { uid } = res;
+
+		if (uid) {
+			// User was created successfully, use returned uid to set other provided fields
+			// in the database.
+			await setCurrentUser({ _uid: uid, ...newUser }, { updateRemote: true });
+			// Start listening for changes to the user so that we can display them locally.
+			firebase.addFirebaseListener(`users/${uid}`, onCurrentUserData);
+			return true;
 		}
-		catch (error) {
-			SnackbarStore.show('Something went wrong logging you in');
-			this.busy = false;
-		}
-	}
 
-	signInWithEmailAndPassword = async (email, password) => {
-		this.busy = true;
-		try {
-			await this.auth.signInWithEmailAndPassword(email, password);
-		}
-		catch (error) {
-			if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-				SnackbarStore.show('Email address and password do not match');
-			}
-			else SnackbarStore.show('Something went wrong logging you in');
-			this.busy = false;
-		}
-	}
+		// User could not be created, return error.
+		return res;
+	};
 
-	signUpWithGoogle = this.signInWithGoogle;
+	const signIn = async (email, password) => {
+		const res = await firebase.auth.signInWithEmailAndPassword(email, password)
+			.catch((error) => error);
+		
+		if (res.code) return res;
+		return true;
+	};
 
-	createUserWithEmailAndPassword = async (email, password) => {
-		this.busy = true;
-		try {
-			await this.auth.createUserWithEmailAndPassword(email, password);
-		}
-		catch (error) {
-			SnackbarStore.show('Something went wrong creating your account');
-			this.busy = false;
-		}
-	}
+	const signOut = () => {
+		reset();
+		firebase.auth.signOut();
+	};
 
-	logout = () => {
-		FirebaseStore.removeListener();
-		OrganisationsStore.reset();
-		ReportsStore.reset();
-		this._reset();
-		this.auth.signOut();
-	}
+	const reset = action(() => {
+		firebase.removeFirebaseListener();
+		state.organisations = {};
+	});
+
+	// Update the loading state. Visually "blocks" the entire application, should only
+	// be used during initialisation.
+	const setLoading = (val) => state.loading = isBoolean(val) ? val : false;
+
+	return {
+		createUser,
+		findById,
+		startListening,
+		signIn,
+		signOut
+	};
+};
+
+const AuthStore = (state, initialData) => {
+
+	extendObservable(state, {
+		authed: computed(() => state.currentUser === null ? 'loading' : !isEmpty(state.currentUser)),
+		currentUser: null,
+		users: {}
+	});
 	
-	_reset = () => {
-		this.users.clear();
-		this.users.set('current', observable.map({}));
-	}
+	const actions = authActions(state);
 
-	_handleAuthStateChanged = (user) => {
-		if (!user) {
-			this.users.get('current').clear();
-			this.loading = false;
-			this.busy = false;
-			return;
-		}
+	actions.startListening();
 
-		const { uid, email, emailVerified, displayName: name, photoURL: avatar } = user;
+	return actions;
+};
 
-		if (!this.authed) OrganisationsStore.init(uid);
-
-		FirebaseStore.setDoc(`users/${uid}`, { lastLogin: new Date(), email, emailVerified, name, avatar });
-		FirebaseStore.addListener(`users/${uid}`, this._onUserData);
-	}
-
-	_onUserData = (doc) => {
-		const uid = doc.id;
-
-		if (!doc.exists) {
-			FirebaseStore.setDoc(`users/${uid}`, { created: new Date() });
-			return;
-		}
-		
-		const data = doc.data(),
-			user = { uid, ...data };
-		
-		this.users.get('current').merge(user);
-		this.loading = false;
-		this.busy = false;
-	}
-}
-
-export default new AuthStore();
+export default AuthStore;

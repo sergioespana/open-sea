@@ -2,12 +2,13 @@ import Drawer, { DrawerInput } from 'components/Drawer';
 import { inject, observer } from 'mobx-react';
 import { NavigationMain, NavigationHeader, NavigationContainer, NavigationButton } from 'components/Navigation';
 import React, { Component } from 'react';
+import { app } from 'mobx-app';
 import linkState from 'linkstate';
 import MdArrowBack from 'react-icons/lib/md/arrow-back';
 import MdHome from 'react-icons/lib/md/home';
 import { withRouter } from 'react-router-dom';
 
-@inject('MVCStore') @observer class SearchDrawer extends Component {
+@inject(app('MVCStore')) @observer class SearchDrawer extends Component {
 	state = {
 		query: ''
 	}
@@ -22,12 +23,13 @@ import { withRouter } from 'react-router-dom';
 	}
 
 	render() {
-		const { MVCStore } = this.props,
+		const { MVCStore, state } = this.props,
+			{ searchDrawerOpen } = state,
 			{ query } = this.state;
 		return (
 			<Drawer
 				wide
-				open={MVCStore.searchDrawerOpen}
+				open={searchDrawerOpen}
 				onRequestClose={MVCStore.toggleSearchDrawer}
 			>
 				<NavigationMain color="#ffffff">
@@ -43,7 +45,7 @@ import { withRouter } from 'react-router-dom';
 						<NavigationHeader />
 						<form onSubmit={this.onSubmit} style={{ width: '100%' }}>
 							<DrawerInput
-								autofocus
+								autoFocus
 								placeholder="Search for organisations, reports, and more..."
 								value={query}
 								onChange={linkState(this, 'query')}

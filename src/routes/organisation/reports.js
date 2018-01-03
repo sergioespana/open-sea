@@ -1,4 +1,5 @@
 import { inject, observer } from 'mobx-react';
+import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Header from 'components/Header';
 import Helmet from 'react-helmet';
@@ -8,14 +9,14 @@ import moment from 'moment';
 import React from 'react';
 import Table from 'components/Table';
 
-const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => (
+const Overview = inject(app('OrganisationsStore', 'ReportsStore'))(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => (
 	<Main>
-		<Helmet title={`${OrganisationsStore.findById(id, true).name} / reports`} />
+		<Helmet title={`${OrganisationsStore.findById(id).name} / reports`} />
 		<Header title="Reports" />
 		<Container>
 			<Table
 				columns={[ 'Report', 'Created', 'Last updated', 'Status' ]}
-				data={Object.keys(ReportsStore.findById(id, null, true)).map((key) => {
+				data={Object.keys(ReportsStore.findByOrgId(id)).map((key) => {
 					const report = ReportsStore.findById(id, key, true),
 						created = moment(report.created),
 						updated = report.updated ? moment(report.updated) : null;

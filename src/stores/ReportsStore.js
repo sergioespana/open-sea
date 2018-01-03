@@ -1,194 +1,88 @@
-import { toJS, observable } from 'mobx';
-import FirebaseStore from './FirebaseStore';
+import { eval as evaluate, round } from 'mathjs';
+import { action } from 'mobx';
+import AJV from 'ajv';
+import findLastKey from 'lodash/findLastKey';
+import { firebase } from './helpers';
 import get from 'lodash/get';
-import math from 'mathjs';
-import set from 'lodash/set';
+import replace from 'lodash/replace';
+import { safeLoad } from 'js-yaml';
+import schema from './schema.json';
 import slug from 'slug';
-import SnackbarStore from './SnackbarStore';
-import unset from 'lodash/unset';
 
-class ReportsStore {
+const ajv = new AJV({
+	coerceTypes: true,
+	useDefaults: true
+});
 
-	@observable loading = true;
-	@observable busy = false;
-	reports = observable.map({});
+const reportsActions = (state) => {
 
-	init = (org) => {
-		if (!org) return this.loading = false;
-		if (!this.loading) this.loading = true;
+	const findByOrgId = (id) => get(state, `reports.${id}`) || {};
 
-		FirebaseStore.addListener(`organisations/${org}/reports`, this._onRepScopeChanged);
-		this.reports.set(org, observable.map({}));
-	}
+	const findById = (orgId, id) => get(state, `reports.${orgId}.${id}`) || {};
 
-	findById = (org, id, toObj = false) => {
-		let col = id ? this.reports.get(org).get(id) : this.reports.get(org);
-		if (toObj) return toJS(col);
-		return col;
-	}
+	const findMostRecentWithKey = (id, key) => findById(id, findLastKey(findByOrgId(id), key));
 
-	create = async (org, name) => {
-		this.busy = true;
+	const createReport = async (obj) => {
+		const { name, _orgId } = obj;
+		const id = slug(name, { lower: true });
+		const report = { _id: id, created: new Date(), ...obj };
+		// Check if the report already exists.
+		if ((await firebase.getDoc(`organisations/${_orgId}/reports/${id}`)).exists) return new Error('Report already exists.');
+		// Store the new report in the database.
+		await firebase.setDoc(`organisations/${_orgId}/reports/${id}`, obj);
+		// Return the newly created report.
+		return report;
+	};
 
-		const id = slug(name).toLowerCase(),
-			exists = await FirebaseStore.docExists(`organisations/${org}/reports/${id}`);
+	const addModel = (orgId, repId, model) => setReport(orgId, repId, { model }, { merge: true, updateRemote: true });
 
-		if (exists) {
-			SnackbarStore.show(`Report called ${name} already exists`);
-			return;
-		}
+	const parseCount = (str, data = {}) => replace(str, /(count\(([^)]+)\))/ig, (...args) => (get(data, args[2]) || []).length);
 
-		const created = new Date();
+	const computeNumber = (value, data) => {
+		try { return round(evaluate(parseCount(value, data), data), 2); }
+		catch (e) { return 0; }
+	};
 
-		SnackbarStore.show(`Creating ${name}...`, 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { name, created });
-		SnackbarStore.show(`Saved ${name}`, 4000, 'VIEW', () => console.log('TODO: Go to new report'));
-		this.busy = false;
-	}
+	const computeIndicator = (orgId, repId, { type, value }) => {
+		const report = findById(orgId, repId);
+		const data = get(report, `data`) || {};
 
-	addModelToReport = async (org, id, model, overwrite = false) => {
-		// TODO: Check for existing model and ask to overwrite through a dialog
-		this.busy = true;
-		SnackbarStore.show(`Saving model...`, 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${id}`, { model, updated: new Date() });
-		SnackbarStore.show(`Saved model`);
-		this.busy = false;
-	}
+		if (type === 'number' || type === 'percentage') return computeNumber(value, data);
+		if (type === 'text') return get(data, value) || '';
+		if (type === 'list') return (get(data, value) || []).length;
+	};
 
-	copyModel = (org, from, to) => (event) => {
-		const fromReport = this.findById(org, from),
-			toReport = this.findById(org, to);
+	const parseTextToModel = (str) => safeLoad(str);
 
-		const model = this.findById(org, from).get('model');
-		return this.addModelToReport(org, to, model);
-	}
+	const validateModel = (obj) => ajv.validate(schema, obj) || ajv.errors;
 
-	getData = (org, rep, path) => {
-		if (!this.reports.has(org)) return '';
-		
-		const organisation = this.reports.get(org);
-		if (!organisation.has(rep)) return '';
+	const setReport = action((orgId, repId, obj, options = {}) => {
+		const { merge, updateRemote } = options;
+		const report = { ...obj, updated: new Date() };
 
-		const report = organisation.get(rep);
-		if (!report.has('data')) return '';
+		if (merge) state.reports[orgId][repId] = { ...state.reports[orgId][repId], ...report };
+		else state.reports[orgId][repId] = report;
 
-		const data = report.get('data');
-		if (path) return toJS(get(data, path)) || '';
-		return toJS(data);
-	}
+		if (updateRemote) firebase.setDoc(`organisations/${orgId}/reports/${repId}`, report);
+	});
 
-	linkMetric = (org, rep, path) => (event) => {
-		const { target: { value } } = event,
-			report = this.reports.get(org).get(rep);
+	return {
+		addModel,
+		computeIndicator,
+		createReport,
+		findById,
+		findByOrgId,
+		findMostRecentWithKey,
+		parseTextToModel,
+		validateModel
+	};
+};
 
-		if (!report.has('data')) report.set('data', {});
+const ReportsStore = (state, initialData) => {
 
-		let data = this.getData(org, rep);
-		if (value === '' || value === null) unset(data, path);
-		else set(data, path, value);
-		
-		return report.set('data', data);
-	}
+	const actions = reportsActions(state);
 
-	saveData = (org, rep) => async (event) => {
-		const data = this.getData(org, rep);
-		
-		if (!data) return;
+	return actions;
+};
 
-		this.busy = true;
-		SnackbarStore.show('Saving data...', 0);
-		await FirebaseStore.setDoc(`organisations/${org}/reports/${rep}`, { data, updated: new Date() });
-		SnackbarStore.show('Saved data');
-	}
-	
-	computeIndicator = (org, rep, { type, value }) => {
-		const data = toJS(this.getData(org, rep));
-		try {
-			let output;
-			if (type === 'number' || type === 'percentage') {
-				const countRegex = /(count\(([^)]+)\))/ig,
-					match = countRegex.exec(value);
-
-				if (match) {
-					let toReplace = match[1],
-						dataRef = match[2],
-						dataObj = data[dataRef],
-						toReplaceWith = dataObj ? dataObj.length : 0;
-					
-					value = value.replace(toReplace, toReplaceWith);
-				}
-
-				output = math.eval(value, data);
-				if (type === 'percentage') output = math.round(output, 2);
-			}
-			else if (type === 'text') output = data[value];
-			else if (type === 'list') output = data[value].length;
-
-			return output || null;
-		}
-		catch (error) {
-			return null;
-		}
-	}
-
-	reset = () => {
-		this.limit = 0;
-		this.count = 0;
-		this.reports.clear();
-	}
-
-	limit = 0;
-	count = 0;
-
-	_onRepScopeChanged = (snapshot) => {
-		this.limit = snapshot.size;
-		
-		if (snapshot.empty) {
-			this.count++;
-			if (this.count >= this.limit) this.loading = false;
-			return;
-		}
-
-		snapshot.docChanges.forEach(this._handleRepScopeChanged);
-	}
-
-	_handleRepScopeChanged = (change) => {
-		if (change.type === 'added') return this._addReportListener(change.doc);
-		if (change.type === 'removed') return this._removeReportListener(change.doc);
-	}
-
-	_addReportListener = (doc) => {
-		const id = doc.id,
-			org = doc._key.path.segments.slice(doc._key.path.offset)[1],
-			path = `organisations/${org}/reports/${id}`;
-		
-		FirebaseStore.addListener(path, this._onReportData);
-		this.reports.get(org).set(id, observable.map({}));
-	}
-
-	_removeReportListener = (doc) => {
-		const id = doc.id,
-			org = doc._key.path.segments.slice(doc._key.path.offset)[1],
-			path = `organisations/${org}/reports/${id}`;
-		
-		FirebaseStore.removeListener(path);
-		this.reports.get(org).delete(id);
-	}
-
-	_onReportData = (doc) => {
-		if (!doc.exists) {
-			this.count++;
-			return this._removeReportListener(doc);
-		}
-
-		const id = doc.id,
-			org = doc._key.path.segments[1];
-		
-		this.reports.get(org).get(id).merge(doc.data());
-
-		this.count++;
-		if (this.count === this.limit) this.loading = false;
-	}
-}
-
-export default new ReportsStore();
+export default ReportsStore;

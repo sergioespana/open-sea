@@ -1,6 +1,10 @@
+import get from 'lodash/get';
+import indexOf from 'lodash/indexOf';
 import map from 'lodash/map';
 import React from 'react';
+import Select from 'components/Input/Select';
 import styled from 'styled-components';
+import uniq from 'lodash/uniq';
 
 const FilterContainer = styled.div`
 	min-width: 570px;
@@ -19,11 +23,26 @@ const FilterContainer = styled.div`
 	}
 `;
 
+// TODO: Allow sorting of columns that have sortable data, autodetect.
+// TODO: Allow filtering through specified filters.
+// TODO: Create FilterSelect (or add prop isFilter to a new Select compontent).
+// TODO: Create toggleable button for boolean values.
+
 const Table = styled(({ columns = [], data = [], filters = [], ...props }) => (
 	<React.Fragment>
-		{ filters.length > 0 && (
+		{ filters && (
 			<FilterContainer>
 				<span>Filter by:</span>
+				{ map(filters, (filter, key) => {
+					const index = indexOf(columns, filter);
+					const options = map(uniq(map(data, (row) => get(row[index], 'props.children') || 'None')), (option) => ({ value: option, text: option }));
+					return (
+						<Select
+							key={key}
+							options={options}
+						/>
+					);
+				}) }
 			</FilterContainer>
 		) }
 		<table {...props}>

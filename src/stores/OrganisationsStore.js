@@ -1,104 +1,131 @@
-import { toJS, observable } from 'mobx';
-import AuthStore from './AuthStore';
-import FirebaseStore from './FirebaseStore';
-import ReportsStore from './ReportsStore';
+import { action, extendObservable } from 'mobx';
+import { firebase, prefixKeysWith } from './helpers';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import isBoolean from 'lodash/isBoolean';
+import set from 'lodash/set';
 import slug from 'slug';
-import SnackbarStore from './SnackbarStore';
+import unset from 'lodash/unset';
 
-class OrganisationsStore {
-	
-	@observable loading = true;
-	@observable busy = false;
-	organisations = observable.map({});
+const orgActions = (state) => {
 
-	init = (uid) => {
-		if (!this.loading) this.loading = true;
-		if (uid) FirebaseStore.addListener(`users/${uid}/organisations`, this._onOrgScopeChanged);
-		else FirebaseStore.addListener(`organisations`, this._onOrgScopeChanged);
-	}
+	const findById = (id) => {
+		const path = `organisations.${id}`;
+		// If the organisation is already loaded, simply return it.
+		if (has(state, path)) return get(state, path);
+		// Add a listener if it does not already exist. onOrganisationData will do the rest.
+		// TODO: Catch no access errors.
+		firebase.addFirebaseListener(`organisations/${id}`, onOrganisationData());
+		return false;
+	};
 
-	findById = (id, toObj = false) => {
-		let col = id ? this.organisations.get(id) : this.organisations;
-		if (toObj) return toJS(col);
-		return col;
-	}
+	const findByUid = (uid) => {
+		// Return if we're not currently loading, because this means we've already initialised
+		// organisations for the current user.
+		if (!state.loading) return;
+		firebase.addFirebaseListener(`users/${uid}/organisations`, onUserOrganisations);
+	};
 
-	create = async (name, options = {}, history) => {
-		this.busy = true;
+	const onUserOrganisations = (snapshot) => {
+		const added = snapshot.docChanges.filter(({ type }) => type === 'added');
+		const removed = snapshot.docChanges.filter(({ type }) => type === 'removed');
+		const max = snapshot.size - 1;
 
-		const id = slug(name).toLowerCase(),
-			exists = await FirebaseStore.docExists(`organisations/${id}`);
+		// Handle empty snapshot (user has access to no organisations).
+		if (max < 0) return setLoading(false);
 		
-		if (exists) {
-			SnackbarStore.show(`${name} already exists`);
-			return;
-		}
+		// For each added organisation, set a listener.
+		added.forEach(({ doc, doc: { id } }, i) => {
+			firebase.addFirebaseListener(`organisations/${id}`, onOrganisationData({ id, ...doc.data() }, max, i));
+		});
 
-		const created = new Date(),
-			uid = AuthStore.users.get('current').get('uid'),
-			role = 'owner';
+		// For each removed organisation, clean up.
+		removed.forEach(({ doc: { id } }) => {
+			firebase.removeFirebaseListener(`organisations/${id}`);
+			unset(state.organisations, id);
+		});
 
-		SnackbarStore.show(`Creating ${name}...`, 0);
-		await FirebaseStore.setDoc(`organisations/${id}`, { name, created, ...options });
-		await FirebaseStore.setDoc(`users/${uid}/organisations/${id}`, { role });
-		if (history) {
-			SnackbarStore.show(`Saved ${name}`, 4000, 'VIEW', () => history.push(`/${id}`));
-		}
-		else {
-			SnackbarStore.show(`Saved ${name}`);
-		}
-		this.busy = false;
-	}
+		// TODO: Handle updates such as access changes.
+	};
 
-	reset = () => {
-		this.limit = 0;
-		this.count = 0;
-		this.organisations.clear();
-	}
+	const onOrganisationData = (data = {}, max = 0, i = 0) => action((doc) => {
+		// Make the data that we initially passed "private" by prefixing the object
+		// keys with an _. We will filter these out when storing data in the database.
+		const privateData = prefixKeysWith(data, '_');
+		// Update or set the data in the global state.
+		setOrganisation(doc.id, { ...privateData, ...doc.data() });
+		// Set a listener for the organisation's reports.
+		firebase.addFirebaseListener(`organisations/${doc.id}/reports`, onOrganisationReports(doc.id, max, i));
+	});
 
-	limit = 0;
-	count = 0;
+	const onOrganisationReports = (orgId, orgMax, orgI) => (snapshot) => {
+		const addedOrModified = snapshot.docChanges.filter(({ type }) => type === 'added' || type === 'modified');
+		const removed = snapshot.docChanges.filter(({ type }) => type === 'removed');
+		const max = snapshot.size - 1;
 
-	_onOrgScopeChanged = (snapshot) => {
-		if (snapshot.empty) return this.loading = false;
+		// If there are not reports for this organisation ánd it was the last of the
+		// organisations, set loading to be false.
+		if (max < 0 && orgI >= orgMax) return setLoading(false);
 
-		this.limit = snapshot.size;
-		snapshot.docChanges.forEach(this._handleOrgScopeChange);
-	}
+		// For each report that was added, update or set the dat ain the global state.
+		addedOrModified.forEach(({ doc, doc: { id } }, i) => {
+			setReport(`${orgId}.${id}`, { _id: id, ...doc.data() });
+			// If this was the last report we needed to load ánd it was part of the
+			// last organisation we needed to load, set loading to be false.
+			if (i >= max && orgI >= orgMax) setLoading(false);
+		});
 
-	_handleOrgScopeChange = (change) => {
-		if (change.type === 'added') return this._addOrganisationListener(change.doc);
-		if (change.type === 'removed') return this._removeOrganisationListener(change.doc);
-	}
+		// For each removed report, clean up.
+		removed.forEach(({ doc: { id } }) => unset(state.reports[orgId][id]));
+	};
 
-	_addOrganisationListener = (doc) => {
-		const id = doc.id,
-			{ role } = doc.data(),
-			path = `organisations/${id}`,
-			org = observable.map({ id, role });
+	const createOrganisation = async (obj) => {
+		const { name } = obj;
+		const id = slug(name, { lower: true });
+		const organisation = { _id: id, avatar: '/assets/images/organisation-avatar-placeholder.png', created: new Date(), ...obj };
+		// Check if the organisation already exists.
+		if ((await firebase.getDoc(`organisations/${id}`)).exists) return new Error('Organisation already exists.');
+		// Store the new organisation in the database.
+		await firebase.setDoc(`organisations/${id}`, obj);
+		// Return the newly created organisation.
+		return organisation;
+	};
+	
+	// Give a user with id "uid" access to organisation with id "id".
+	const addUser = async (id, uid, role = 'watcher') => {
+		await firebase.setDoc(`users/${uid}/organisations/${id}`, { role, added: new Date() });
+		return true;
+	};
 
-		FirebaseStore.addListener(path, this._onOrgData);
-		this.organisations.set(id, org);
-		ReportsStore.init(id);
-	}
+	// Update an organisation in the global state.
+	const setOrganisation = (id, obj) => set(state.organisations, id, obj);
 
-	_removeOrganisationListener = (doc) => {
-		const id = doc.id,
-			path = `organisations/${id}`,
-			name = this.organisations.get(id).get('name');
+	// Update a report in the global state.
+	const setReport = (path, obj) => set(state.reports, path, obj);
 
-		SnackbarStore.show(`Your access to ${name} has been revoked`);
-		FirebaseStore.removeListener(path);
-		this.organisations.delete(id);
-	}
+	// Update the loading state. Visually "blocks" the entire application, should only
+	// be used during initialisation.
+	const setLoading = (val) => state.loading = isBoolean(val) ? val : false;
 
-	_onOrgData = (doc) => {
-		if (!doc.exists) return this._removeOrganisationListener(doc);
-		this.organisations.get(doc.id).merge(doc.data());
+	return {
+		addUser,
+		createOrganisation,
+		findById,
+		findByUid
+	};
+};
 
-		this.count++;
-		if (this.count === this.limit) this.loading = false;
-	}
-}
+const OrganisationsStore = (state, initialData) => {
 
-export default new OrganisationsStore();
+	extendObservable(state, {
+		loading: true,
+		organisations: {},
+		reports: {}
+	});
+
+	const actions = orgActions(state);
+
+	return actions;
+};
+
+export default OrganisationsStore;

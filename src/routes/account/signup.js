@@ -1,67 +1,88 @@
 import { inject, observer } from 'mobx-react';
 import { Link, Redirect } from 'react-router-dom';
 import React, { Component } from 'react';
-import Button from 'material-styled-components/Button';
+import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
+import { app } from 'mobx-app';
+import Button from 'components/Button';
+import get from 'lodash/get';
+import Input from 'components/Input';
 import linkState from 'linkstate';
 import Main from 'components/Main';
 
-// TODO: Show indeterminate horizontal loader when signing up
-
-@inject('AuthStore') @observer class Signup extends Component {
+@inject(app('AuthStore', 'MVCStore'))
+@observer
+class Signup extends Component {
 	state = {
 		email: '',
+		error: '',
+		name: '',
 		password: ''
 	}
 
-	handleFormSubmit = (event) => {
+	onSubmit = async (event) => {
 		event.preventDefault();
+		const { AuthStore, MVCStore } = this.props;
+		const { name, email, password } = this.state;
+		MVCStore.setBusy(true);
+		const { code, message } = await AuthStore.createUser(email, password, { name });
+		MVCStore.setBusy(false);
 		
-		const { AuthStore } = this.props,
-			{ email, password } = this.state;
-		
-		AuthStore.createUserWithEmailAndPassword(email, password);
+		if (!message) return;
+		switch (code) {
+			case 'auth/email-already-in-use': return this.setState({ error: <span>The provided email address is already in use by another account. If this is your email address, <Link to="/account/signin">sign in</Link> instead.</span> });
+			case 'auth/invalid-email': return this.setState({ error: 'The provided email address is invalid.' });
+			case 'auth/weak-password': return this.setState({ error: 'The provided password is insufficiently strong.' });
+			default: return this.setState({ error: 'An unknown error has occurred.' });
+		}
 	}
 
 	render() {
-		const { email, password } = this.state,
-			{ AuthStore } = this.props;
+		const { email, error, name, password } = this.state;
+		const { location, state } = this.props;
+		const { authed, busy } = state;
+		const from = get(location, 'state.from');
+		const disabled = busy || email === '' || name === '' || password === '';
 
-		return AuthStore.authed ? (
-			<Redirect to="/" />
+		return authed ? (
+			<Redirect to={from || '/'} />
 		) : (
-			<Main container slim style={{ textAlign: 'center' }}>
-				<h1>Sign up for a new account</h1>
-				<br />
-				<form onSubmit={this.handleFormSubmit}>
-					<input
+			<Main>
+				<StandaloneForm
+					title="Welcome to openSEA"
+					onSubmit={this.onSubmit}
+				>
+					<Input
+						label="Full name"
+						value={name}
+						onChange={linkState(this, 'name')}
+						disabled={busy}
+						required
+					/>
+					<Input
 						type="email"
-						placeholder="Email"
+						label="Email"
 						value={email}
-						onInput={linkState(this, 'email')}
-						disabled={AuthStore.busy}
+						onChange={linkState(this, 'email')}
+						disabled={busy}
 						required
-					/><br />
-					<br />
-					<input
+					/>
+					<Input
 						type="password"
-						placeholder="Password"
+						label="Password"
+						help={error}
 						value={password}
-						onInput={linkState(this, 'password')}
-						disabled={AuthStore.busy}
+						onChange={linkState(this, 'password')}
+						disabled={busy}
 						required
-					/><br />
-					<br />
-					<Button type="submit" primary raised disabled={AuthStore.busy}>Sign up</Button>
-				</form>
-				<br />
-				<br />
-				<p>--- Or ---</p>
-				<br />
-				<br />
-				<Button raised onClick={AuthStore.signUpWithGoogle} disabled={AuthStore.busy}>Sign up with Google</Button>
-				<br />
-				<br />
-				<p>Already have an account? <Link to="/login">Log in</Link></p>
+					/>
+					<FormButtonsContainer>
+						<Button
+							type="submit"
+							disabled={disabled}
+						>Sign up</Button>
+						<Link to="/account/signin">Already have an account?</Link>
+					</FormButtonsContainer>
+				</StandaloneForm>
 			</Main>
 		);
 	}

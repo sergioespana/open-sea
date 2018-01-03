@@ -58,5 +58,5 @@
 			}
 		}
 	},
-	"required": ["metrics", "indicators", "reportItems"]
+	"required": ["metrics", "indicators"]
 }

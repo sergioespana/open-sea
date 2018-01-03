@@ -1,26 +1,36 @@
-import { observable } from 'mobx';
+import { action, extendObservable } from 'mobx';
+import isBoolean from 'lodash/isBoolean';
 
-class MVCStore {
-	@observable navExpanded;
-	@observable createDrawerOpen = false;
-	@observable searchDrawerOpen = false;
+const mvcActions = (state) => {
 
-	constructor() {
-		this.navExpanded = window.localStorage.getItem('navExpanded') === 'true';
-	}
+	const toggleExpanded = action(() => state.mainNavExpanded = !state.mainNavExpanded);
 
-	toggleExpanded = () => {
-		this.navExpanded = !this.navExpanded;
-		window.localStorage.setItem('navExpanded', this.navExpanded);
-	}
+	const toggleCreateDrawer = action(() => state.createDrawerOpen = !state.createDrawerOpen);
 
-	toggleCreateDrawer = () => {
-		this.createDrawerOpen = !this.createDrawerOpen;
-	}
+	const toggleSearchDrawer = action(() => state.searchDrawerOpen = !state.searchDrawerOpen);
 
-	toggleSearchDrawer = () => {
-		this.searchDrawerOpen = !this.searchDrawerOpen;
-	}
-}
+	const setBusy = (val) => state.busy = isBoolean(val) ? val : false;
 
-export default new MVCStore();
+	return {
+		setBusy,
+		toggleCreateDrawer,
+		toggleExpanded,
+		toggleSearchDrawer
+	};
+};
+
+const MVCStore = (state, initialData) => {
+
+	extendObservable(state, {
+		busy: false,
+		mainNavExpanded: false,
+		createDrawerOpen: false,
+		searchDrawerOpen: false
+	});
+
+	const actions = mvcActions(state);
+
+	return actions;
+};
+
+export default MVCStore;

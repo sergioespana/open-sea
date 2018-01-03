@@ -47,7 +47,7 @@ const Header = styled(({ breadcrumbs, secondary, title, ...props }) => (
 			<PrimaryContainer>
 				{ breadcrumbs && (
 					<Breadcrumbs>
-						{ breadcrumbs.map((breadcrumb) => <li>{ breadcrumb }</li>) }
+						{ breadcrumbs.map((breadcrumb, key) => <li key={key}>{ breadcrumb }</li>) }
 					</Breadcrumbs>
 				) }
 				{ title && <Title>{ title }</Title> }

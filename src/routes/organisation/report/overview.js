@@ -1,23 +1,26 @@
 import { inject, observer } from 'mobx-react';
 import { Link, Redirect } from 'react-router-dom';
+import { app } from 'mobx-app';
 import Chart from 'components/Chart';
 import Container from 'components/Container';
+import get from 'lodash/get';
 import Header from 'components/Header';
 import Main from 'components/Main';
 import map from 'lodash/map';
 import React from 'react';
 import toNumber from 'lodash/toNumber';
 
-const Overview = inject('ReportsStore', 'SnackbarStore')(observer(({ ReportsStore, match: { params: { id, rep } } }) => {
-	const report = ReportsStore.findById(id, rep),
-		model = report.get('model');
+const Overview = inject(app('ReportsStore', 'SnackbarStore'))(observer(({ ReportsStore, match: { params: { id, rep } } }) => {
+	const report = ReportsStore.findById(id, rep);
+	const data = get(report, 'data');
+	const model = get(report, 'model') || {};
 
-	if (!report.has('data')) return <Redirect to={`/${id}/${rep}/data`} replace />;
+	if (!data) return <Redirect to={`/${id}/${rep}/data`} replace />;
 
 	return (
 		<Main>
 			<Container>
-				{ map(model ? model.reportItems : {}, (item, key) => {
+				{ map(model.reportItems, (item, key) => {
 					if (item.chart) {
 						const labels = item.data.map(ind => model.indicators[ind].name);
 						const data = {

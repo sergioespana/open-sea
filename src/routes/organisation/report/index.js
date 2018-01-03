@@ -2,49 +2,53 @@ import { inject, observer } from 'mobx-react';
 import { Link, Route, Switch } from 'react-router-dom';
 import React, { Component } from 'react';
 import SideList, { Group, ListItem } from 'components/SideList';
+import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Data from './data';
-import findLastKey from 'lodash/findLastKey';
+import get from 'lodash/get';
 import Header from 'components/Header';
 import Helmet from 'react-helmet';
 import Main from 'components/Main';
 import Overview from './overview';
 import Placeholder from 'components/Placeholder';
 
-@inject('OrganisationsStore', 'ReportsStore', 'SnackbarStore') @observer class Report extends Component {
+@inject(app('OrganisationsStore', 'ReportsStore', 'SnackbarStore'))
+@observer
+class Report extends Component {
 	componentDidMount() {
-		const { ReportsStore, SnackbarStore, match: { params: { id, rep } } } = this.props,
-			report = ReportsStore.findById(id, rep),
-			reports = ReportsStore.findById(id, null, true),
-			reportKeys = Object.keys(reports);
+		// const { ReportsStore, SnackbarStore, match: { params: { id, rep } } } = this.props,
+		// 	report = ReportsStore.findById(id, rep),
+		// 	reports = ReportsStore.findByOrgId(id),
+		// 	reportKeys = Object.keys(reports);
 
-		if (report.has('model') || reportKeys.length <= 1) return;
+		// if (report.has('model') || reportKeys.length <= 1) return;
 
-		const mostRecentId = findLastKey(reports, 'model');
-		if (mostRecentId) SnackbarStore.show(`Model from a previous report (${reports[mostRecentId].name}) is available`, 0, 'USE', ReportsStore.copyModel(id, mostRecentId, rep));
+		// const mostRecentId = findLastKey(reports, 'model');
+		// if (mostRecentId) SnackbarStore.show(`Model from a previous report (${reports[mostRecentId].name}) is available`, 0, 'USE', ReportsStore.copyModel(id, mostRecentId, rep));
 	}
 
 	componentWillUnmount() {
-		this.props.SnackbarStore.hide();
+		// this.props.SnackbarStore.hide();
 	}
 
 	render() {
-		const { OrganisationsStore, ReportsStore, match: { params: { id, rep } } } = this.props,
-			organisation = OrganisationsStore.findById(id, true),
-			report = ReportsStore.findById(id, rep);
+		const { state, match: { params: { id, rep } } } = this.props;
+		const organisation = get(state, `organisations.${id}`);
+		const report = get(state, `reports.${id}.${rep}`);
+		const model = get(report, 'model');
 
 		return (
 			<Main>
-				<Helmet title={`${organisation.name} / ${report.get('name')}`} />
+				<Helmet title={`${organisation.name} / ${report.name}`} />
 				<Header
 					breadcrumbs={[
-						<Link to={`/${id}/reports`}>{ organisation.name }</Link>,
-						<Link to={`/${id}/${rep}`}>{ report.get('name') }</Link>
+						<Link to={`/${id}`}>{ organisation.name }</Link>,
+						<Link to={`/${id}/reports`}>Reports</Link>
 					]}
-					title={report.get('name')}
+					title={report.name}
 				/>
-				<Container flex={report.has('model')}>
-					{ report.has('model') ? (
+				<Container flex={model}>
+					{ model ? (
 						<React.Fragment>
 							<SideList>
 								<Group>

@@ -1,9 +1,13 @@
+import { inject, observer } from 'mobx-react';
+import { matchPath, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
+import { app } from 'mobx-app';
+import attempt from 'lodash/attempt';
 import DropZone from 'react-dropzone';
-import { inject } from 'mobx-react';
-import pathToRegexp from 'path-to-regexp';
+import get from 'lodash/get';
+import isError from 'lodash/isError';
+import isUndefined from 'lodash/isUndefined';
 import styled from 'styled-components';
-import { withRouter } from 'react-router-dom';
 
 const Overlay = styled.div`
 	position: fixed;
@@ -15,71 +19,72 @@ const Overlay = styled.div`
 	z-index: 24;
 `;
 
-@inject('ReportsStore', 'SnackbarStore', 'YAMLStore') class Dropzone extends Component {
+@inject(app('MVCStore', 'ReportsStore'))
+@observer
+class Dropzone extends Component {
 	state = {
 		dragging: false
 	}
 
-	handleDragEnter = () => this.isValidReportRoute() && this.setState({ dragging: true });
+	onDragEnter = () => this.isValidReportRoute() && this.setState({ dragging: true });
 
-	handleDragLeave = () => this.state.dragging && this.setState({ dragging: false });
+	onDragLeave = () => this.state.dragging && this.setState({ dragging: false });
 
-	handleDrop = (accepted, rejected) => {
-		this.handleDragLeave();
+	onDrop = (accepted, rejected) => {
+		this.onDragLeave();
+		// TODO: Display error to user that file was rejected.
+		if (accepted.length === 0 && rejected.length > 0) return console.log('file rejected');
 		
-		const match = this.isValidReportRoute(),
-			{ ReportsStore, SnackbarStore, YAMLStore } = this.props;
-
-		if (!match) return this.handleDragLeave();
-		if (rejected.length > 0) return SnackbarStore.show(`File is of an unsupported filetype (${rejected[0].type})`);
-
-		const [org, rep] = match,
-			file = accepted[0];
-
+		const file = accepted[0];
 		const fr = new FileReader();
-		fr.onload = ({ target: { result } }) => {
-			if (!result) return SnackbarStore.show('Unable to read the file');
-			
-			try {
-				const model = YAMLStore.parse(result) || {},
-					valid = YAMLStore.validate(model);
-	
-				if (!valid) return SnackbarStore.show(YAMLStore.buildErrorMessage(model));
-	
-				ReportsStore.addModelToReport(org, rep, model);
-			}
-			catch (error) {
-				return SnackbarStore.show('Unable to parse the file');
-			}
-		};
+		fr.onload = this.onFileRead;
 		fr.readAsText(file);
 	}
+	
+	onFileRead = async ({ target: { result } }) => {
+		// TODO: Display error to user that file couldn't be read.
+		if (!result) return console.log('could not read file');
+
+		const { MVCStore, ReportsStore } = this.props;
+		const model = ReportsStore.parseTextToModel(result);
+		const res = ReportsStore.validateModel(model);
+
+		if (res.length > 0) {
+			// Model contained errors, show.
+			return console.log(res);
+		}
+
+		MVCStore.setBusy(true);
+		const { params: { rep, org } } = this.getRouteMatch();
+		const add = await attempt(() => ReportsStore.addModel(org, rep, model));
+		MVCStore.setBusy(false);
+		if (isError(add)) return this.handleError(org);
+	}
+
+	handleError = (error) => {
+		// TODO: Handle error.
+		console.log(error);
+	}
+
+	getRouteMatch = () => matchPath(this.props.location.pathname, { path: '/:org/:rep' });
 
 	isValidReportRoute = () => {
-		const { location, ReportsStore } = this.props,
-			reports = ReportsStore.reports,
-			re = pathToRegexp('/:id/:rep'),
-			match = location.pathname.match(re);
-
-		if (!match) return false;
-
-		const [, org, rep] = match;
-
-		if (!reports.has(org)) return false;
-
-		if (!reports.get(org).has(rep)) return false;
-
-		return [org, rep];
+		const { state } = this.props;
+		const match = this.getRouteMatch();
+		const org = get(match, 'params.org');
+		const rep = get(match, 'params.rep');
+		return !isUndefined(get(state.reports, `${org}.${rep}`));
 	}
 
 	render() {
 		let { children, id } = this.props,
 			{ dragging } = this.state;
+		
 		return (
 			<DropZone
-				onDragEnter={this.handleDragEnter}
-				onDragLeave={this.handleDragLeave}
-				onDrop={this.handleDrop}
+				onDragEnter={this.onDragEnter}
+				onDragLeave={this.onDragLeave}
+				onDrop={this.onDrop}
 				accept=".yml"
 				disableClick
 				multiple={false}

@@ -1,12 +1,13 @@
 import { inject, observer } from 'mobx-react';
 import { NavigationButton, NavigationHeader } from 'components/Navigation';
+import { app } from 'mobx-app';
 import MdAssessment from 'react-icons/lib/md/assessment';
 import MdInbox from 'react-icons/lib/md/inbox';
 import MdSettings from 'react-icons/lib/md/settings';
 import React from 'react';
 
-const OrgButtons = inject('OrganisationsStore')(observer(({ loading, OrganisationsStore, match: { params: { org } } }) => {
-	const organisation = OrganisationsStore.findById(org, true) || {},
+const OrgButtons = inject(app('OrganisationsStore'))(observer(({ loading, OrganisationsStore, match: { params: { org } } }) => {
+	const organisation = OrganisationsStore.findById(org) || {},
 		avatar = organisation.avatar || 'https://via.placeholder.com/40x40/00695C';
 	return (
 		<React.Fragment>
