@@ -1,51 +1,58 @@
 import * as stores from './stores';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { observer, Provider } from 'mobx-react';
-import React, { Component } from 'react';
+import { injectGlobal, ThemeProvider } from 'styled-components';
 import { createStore } from 'mobx-app';
-import Dropzone from 'components/Dropzone';
-import Main from 'routes';
+import MainApp from 'routes';
 import Product from 'routes/product';
+import { Provider } from 'mobx-react';
+import React from 'react';
 import theme from './theme';
-import ThemeProvider from 'material-styled-components/theme/ThemeProvider';
 
 const { state, actions } = createStore(stores);
 
-@observer
-class App extends Component {
+const App = () => (
+	<Provider actions={actions} state={state}>
+		<ThemeProvider theme={theme}>
+			<BrowserRouter>
+				<Switch>
+					<Route path="/product" component={Product} />
+					<Route path="*" component={MainApp} />
+				</Switch>
+			</BrowserRouter>
+		</ThemeProvider>
+	</Provider>
+);
 
-	onNetworkStateChanged = () => {
-		const online = navigator.onLine;
-		// TODO: Display a message.
-		console.info(`Only status changed to: ${online ? 'online' : 'offline'}`);
+injectGlobal`
+	html, body {
+		color: ${theme.text.primary};
 	}
 
-	componentWillMount() {
-		window.addEventListener('online', this.onNetworkStateChanged);
-		window.addEventListener('offline', this.onNetworkStateChanged);
+	#app {
+		display: flex;
+		min-width: 1024px;
+		min-height: 100vh;
+
+		main {
+			flex: auto;
+		}
 	}
-	
-	componentWillUnmount() {
-		window.removeEventListener('online', this.onNetworkStateChanged);
-		window.removeEventListener('offline', this.onNetworkStateChanged);
+
+	a {
+		color: #0052CC;
+		text-decoration: none;
+		font-size: 0.875rem;
+		
+		:hover {
+			cursor: pointer;
+			color: #0065FF;
+			text-decoration: underline;
+		}
 	}
-	
-	render() {
-		return (
-			<Provider actions={actions} state={state}>
-				<ThemeProvider theme={theme}>
-					<BrowserRouter>
-						<Dropzone id="app">
-							<Switch>
-								<Route path="/product" component={Product} />
-								<Route path="/" component={Main} />
-							</Switch>
-						</Dropzone>
-					</BrowserRouter>
-				</ThemeProvider>
-			</Provider>
-		);
+
+	p {
+		font-size: 0.875rem;
 	}
-}
+`;
 
 export default App;

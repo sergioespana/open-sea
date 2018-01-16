@@ -26,9 +26,10 @@ module.exports = {
 		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.less', '.scss', '.sass', '.styl', '.css'],
 		alias: {
 			components: path.resolve(__dirname, 'src/components'),
+			mixins: path.resolve(__dirname, 'src/mixins'),
+			navigation: path.resolve(__dirname, 'src/navigation'),
 			routes: path.resolve(__dirname, 'src/routes'),
-			stores: path.resolve(__dirname, 'src/stores'),
-			styles: path.resolve(__dirname, 'src/styles')
+			stores: path.resolve(__dirname, 'src/stores')
 		}
 	},
 

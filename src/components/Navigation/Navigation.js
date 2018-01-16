@@ -1,26 +1,39 @@
-import Expander from './NavigationExpander';
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 
-const Navigation = styled((props) => {
-	const { children, className, expanded, toggleExpanded } = props,
-		baseProps = { className },
-		expanderProps = { expanded, toggleExpanded };
-	return (
-		<aside {...baseProps}>
-			{ children }
-			{ toggleExpanded && <Expander {...expanderProps} /> }
-		</aside>
-	);
-})`
-	display: flex;
-	width: auto;
-    flex-shrink: 0;
-	position: relative;
+class Navigation extends Component {
+	state = {
+		width: 64
+	}
 
-	& > :not(:first-child):not(:last-child) {
-		${({ expanded }) => !expanded && `display: none;`}
+	getWidth = () => this.wrapper ? this.wrapper.clientWidth : 64;
+
+	setWidth = (width) => this.state.width !== width && this.setState({ width });
+
+	componentDidMount = () => this.setWidth(this.getWidth());
+	
+	componentDidUpdate = () => this.setWidth(this.getWidth());
+
+	render = () => {
+		const { children, expanded, ...props } = this.props;
+		const { width } = this.state;
+		return (
+			<aside {...props} style={{ width }}>
+				<div ref={(elem) => this.wrapper = elem}>{ children }</div>
+			</aside>
+		);
+	}
+}
+
+export default styled(Navigation)`
+	display: flex;
+	position: relative;
+	flex-shrink: 0;
+
+	& > div {
+		position: fixed;
+		display: flex;
+		height: 100%;
+		z-index: 300;
 	}
 `;
-
-export default Navigation;

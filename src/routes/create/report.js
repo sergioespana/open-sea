@@ -1,95 +1,117 @@
+import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
-import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
 import { app } from 'mobx-app';
-import attempt from 'lodash/attempt';
 import Button from 'components/Button';
-import fromPairs from 'lodash/fromPairs';
-import Helmet from 'react-helmet';
-import Input from 'components/Input';
-import isError from 'lodash/isError';
 import linkState from 'linkstate';
-import Main from 'components/Main';
 import map from 'lodash/map';
+import omit from 'lodash/omit';
+import { parse } from 'query-string';
 import slug from 'slug';
 
-@inject(app('MVCStore', 'ReportsStore'))
+@inject(app('ReportsStore', 'VisualStore'))
 @observer
 class CreateReport extends Component {
 	state = {
 		error: '',
-		name: 'My Report',
-		orgId: ''
+		id: '',
+		name: '',
+		organisation: ''
+	}
+
+	slugify = (str, lower = true) => slug(str, { lower });
+
+	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
+
+	onChangeName = ({ target: { value } }) => {
+		const { name, id } = this.state;
+		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
+	}
+
+	onBlurName = () => {
+		const { name } = this.state;
+		return this.setState({ name: this.sanitize(name) });
+	}
+
+	onBlurId = () => {
+		const { name, id } = this.state;
+		return id === '' ? this.setState({ id: this.slugify(name) }) : this.setState({ id: this.slugify(id, false) });
 	}
 
 	onSubmit = async (event) => {
+		const { organisation: orgId, id } = this.state;
+		const report = { ...omit(this.state, 'error', 'id', 'organisation'), _id: id };
+		const { history, ReportsStore, VisualStore } = this.props;
+
 		event.preventDefault();
-		this.setState({ error: '' });
+		this.setState({ error: null });
+		VisualStore.setBusy(true);
 
-		const { history, MVCStore, ReportsStore } = this.props;
-		const { name, orgId } = this.state;
-
-		MVCStore.setBusy(true);
-		// Add current user as owner of newly created organisation.
-		const rep = await attempt(() => ReportsStore.createReport({ name, _orgId: orgId }));
-		MVCStore.setBusy(false);
-		if (isError(rep)) return this.handleError(orgId);
-		// Redirect to newly created report page.
-		history.push(`/${orgId}/${rep._id}`);
+		const { code } = await ReportsStore.create(orgId, report);
+		VisualStore.setBusy(false);
+		if (code) this.handleError(code);
+		else history.push(`/${orgId}/${id}`);
 	}
 
-	handleError = ({ code, message }) => {
-		// If no code is provided, we are dealing with a custom error so there is
-		// no need to create a message manually.
-		if (!code) return this.setState({ error: message });
-
-		// Display custom error messages for errors thrown by Firebase.
+	handleError = (code) => {
 		switch (code) {
-			// TODO: Actually handle the codes.
-			default: return this.setState({ error: 'An unknown error occurred' });
+			case 'already-exists': return this.setState({ error: `A report with ID "${this.state.id}" already exists.` });
+			default: return this.setState({ error: 'An unknown error has occurred' });
 		}
 	}
 
+	componentWillMount = () => {
+		const organisation = (parse(location.search) || {}).organisation || '';
+		this.setState({ organisation });
+	}
+
 	render = () => {
-		const { error, name, orgId } = this.state;
+		const { error, id, name, organisation } = this.state;
 		const { state } = this.props;
 		const { busy, organisations } = state;
-		const id = slug(name, { lower: true });
-		const disabled = busy || id === '' || id === 'my-report' || orgId === '';
 
 		return (
-			<Main>
-				<Helmet title="Create a report" />
-				<StandaloneForm
-					title="Create a new report"
-					onSubmit={this.onSubmit}
-				>
-					<Input
-						label="Report name"
-						help={<span>Your report's ID will be <strong>{ id }</strong>.</span>}
-						value={name}
-						onChange={linkState(this, 'name')}
-						disabled={busy}
-					/>
+			<Form standalone onSubmit={this.onSubmit}>
+				<header>
+					<h1>Create a report</h1>
+				</header>
+				<section>
+					<Alert message={error} type="error" />
 					<Input
 						type="select"
 						label="Organisation"
-						help={error}
-						value={orgId}
-						options={map(organisations, ({ name }, id) => fromPairs([['text', name], ['value', id]]))}
-						onChange={linkState(this, 'orgId', 'target.value')}
+						required
+						value={organisation}
+						onChange={linkState(this, 'organisation', 'target.value')}
+						options={map(organisations, (organisation) => ({ value: organisation._id, text: organisation.name }))}
 						disabled={busy}
 					/>
-					<FormButtonsContainer>
-						<Button
-							type="submit"
-							disabled={disabled}
-						>Create report</Button>
-						<Link to="/">Cancel</Link>
-					</FormButtonsContainer>
-				</StandaloneForm>
-			</Main>
+					<Input
+						label="Name"
+						required
+						value={name}
+						onChange={this.onChangeName}
+						onBlur={this.onBlurName}
+						disabled={busy}
+					/>
+					<Input
+						label="URL"
+						help="This will be the URL for your report. You will not be able to change it later, so choose carefully."
+						prefix={`${organisation.length > 10 ? '...' : window.location.hostname}/${organisation ? `${organisation}/` : ''}`}
+						required
+						value={id}
+						onChange={linkState(this, 'id')}
+						onBlur={this.onBlurId}
+						long={organisation.length > 10}
+						disabled={busy}
+					/>
+				</section>
+				<footer>
+					<Button type="submit" disabled={busy}>Create report</Button>
+					<Link to="/">Cancel</Link>
+				</footer>
+			</Form>
 		);
 	}
 }

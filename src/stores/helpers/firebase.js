@@ -20,14 +20,17 @@ const firebase = fb.initializeApp({
 
 export const auth = firebase.auth();
 export const db = firebase.firestore();
+export const storage = firebase.storage();
 
 export const getRef = (path) => reduce(path.split('/'), (ref, seg, i) => (i === 0 || i %2 === 0) ? ref.collection(seg) : ref.doc(seg), db);
+
+export const docExists = async (path) => (await getDoc(path)).exists;
 
 export const getDoc = (path) => getRef(path).get();
 
 export const setDoc = (path, obj, options = {}) => getRef(path).set(omitKeysWith(obj, '_'), { merge: true, ...options });
 
-export const getProvider = (providerName) => firebase.auth[`${upperFirst(providerName)}AuthProvider`] || false;
+export const putFile = (path, blob) => storage.ref().child(path).put(blob);
 
 let listeners = {};
 

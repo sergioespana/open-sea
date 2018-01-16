@@ -1,91 +1,78 @@
+import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
-import { Link, Redirect } from 'react-router-dom';
 import React, { Component } from 'react';
-import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
-import get from 'lodash/get';
-import Input from 'components/Input';
+import { Link } from 'react-router-dom';
 import linkState from 'linkstate';
-import Main from 'components/Main';
 
-@inject(app('AuthStore', 'MVCStore'))
+@inject(app('AuthStore'))
 @observer
-class Signup extends Component {
+class AccountSignUp extends Component {
 	state = {
+		avatar: '',
 		email: '',
 		error: '',
 		name: '',
 		password: ''
 	}
 
+	onChangeAvatar = ({ target: { files } }) => this.setState({ avatar: files[0] });
+
 	onSubmit = async (event) => {
+		const { avatar, email, name, password } = this.state;
+		const { AuthStore } = this.props;
+
 		event.preventDefault();
-		const { AuthStore, MVCStore } = this.props;
-		const { name, email, password } = this.state;
-		MVCStore.setBusy(true);
-		const { code, message } = await AuthStore.createUser(email, password, { name });
-		MVCStore.setBusy(false);
-		
-		if (!message) return;
-		switch (code) {
-			case 'auth/email-already-in-use': return this.setState({ error: <span>The provided email address is already in use by another account. If this is your email address, <Link to="/account/signin">sign in</Link> instead.</span> });
-			case 'auth/invalid-email': return this.setState({ error: 'The provided email address is invalid.' });
-			case 'auth/weak-password': return this.setState({ error: 'The provided password is insufficiently strong.' });
-			default: return this.setState({ error: 'An unknown error has occurred.' });
-		}
+		this.setState({ error: null });
+		const { code } = await AuthStore.create(email, password, { avatar, name });
+		if (!code) return;
 	}
 
-	render() {
-		const { email, error, name, password } = this.state;
-		const { location, state } = this.props;
-		const { authed, busy } = state;
-		const from = get(location, 'state.from');
-		const disabled = busy || email === '' || name === '' || password === '';
+	render = () => {
+		const { avatar, email, error, name, password } = this.state;
 
-		return authed ? (
-			<Redirect to={from || '/'} />
-		) : (
-			<Main>
-				<StandaloneForm
-					title="Welcome to openSEA"
-					onSubmit={this.onSubmit}
-				>
+		return (
+			<Form standalone onSubmit={this.onSubmit}>
+				<header>
+					<h1>Welcome to openSEA</h1>
+				</header>
+				<section>
+					<Alert message={error} type="error" />
 					<Input
-						label="Full name"
 						value={name}
-						onChange={linkState(this, 'name')}
-						disabled={busy}
+						label="Full name"
 						required
+						onChange={linkState(this, 'name')}
 					/>
 					<Input
 						type="email"
-						label="Email"
 						value={email}
-						onChange={linkState(this, 'email')}
-						disabled={busy}
+						label="Email"
 						required
+						onChange={linkState(this, 'email')}
 					/>
 					<Input
 						type="password"
-						label="Password"
-						help={error}
 						value={password}
-						onChange={linkState(this, 'password')}
-						disabled={busy}
+						label="Password"
 						required
+						onChange={linkState(this, 'password')}
 					/>
-					<FormButtonsContainer>
-						<Button
-							type="submit"
-							disabled={disabled}
-						>Sign up</Button>
-						<Link to="/account/signin">Already have an account?</Link>
-					</FormButtonsContainer>
-				</StandaloneForm>
-			</Main>
+					<Input
+						type="image"
+						value={avatar}
+						label="Avatar"
+						onChange={this.onChangeAvatar}
+					/>
+				</section>
+				<footer>
+					<Button type="submit">Sign up</Button>
+					<Link to="/account/signin">Already have an account?</Link>
+				</footer>
+			</Form>
 		);
 	}
 }
 
-export default Signup;
+export default AccountSignUp;

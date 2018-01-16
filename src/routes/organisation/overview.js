@@ -1,72 +1,65 @@
+import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import React, { Component } from 'react';
+import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
-import Chart from 'components/Chart';
+import Button from 'components/Button';
 import Container from 'components/Container';
-import Grid from 'components/Grid';
-import Header from 'components/Header';
-import Helmet from 'react-helmet';
-import includes from 'lodash/includes';
+import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
+import isUndefined from 'lodash/isUndefined';
 import { Link } from 'react-router-dom';
-import Main from 'components/Main';
-import map from 'lodash/map';
 import Placeholder from 'components/Placeholder';
+import sortBy from 'lodash/sortBy';
 
-@inject(app('OrganisationsStore', 'ReportsStore'))
-@observer
-class Overview extends Component {
+const PageHeader = ({ orgId, organisation }) => (
+	<Header>
+		<Breadcrumbs>
+			<Link to={`/${orgId}`}>{ organisation.name }</Link>
+		</Breadcrumbs>
+		<h1>Overview</h1>
+	</Header>
+);
 
-	formatTooltip = ({ type }) => (value = 0) => type === 'percentage' ? `${value}%` : `${value}`;
+const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) => {
+	const { match: { params: { orgId } }, OrganisationsStore } = props;
+	const organisation = OrganisationsStore.getItem(orgId, '_id');
+	const reports = organisation._reports;
 
-	render() {
-		const { match: { params: { id } }, OrganisationsStore, ReportsStore } = this.props;
-		const organisation = OrganisationsStore.findById(id);
-		const reports = ReportsStore.findByOrgId(id);
-		const mostRecent = ReportsStore.findMostRecentWithKey(id, 'model');
+	if (reports.length === 0) return (
+		<Fragment>
+			<PageHeader orgId={orgId} organisation={organisation} />
+			<Container>
+				<Placeholder>
+					<h1>Whoa there!</h1>
+					<p>No reports exist for this organisation! To get started, create a report first.</p>
+					<p><Button to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
+				</Placeholder>
+			</Container>
+		</Fragment>
+	);
 
-		return (
-			<Main>
-				<Helmet title={`${organisation.name} / overview`} />
-				<Header title="Overview" />
-				<Container>
-					{ isEmpty(mostRecent) ? (
-						<Placeholder>
-							<h1>No reports with data to show</h1>
-							<p>To get started, <Link to={`/${id}/new`}>create a report</Link> or add data to an existing report.</p>
-						</Placeholder>
-					) : (
-						<Grid childMinWidth={400}>
-							{ map(mostRecent.model.indicators, (indicator, key) => {
-								if (!includes(['number', 'percentage', 'list', 'likert'], indicator.type)) return null;
+	const mostRecent = find(sortBy(organisation._reports, ['created']), (value) => !isUndefined(value.model)) || {};
 
-								const labels = map(reports, (report) => report.name),
-									values = Object.keys(reports).map((repId) => ReportsStore.computeIndicator(id, repId, indicator)),
-									data = {
-										labels,
-										datasets: [{
-											title: indicator.name,
-											values
-										}]
-									};
+	if (isEmpty(mostRecent)) return (
+		<Fragment>
+			<PageHeader orgId={orgId} organisation={organisation} />
+			<Container>
+				<Placeholder>
+					<h1>Whoa there!</h1>
+					<p>None of your organisation's reports seem to have a model.</p>
+				</Placeholder>
+			</Container>
+		</Fragment>
+	);
 
-								return (
-									<Chart
-										key={key}
-										title={indicator.name}
-										data={data}
-										colors={['#80CBC4']}
-										format_tooltip_y={this.formatTooltip(indicator)}
-									/>
-								);
+	return (
+		<Fragment>
+			<PageHeader orgId={orgId} organisation={organisation} />
+			<Container>
+				
+			</Container>
+		</Fragment>
+	);
+}));
 
-							}) }
-						</Grid>
-					) }
-				</Container>
-			</Main>
-		);
-	}
-}
-
-export default Overview;
+export default OrganisationOverview;

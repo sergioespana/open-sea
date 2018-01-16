@@ -1,74 +1,70 @@
 import { inject, observer } from 'mobx-react';
-import React, { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import Account from 'routes/account';
+import { Redirect, Switch } from 'react-router-dom';
+import AccountRoutes from './account';
 import { app } from 'mobx-app';
-import Create from 'routes/create';
 import CreateDrawer from 'components/CreateDrawer';
-import Dashboard from 'routes/dashboard';
-import Helmet from 'react-helmet';
-import isUndefined from 'lodash/isUndefined';
-import Login from 'routes/account/login';
-import Logout from 'routes/account/logout';
-import MainNavigation from 'components/MainNavigation';
-import Organisation from 'routes/organisation';
-import Overview from 'routes/dashboard/overview';
-import PrivateRoute from 'components/PrivateRoute';
+import CreateRoutes from './create';
+import DashboardNavigation from 'navigation/dashboard';
+import DashboardOverview from './dashboard/overview';
+import DashboardRoutes from './dashboard';
+import DefaultNavigation from 'navigation';
+import Dropzone from 'components/Dropzone';
+import Nav from 'components/Navigation';
+import OrganisationNavigation from 'navigation/organisation';
+import OrganisationRoutes from './organisation';
+import React from 'react';
+import Route from 'components/Route';
 import SearchDrawer from 'components/SearchDrawer';
-import Signup from 'routes/account/signup';
-import Snackbar from 'components/Snackbar';
 
-@inject(app('AuthStore', 'OrganisationsStore'))
-@observer
-class Main extends Component {
+const Landing = () => <main><DashboardOverview /></main>;
 
-	componentWillUpdate(nextProps) {
-		const { AuthStore, OrganisationsStore, state } = nextProps;
-		const { authed, loading } = state;
-		const currentUser = AuthStore.findById('current');
-		if (authed && loading) OrganisationsStore.findByUid(currentUser._uid);
-	}
+const Navigation = ({ expanded }) => (
+	<Nav expanded={expanded}>
+		<Switch>
+			<Route path="/" exact component={DashboardNavigation} />
+			<Route path="/account/(signin|signup|logout)" exact />
+			<Route path="/account" component={DashboardNavigation} />
+			<Route path="/create" component={DefaultNavigation} />
+			<Route path="/dashboard" component={DashboardNavigation} />
+			<Route path="/search" component={DefaultNavigation} />
+			<Route path="/:orgId" component={OrganisationNavigation} />
+			<Route path="*" component={DefaultNavigation} />
+		</Switch>
+	</Nav>
+);
 
-	render() {
-		const { state } = this.props;
-		const { authed, loading } = state;
+const MainRoutes = inject(app('state'))(observer((props) => {
+	const { state } = props;
+	const { authed, expanded, listening, loading } = state;
 
-		if (authed === 'loading') return null;
+	if (!listening) return null;
 
-		return (
-			<React.Fragment>
-				<Helmet defaultTitle="openSEA" titleTemplate="%s — openSEA" />
+	if (loading) return (
+		<div id="app">
+			<Navigation expanded={expanded} />
+			<Switch>
+				<Route path="/account" component={AccountRoutes} />
+				<Route path="*" />
+			</Switch>
+		</div>
+	);
 
-				<MainNavigation curPath={window.location.pathname} />
+	return (
+		<Dropzone id="app">
+			<Navigation expanded={expanded} />
+			<CreateDrawer />
+			<SearchDrawer />
+			<Switch>
+				{ !authed && <Redirect from="/" exact to="/product" /> }
+				<Route path="/" exact component={Landing} authedOnly />
+				<Route path="/account" component={AccountRoutes} />
+				<Route path="/create" component={CreateRoutes} authedOnly />
+				<Route path="/dashboard" component={DashboardRoutes} authedOnly />
+				<Route path="/search" authedOnly />
+				<Route path="/:orgId" component={OrganisationRoutes} authedOnly />
+			</Switch>
+		</Dropzone>
+	);
+}));
 
-				{ loading ? (
-					<Switch>
-						{ !authed && <Redirect from="/" exact to="/product" replace /> }
-						<Route path="/account/signin" component={Login} />
-						<Route path="/account/signup" component={Signup} />
-						<Route path="/account/logout" component={Logout} />
-					</Switch>
-				) : (
-					<Switch>
-						{ !authed && <Redirect from="/" exact to="/product" replace /> }
-						<Route path="/account/signin" component={Login} />
-						<Route path="/account/signup" component={Signup} />
-						<Route path="/account/logout" component={Logout} />
-						<PrivateRoute path="/" exact component={Overview} />
-						<PrivateRoute path="/account" component={Account} />
-						<PrivateRoute path="/create" component={Create} />
-						<PrivateRoute path="/dashboard" component={Dashboard} />
-						<PrivateRoute path="/search" />
-						<Route path="/:org" component={Organisation} />
-					</Switch>
-				) }
-
-				<SearchDrawer />
-				<CreateDrawer />
-				{/* <Snackbar /> */}
-			</React.Fragment>
-		);
-	}
-}
-
-export default Main;
+export default MainRoutes;

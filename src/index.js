@@ -12,7 +12,6 @@ injectGlobal`
 		margin: 0;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		overflow: hidden;
 	}
 
 	*,
@@ -23,22 +22,6 @@ injectGlobal`
 
 	*:focus {
 		outline: 0;
-	}
-
-	#app {
-		height: 100vh;
-		display: flex;
-	}
-
-	a {
-		color: #0052CC;
-		text-decoration: none;
-
-		:hover {
-			cursor: pointer;
-			color: #0065FF;
-			text-decoration: underline;
-		}
 	}
 `;
 

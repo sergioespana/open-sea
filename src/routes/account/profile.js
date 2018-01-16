@@ -1,31 +1,34 @@
+import Form, { Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
-import Container from 'components/Container';
-import Input from 'components/Input';
 import React from 'react';
 
-const Profile = inject(app('AuthStore'))(observer(({ AuthStore }) => {
-	const currentUser = AuthStore.findById('current');
+const AccountProfile = inject(app('AuthStore'))(observer((props) => {
+	const { state } = props;
+	const { authed: currentUser } = state;
+	
 	return (
-		<Container>
-			<h1>Account settings</h1>
-			<Input
-				label="Avatar"
-				type="image"
-				src={currentUser.avatar}
-			/>
-			<Input
-				label="Full name"
-				value={currentUser.name}
-				help="Your name and avatar are visible to other users with access to the same organisations as you."
-			/>
-			<Button
-				style={{ marginTop: 20 }}
-				disabled={currentUser.withProvider}
-			>Update</Button>
-		</Container>
+		<Form>
+			<section>
+				<h1>Account settings</h1>
+				<Input
+					type="image"
+					label="Avatar"
+					value={currentUser.avatar}
+					disabled
+				/>
+				<Input
+					label="Full name"
+					value={currentUser.name}
+					disabled
+				/>
+			</section>
+			<footer>
+				<Button>Update</Button>
+			</footer>
+		</Form>
 	);
 }));
 
-export default Profile;
+export default AccountProfile;
