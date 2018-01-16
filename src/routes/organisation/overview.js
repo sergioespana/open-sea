@@ -20,10 +20,10 @@ const PageHeader = ({ orgId, organisation }) => (
 	</Header>
 );
 
-const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId } }, OrganisationsStore } = props;
+const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
-	const reports = organisation._reports;
+	const reports = ReportsStore.getItems({ _orgId: orgId });
 
 	if (reports.length === 0) return (
 		<Fragment>
@@ -38,7 +38,8 @@ const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) 
 		</Fragment>
 	);
 
-	const mostRecent = find(sortBy(organisation._reports, ['created']), (value) => !isUndefined(value.model)) || {};
+	// TODO: Can we come up with a more elegant method for this? Perhaps a more permanent solution?
+	const mostRecent = find(sortBy(reports, ['created']), (value) => !isUndefined(value.model)) || {};
 
 	if (isEmpty(mostRecent)) return (
 		<Fragment>
@@ -55,9 +56,7 @@ const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) 
 	return (
 		<Fragment>
 			<PageHeader orgId={orgId} organisation={organisation} />
-			<Container>
-				
-			</Container>
+			<Container />
 		</Fragment>
 	);
 }));

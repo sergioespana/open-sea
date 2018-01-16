@@ -1,5 +1,5 @@
 import actions from './actions';
 
-const OrganisationsStore = (state, initial) => actions(state);
+const ReportsStore = (state, initial) => actions(state);
 
-export default OrganisationsStore;
+export default ReportsStore;

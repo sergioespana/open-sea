@@ -5,7 +5,8 @@ const OrganisationsStore = (state, initial) => {
 
 	extendObservable(state, {
 		loading: true,
-		organisations: []
+		organisations: [],
+		reports: []
 	});
 
 	return actions(state);

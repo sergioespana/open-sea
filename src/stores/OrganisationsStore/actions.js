@@ -12,6 +12,7 @@ import reject from 'lodash/reject';
 const actions = (state) => {
 
 	const organisations = collection(state.organisations);
+	const reports = collection(state.reports);
 
 	const onUserOrganisations = ({ docChanges, size }) => {
 		const max = size - 1;
@@ -40,16 +41,13 @@ const actions = (state) => {
 		if (gt(0, max) && gte(orgI, orgMax)) return setLoading(false);
 
 		const [removed, added] = partition(docChanges, { type: 'removed' });
-		const organisation = organisations.getItem(orgId, '_id');
-		const reports = collection(organisation._reports);
 
-		added.forEach(action(({ doc }, i) => {
-			const data = doc.data();
-			reports.updateOrAdd({ _id: doc.id, ...data, _data: data.data || {} }, '_id');
+		added.forEach(action(({ doc, doc: { id: repId } }, i) => {
+			reports.updateOrAdd({ ...prefixKeysWith({ orgId, repId, id: `${orgId}/${repId}` }, '_'), ...doc.data() }, '_id');
 			(i >= max && orgI >= orgMax) && setLoading(false);
 		}));
 
-		removed.forEach(action(({ doc }) => reports.setItems(reject(organisation._reports, { _id: doc.id }))));
+		removed.forEach(action(({ doc: { id: repId } }) => reports.setItems(reject(state.reports, { _id: `${orgId}/${repId}` }))));
 	};
 
 	const create = async (obj) => {

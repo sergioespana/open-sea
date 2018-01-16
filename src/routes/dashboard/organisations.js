@@ -11,8 +11,8 @@ import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';
 
-const DashboardOrganisations = inject(app('AuthStore'))(observer((props) => {
-	const { AuthStore, state } = props;
+const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
+	const { AuthStore, ReportsStore, state } = props;
 	const { organisations } = state;
 
 	if (isEmpty(organisations)) return (
@@ -69,7 +69,7 @@ const DashboardOrganisations = inject(app('AuthStore'))(observer((props) => {
 						{
 							key: '_reports',
 							label: 'Reports',
-							value: ({ _reports }) => _reports.length
+							value: ({ _id: _orgId }) => ReportsStore.getItems({ _orgId }).length
 						},
 						{
 							key: 'isPublic',

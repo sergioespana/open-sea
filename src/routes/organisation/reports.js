@@ -19,10 +19,10 @@ const PageHeader = ({ orgId, organisation }) => (
 	</Header>
 );
 
-const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId } }, OrganisationsStore } = props;
+const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
-	const reports = organisation._reports;
+	const reports = ReportsStore.getItems({ _orgId: orgId });
 
 	if (isEmpty(reports)) return (
 		<Fragment>
@@ -42,14 +42,14 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container>
 				<Table
-					data={organisation._reports}
+					data={reports}
 					defaultSort="-updated"
 					columns={[
 						{
 							key: 'name',
 							label: 'Report',
 							value: ({ name }) => name,
-							format: (value, { _id, name }) => <Link to={`/${orgId}/${_id}`}>{ name }</Link>
+							format: (value, { _id, name }) => <Link to={`/${_id}`}>{ name }</Link>
 						},
 						{
 							key: 'updated',
