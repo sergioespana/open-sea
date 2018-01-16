@@ -21,7 +21,7 @@ class CreateOrganisation extends Component {
 		error: ''
 	}
 
-	slugify = (str, lower = true) => slug(str, { lower });
+	slugify = (str) => slug(str, { lower: true });
 
 	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
 
@@ -39,7 +39,7 @@ class CreateOrganisation extends Component {
 
 	onBlurId = () => {
 		const { name, id } = this.state;
-		return id === '' ? this.setState({ id: this.slugify(name) }) : this.setState({ id: this.slugify(id, false) });
+		return id === '' ? this.setState({ id: this.slugify(name) }) : this.setState({ id: this.slugify(id) });
 	}
 
 	onSubmit = async (event) => {
