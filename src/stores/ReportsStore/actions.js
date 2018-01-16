@@ -35,33 +35,32 @@ const actions = (state) => {
 
 	const validateModel = (obj) => ajv.validate(schema, obj) || ajv.errors;
 
+
+	// FIXME: These models are much too similar, let's change this up.
 	const addModel = async (orgId, repId, model) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { model }).then(() => ({})).catch((error) => error);
+	
+	const saveData = async (orgId, repId, data) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { data }).then(() => ({})).catch((error) => error);
 
 	const linkData = (orgId, repId, path, eventPath = 'target.value') => action((event) => {
 		const id = `${orgId}/${repId}`;
+		const report = reports.getItem(id, '_id');
 		const eventValue = get(event, eventPath);
 		const value = toNumber(eventValue) || eventValue;
 		
-		let _data = getData(orgId, repId);
+		let _data = report.data || report._data || {};
 		set(_data, path, value);
-
-		reports.updateItem(id, _data, '_id');
+		
+		reports.updateItem({ ...report,  _data }, '_id');
 	});
-
-	const getData = (orgId, repId) => {
-		const id = `${orgId}/${repId}`;
-		const report = reports.getItem(id, '_id');
-		return report._data || report.data || {};
-	};
 
 	return {
 		...reports,
 		addModel,
 		create,
-		getData,
 		getItems,
 		linkData,
 		parseTextToModel,
+		saveData,
 		validateModel
 	};
 };
