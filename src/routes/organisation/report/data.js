@@ -6,6 +6,7 @@ import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
+import isEqual from 'lodash/isEqual';
 import map from 'lodash/map';
 
 @inject(app('OrganisationsStore', 'ReportsStore', 'VisualStore'))
@@ -48,7 +49,7 @@ class OrganisationReportData extends Component {
 		const { error } = this.state;
 		const organisation = OrganisationsStore.getItem(orgId, '_id');
 		const report = ReportsStore.getItem(`${orgId}/${repId}`, '_id');
-		const data = report.data || report._data || {};
+		const data = report._data;
 		const model = report.model || {};
 		const metrics = model.metrics || {};
 
@@ -78,7 +79,7 @@ class OrganisationReportData extends Component {
 							)) }
 						</section>
 						<footer>
-							<Button type="submit" disabled={busy}>Save changes</Button>
+							<Button type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
 							<Link to={`/${orgId}/${repId}`}>Cancel</Link>
 						</footer>
 					</Form>

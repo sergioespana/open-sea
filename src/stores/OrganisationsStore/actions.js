@@ -43,7 +43,8 @@ const actions = (state) => {
 		const [removed, added] = partition(docChanges, { type: 'removed' });
 
 		added.forEach(action(({ doc, doc: { id: repId } }, i) => {
-			reports.updateOrAdd({ ...prefixKeysWith({ orgId, repId, id: `${orgId}/${repId}` }, '_'), ...doc.data() }, '_id');
+			const report = doc.data();
+			reports.updateOrAdd({ ...prefixKeysWith({ orgId, repId, id: `${orgId}/${repId}` }, '_'), ...report, _data: report.data || {} }, '_id');
 			(i >= max && orgI >= orgMax) && setLoading(false);
 		}));
 
