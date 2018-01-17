@@ -22,7 +22,7 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 			font-size: 1.5rem;
 		}
 
-		& + header {
+		& + section {
 			padding: 20px 0 0;
 		}
 	}
