@@ -1,3 +1,4 @@
+import { eval as evaluate, round } from 'mathjs';
 import { firebase, omitKeysWith } from '../helpers';
 import { action } from 'mobx';
 import AJV from 'ajv';
@@ -44,18 +45,40 @@ const actions = (state) => {
 	const linkData = (orgId, repId, path, eventPath = 'target.value') => action((event) => {
 		const id = `${orgId}/${repId}`;
 		const report = reports.getItem(id, '_id');
-		const eventValue = get(event, eventPath);
-		const value = toNumber(eventValue) || eventValue;
+		const value = get(event, eventPath);
+		const newData = set({}, path, toNumber(value) || value);
 		
-		let _data = report.data || report._data || {};
-		set(_data, path, value);
-		
-		reports.updateItem({ ...report,  _data }, '_id');
+		reports.updateItem({ ...report,  _data: { ...report._data, ...newData } }, '_id');
 	});
+
+	const parseCount = (val, data) => {
+		const test = 'count(met_002)';
+		const match = /(count\(([^)]+)\))/ig.exec(test);
+		return val.replace(match[1], (data[match[2]] || []).length || 0);
+	};
+
+	const computeNumber = (val, data) => {
+		const value = parseCount(val, data);
+		try { return round(evaluate(value, data)); }
+		catch (error) { return 0; }
+	};
+
+	const compute = (orgId, repId, indId) => {
+		const report = reports.getItem(`${orgId}/${repId}`, '_id');
+		const data = report.data || report._data || {};
+		const { type, value } = get(report, `model.indicators.${indId}`) || {};
+
+		if (type === 'number' || type === 'percentage') return computeNumber(value, data);
+		else if (type === 'text') return data[value];
+		else if (type === 'list') return data[value].length;
+
+		return null;
+	};
 
 	return {
 		...reports,
 		addModel,
+		compute,
 		create,
 		getItems,
 		linkData,

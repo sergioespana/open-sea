@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
+import Chart from 'components/Chart';
 import Container from 'components/Container';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
@@ -13,8 +14,9 @@ const OrganisationReport = inject(app('OrganisationsStore', 'ReportsStore'))(obs
 	const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
 	const report = ReportsStore.getItem(`${orgId}/${repId}`, '_id');
-	const data = report.data || report._data || {};
+	const data = report._data;
 	const model = report.model || {};
+	const indicators = model.indicators || {};
 	const reportItems = model.reportItems || [];
 
 	return (
@@ -39,8 +41,22 @@ const OrganisationReport = inject(app('OrganisationsStore', 'ReportsStore'))(obs
 						<p><Button to={`/${orgId}/${repId}/data`}>Add data</Button></p>
 					</Placeholder>
 				) : map(reportItems, (item, i) => {
-					console.log(item, i);
-					return <p key={i}>{ item.name }</p>;
+					const data = {
+						labels: map(item.data, (indId) => indicators[indId].name),
+						datasets: [{
+							values: map(item.data, (indId) => ReportsStore.compute(orgId, repId, indId))
+						}]
+					};
+
+					return (
+						<Chart
+							key={i}
+							title={item.name}
+							type={item.chart === 'pie' ? 'percentage' : item.chart}
+							data={data}
+							colors={item.colors || []}
+						/>
+					);
 				}) }
 			</Container>
 		</Fragment>
