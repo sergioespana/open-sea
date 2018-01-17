@@ -30,7 +30,7 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 	section {
 		width: 100%;
 
-		h1 {
+		& > h1 {
 			font-size: 1rem;
 			font-weight: 600;
 
@@ -39,7 +39,7 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 			}
 		}
 
-		p {
+		& > p {
 			font-size: 0.875rem;
 		}
 	}
