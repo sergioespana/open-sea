@@ -51,7 +51,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						columns={[
 							{
 								key: 'name',
-								label: 'Organisation',
+								label: 'Report',
 								value: ({ name }) => name,
 								format: (value, { _id, name }) => <Link to={ `/${_id}` }>{ name }</Link>
 							},
