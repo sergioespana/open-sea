@@ -75,6 +75,7 @@ class OrganisationReportData extends Component {
 									help={help}
 									value={data[metId]}
 									onChange={ReportsStore.linkData(orgId, repId, metId)}
+									disabled={busy}
 								/>
 							)) }
 						</section>
