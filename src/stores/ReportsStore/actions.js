@@ -1,9 +1,10 @@
+import { action, autorun } from 'mobx';
 import { eval as evaluate, round } from 'mathjs';
 import { firebase, omitKeysWith } from '../helpers';
-import { action } from 'mobx';
 import AJV from 'ajv';
 import { collection } from 'mobx-app';
 import filter from 'lodash/filter';
+import Fuse from 'fuse.js';
 import get from 'lodash/get';
 import { safeLoad } from 'js-yaml';
 import schema from '../helpers/schema.json';
@@ -75,6 +76,11 @@ const actions = (state) => {
 		return null;
 	};
 
+	let searchable = new Fuse(state.reports, { keys: ['name', '_id'] });
+	const search = (query) => searchable.search(query);
+
+	autorun(() => searchable = new Fuse(state.reports, { keys: ['name'] }));
+
 	return {
 		...reports,
 		addModel,
@@ -84,6 +90,7 @@ const actions = (state) => {
 		linkData,
 		parseTextToModel,
 		saveData,
+		search,
 		validateModel
 	};
 };

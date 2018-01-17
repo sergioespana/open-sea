@@ -1,6 +1,7 @@
 import { action, autorun } from 'mobx';
 import { firebase, prefixKeysWith, omitKeysWith } from '../helpers';
 import { collection } from 'mobx-app';
+import Fuse from 'fuse.js';
 import gt from 'lodash/gt';
 import gte from 'lodash/gte';
 import isBoolean from 'lodash/isBoolean';
@@ -72,6 +73,9 @@ const actions = (state) => {
 
 	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`users/${uid}/organisations/${orgId}`, { role }).then(() => ({})).catch((error) => error);
 
+	let searchable = new Fuse(state.organisations, { keys: ['name', '_id'] });
+	const search = (query) => searchable.search(query);
+	
 	const setLoading = action((val) => state.loading = isBoolean(val) ? val : false);
 
 	autorun(() => {
@@ -82,10 +86,13 @@ const actions = (state) => {
 		firebase.addFirebaseListener(`users/${authed._uid}/organisations`, onUserOrganisations);
 	});
 
+	autorun(() => searchable = new Fuse(state.organisations, { keys: ['name'] }));
+
 	return {
 		...organisations,
 		addUser,
-		create
+		create,
+		search
 	};
 };
 
