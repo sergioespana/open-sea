@@ -27,6 +27,13 @@ class AccountSignUp extends Component {
 		this.setState({ error: null });
 		const { code } = await AuthStore.create(email, password, { avatar, name });
 		if (!code) return;
+
+		switch (code) {
+			case 'auth/email-already-in-use': return this.setState({ error: <span>The provided email address is already in use. You can log in <Link to="/account/signin">here</Link></span> });
+			case 'auth/invalid-email': return this.setState({ error: 'The provided email address is invalid.' });
+			case 'auth/weak-password': return this.setState({ error: 'The provided password is not strong enough.' });
+			default: return this.setState({ error: 'An unknown error has occurred.' });
+		}
 	}
 
 	render = () => {
