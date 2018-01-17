@@ -1,10 +1,11 @@
 import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, NavLink, Switch } from 'react-router-dom';
+import { Link, NavLink, Redirect, Switch } from 'react-router-dom';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
 import OrganisationSettingsAccess from './access';
+import OrganisationSettingsDetails from './details';
 import Route from 'components/Route';
 import Sidenav from 'components/Sidenav';
 
@@ -31,7 +32,8 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 				</Sidenav>
 				<Container>
 					<Switch>
-						<Route path="/:orgId/settings/details" />
+						<Redirect from={`/${orgId}/settings`} exact to={`/${orgId}/settings/details`} replace />
+						<Route path="/:orgId/settings/details" component={OrganisationSettingsDetails} />
 						<Route path="/:orgId/settings/access" component={OrganisationSettingsAccess} />
 						<Route path="/:orgId/settings/export" />
 						<Route path="/:orgId/settings/delete" />
