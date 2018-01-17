@@ -73,7 +73,7 @@ class OrganisationReportData extends Component {
 									type={type}
 									label={name}
 									help={help}
-									value={data[metId]}
+									value={data[metId] || ''}
 									onChange={ReportsStore.linkData(orgId, repId, metId)}
 									disabled={busy}
 								/>

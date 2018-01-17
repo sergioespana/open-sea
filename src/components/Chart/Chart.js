@@ -9,7 +9,7 @@ class Chart extends Component {
 
 	componentWillReceiveProps = (nextProps) => this.c = new Frappe({ parent: this.chart, colors: [theme.accent], ...nextProps });
 
-	render = () => <div ref={chart => this.chart = chart} style={{ maxWidth: '100%' }} />
+	render = () => <div ref={chart => this.chart = chart} style={{ width: '100%' }} />
 }
 
 export default Chart;

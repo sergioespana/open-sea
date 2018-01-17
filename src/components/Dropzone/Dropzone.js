@@ -69,7 +69,7 @@ class Dropzone extends Component {
 
 		if (isUndefined(orgId) || isUndefined(repId)) return false;
 
-		return !isNull(ReportsStore.getItem(orgId, repId, '_id'));
+		return !isNull(ReportsStore.getItem(`${orgId}/${repId}`, '_id'));
 	}
 
 	render = () => {
