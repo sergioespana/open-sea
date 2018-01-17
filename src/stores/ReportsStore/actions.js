@@ -37,10 +37,10 @@ const actions = (state) => {
 	const validateModel = (obj) => ajv.validate(schema, obj) || ajv.errors;
 
 
-	// FIXME: These models are much too similar, let's change this up.
-	const addModel = async (orgId, repId, model) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { model }).then(() => ({})).catch((error) => error);
+	// FIXME: These models are much too similar, can we create a single solution?.
+	const addModel = async (orgId, repId, model) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { model, updated: new Date() }).then(() => ({})).catch((error) => error);
 	
-	const saveData = async (orgId, repId, data) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { data }).then(() => ({})).catch((error) => error);
+	const saveData = async (orgId, repId, data) => await firebase.setDoc(`organisations/${orgId}/reports/${repId}`, { data, updated: new Date() }).then(() => ({})).catch((error) => error);
 
 	const linkData = (orgId, repId, path, eventPath = 'target.value') => action((event) => {
 		const id = `${orgId}/${repId}`;
