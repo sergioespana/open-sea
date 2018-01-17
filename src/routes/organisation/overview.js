@@ -3,8 +3,13 @@ import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
+import Chart from 'components/Chart';
 import Container from 'components/Container';
+import filter from 'lodash/filter';
+import findLast from 'lodash/findLast';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
+import map from 'lodash/map';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';
@@ -36,11 +41,37 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</Fragment>
 	);
 
+	const reportsWithData = filter(reports, 'data');
+	const mostRecent = findLast(reportsWithData, 'model') || {};
+	const model = mostRecent.model || {};
+	const indicators = model.indicators || {};
+	const reportItems = model.reportItems || [];
+
 	return (
 		<Fragment>
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container flex>
-				<Placeholder />
+				{ isEmpty(mostRecent) || reportsWithData.length < 2
+					? <Placeholder />
+					: map(reportItems, (item, i) => {
+						const data = {
+							labels: map(reportsWithData, ({ name }) => name),
+							datasets: map(item.data, (indId) => ({
+								title: indicators[indId].name,
+								values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
+							}))
+						};
+
+						return (
+							<Chart
+								key={i}
+								title={item.name}
+								type="line"
+								data={data}
+							/>
+						);
+					})
+				}
 				<section style={{ flex: '0 0 375px' }}>
 					<h1>Reports</h1>
 					<Table
