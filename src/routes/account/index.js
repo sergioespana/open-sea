@@ -49,9 +49,11 @@ const AccountRoutes = inject(app('state'))(observer((props) => {
 	const { loading } = state;
 
 	if (loading) return (
-		<Switch>
-			<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
-		</Switch>
+		<main>
+			<Switch>
+				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+			</Switch>
+		</main>
 	);
 
 	return (

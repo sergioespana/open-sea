@@ -33,7 +33,7 @@ const actions = (state) => {
 	const signOut = () => {
 		const currentUser = find(state.users, ['_isCurrent', true]);
 		users.updateItem({ _uid: currentUser._uid, _isCurrent: false }, '_uid');
-		firebase.removeFirebaseListener(`users/${currentUser._uid}/organisations`);
+		firebase.removeFirebaseListener();
 		firebase.auth.signOut();
 	};
 

@@ -81,7 +81,11 @@ const actions = (state) => {
 	autorun(() => {
 		const { authed, listening } = state;
 		if (!listening) return;
-		if (listening && !authed) return organisations.clear();
+		if (listening && !authed) {
+			organisations.clear();
+			reports.clear();
+			return;
+		}
 		setLoading(true);
 		firebase.addFirebaseListener(`users/${authed._uid}/organisations`, onUserOrganisations);
 	});
