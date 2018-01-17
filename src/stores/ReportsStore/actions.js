@@ -59,7 +59,7 @@ const actions = (state) => {
 
 	const computeNumber = (val, data) => {
 		const value = parseCount(val, data);
-		try { return round(evaluate(value, data)); }
+		try { return round(evaluate(value, data), 2); }
 		catch (error) { return 0; }
 	};
 
