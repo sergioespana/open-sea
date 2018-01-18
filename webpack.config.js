@@ -5,9 +5,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
-const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
 const WebpackChunkHash = require('webpack-chunk-hash');
+const WebpackBundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -17,8 +17,8 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'build'),
 		publicPath: '/',
-		filename: isProd ? '[name].[chunkhash:8].js' : '[name].js',
-		chunkFilename: '[name].[chunkhash:8].js'
+		filename: '[name].[hash].js',
+		chunkFilename: '[name].[chunkhash].js'
 	},
 
 	resolve: {
@@ -95,10 +95,17 @@ module.exports = {
 			disable: !isProd,
 			allChunks: true
 		}),
+		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 		new webpack.optimize.CommonsChunkPlugin({
+			name: 'vendor',
+			filename: '[name].[hash].js',
+			minChunks: ({ resource }) => /node_modules/.test(resource)
+		}),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'main',
+			async: true,
 			children: true,
-			async: false,
-			minChunks: 2
+			minChunks: ({ resource }) => /node_modules/.test(resource)
 		}),
 		new CopyWebpackPlugin([
 			{
@@ -110,11 +117,8 @@ module.exports = {
 			template: path.resolve(__dirname, 'src/index.html'),
 			minify: { collapseWhitespace: true }
 		}),
-		new ProgressBarWebpackPlugin({
-			format: 'Build [:bar] \u001b[32m\u001b[1m:percent\u001b[22m\u001b[39m (:elapseds) \u001b[2m:msg\u001b[22m',
-			renderThrottle: 100,
-			summary: false,
-			clear: true
+		new WebpackBundleAnalyzerPlugin({
+			analyzerMode: isProd ? 'disabled' : 'server'
 		})
 	].concat(isProd ? [
 		new webpack.HashedModuleIdsPlugin(),
