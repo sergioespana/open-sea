@@ -17,8 +17,8 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'build'),
 		publicPath: '/',
-		filename: '[name].[hash].js',
-		chunkFilename: '[name].[chunkhash].js'
+		filename: '[name].[hash:10].js',
+		chunkFilename: '[name].[chunkhash:10].js'
 	},
 
 	resolve: {
@@ -91,21 +91,21 @@ module.exports = {
 			'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
 		}),
 		new ExtractTextWebpackPlugin({
-			filename: isProd ? 'style.[contenthash:8].css' : 'style.css',
+			filename: isProd ? 'style.[contenthash:10].css' : 'style.css',
 			disable: !isProd,
 			allChunks: true
 		}),
 		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'vendor',
-			filename: '[name].[hash].js',
-			minChunks: ({ resource }) => /node_modules/.test(resource)
+			filename: '[name].[hash:10].js',
+			minChunks: ({ resource }) => resource !== undefined && /node_modules/.test(resource)
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'main',
 			async: true,
 			children: true,
-			minChunks: ({ resource }) => /node_modules/.test(resource)
+			minChunks: ({ resource }) => resource !== undefined && /node_modules/.test(resource)
 		}),
 		new CopyWebpackPlugin([
 			{
