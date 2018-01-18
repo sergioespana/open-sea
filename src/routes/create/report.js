@@ -8,7 +8,7 @@ import linkState from 'linkstate';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
 import { parse } from 'query-string';
-import slug from 'slug';
+import slug from 'slugify';
 
 @inject(app('ReportsStore', 'VisualStore'))
 @observer
@@ -20,7 +20,7 @@ class CreateReport extends Component {
 		organisation: ''
 	}
 
-	slugify = (str) => slug(str, { lower: true });
+	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
 
 	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
 

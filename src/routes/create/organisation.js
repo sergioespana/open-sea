@@ -7,7 +7,7 @@ import Button from 'components/Button';
 import isString from 'lodash/isString';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
-import slug from 'slug';
+import slug from 'slugify';
 
 @inject(app('OrganisationsStore', 'VisualStore'))
 @observer
@@ -21,7 +21,7 @@ class CreateOrganisation extends Component {
 		error: ''
 	}
 
-	slugify = (str) => slug(str, { lower: true });
+	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
 
 	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
 

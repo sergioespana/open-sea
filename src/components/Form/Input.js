@@ -1,9 +1,8 @@
 import styled, {css } from 'styled-components';
 import { darken } from 'polished';
-import map from 'lodash/map';
 import React from 'react';
 import Select from './Select';
-import slug from 'slug';
+import slug from 'slugify';
 
 const Wrapper = styled(({ ...props }) => <div {...props} />)`
 	display: flex;
@@ -163,7 +162,7 @@ const Help = styled(({ ...props }) => props.children ? <p {...props} /> : null)`
 
 const Input = (props) => {
 	const { help, label, long, prefix, secondLabel, short, type, ...other } = props;
-	const id = `field-${slug(label || props.placeholder, { lower: true })}`;
+	const id = `field-${slug(label || props.placeholder, { remove: /[=`#%^$*_+~.()'"!\-:@]/g })}`;
 
 	switch (type) {
 		case 'checkbox': return (
