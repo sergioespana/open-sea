@@ -2,11 +2,10 @@ import { action, autorun } from 'mobx';
 import { firebase, omitKeysWith } from '../helpers';
 import AJV from 'ajv';
 import { collection } from 'mobx-app';
-import evaluate from 'mathjs/lib/expression/function/eval';
 import filter from 'lodash/filter';
 import Fuse from 'fuse.js';
 import get from 'lodash/get';
-import round from 'mathjs/lib/function/arithmetic/round';
+import math from '../helpers/math';
 import { safeLoad } from 'js-yaml';
 import schema from '../helpers/schema.json';
 import set from 'lodash/set';
@@ -61,7 +60,7 @@ const actions = (state) => {
 
 	const computeNumber = (val, data) => {
 		const value = parseCount(val, data);
-		try { return round(evaluate(value, data), 2); }
+		try { return math.round(math.eval(value, data), 2); }
 		catch (error) { return 0; }
 	};
 
