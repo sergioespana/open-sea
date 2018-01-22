@@ -1,4 +1,3 @@
-import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import App from './app';
 import { injectGlobal } from 'styled-components';
 import React from 'react';
@@ -25,8 +24,17 @@ injectGlobal`
 	}
 `;
 
-OfflinePluginRuntime.install();
-
 ReactDOM.render(<App />, document.body);
 
 if (module.hot) module.hot.accept();
+
+if (process.env.NODE_ENV !== 'development' && 'serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		// TODO: Handle register without logging
+		// TODO: Handle other SW events
+		// eslint-disable-next-line compat/compat
+		navigator.serviceWorker.register('/sw.js')
+			.then((res) => console.log('SW registered: ', res))
+			.catch((error) => console.log('SW registration failed: ', error));
+	});
+}

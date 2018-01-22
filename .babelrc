@@ -1,16 +1,17 @@
 {
 	"presets": [
-		"env",
+		["env", {
+			"targets": {
+				"browsers": [
+					"last 2 versions"
+				]
+			}
+		}],
 		"stage-0",
 		"react"
 	],
 	"plugins": [
 		"transform-decorators-legacy",
-		"transform-object-rest-spread",
-		["transform-runtime", {
-			"polyfill": false,
-			"regenerator": true
-		}],
-		"transform-react-jsx"
+		"transform-object-rest-spread"
 	]
 }
