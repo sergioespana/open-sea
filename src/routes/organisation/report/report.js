@@ -7,6 +7,7 @@ import Button from 'components/Button';
 import Chart from 'components/Chart';
 import Container from 'components/Container';
 import findLast from 'lodash/findLast';
+import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 import Placeholder from 'components/Placeholder';
@@ -40,6 +41,7 @@ class OrganisationReport extends Component {
 
 		return (
 			<Fragment>
+				<Helmet title={`${organisation.name} / ${report.name}`} />
 				<Header secondary={(!isEmpty(model) && !isEmpty(data)) && <Button to={`/${orgId}/${repId}/data`}>Edit data</Button>}>
 					<Breadcrumbs>
 						<Link to={`/${orgId}`}>{ organisation.name }</Link>

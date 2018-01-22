@@ -6,6 +6,7 @@ import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
+import Helmet from 'react-helmet';
 import isEqual from 'lodash/isEqual';
 import map from 'lodash/map';
 
@@ -55,6 +56,7 @@ class OrganisationReportData extends Component {
 
 		return (
 			<Fragment>
+				<Helmet title={`${organisation.name} / ${report.name} / Data`} />
 				<Header>
 					<Breadcrumbs>
 						<Link to={`/${orgId}`}>{ organisation.name }</Link>

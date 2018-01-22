@@ -7,6 +7,7 @@ import Chart from 'components/Chart';
 import Container from 'components/Container';
 import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
+import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import map from 'lodash/map';
@@ -23,6 +24,8 @@ const PageHeader = ({ orgId, organisation }) => (
 	</Header>
 );
 
+const Head = ({ organisation }) => <Helmet title={organisation.name} />;
+
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
@@ -30,6 +33,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 
 	if (reports.length === 0) return (
 		<Fragment>
+			<Head organisation={organisation} />
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container>
 				<Placeholder>
@@ -49,6 +53,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 
 	return (
 		<Fragment>
+			<Head organisation={organisation} />
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container flex>
 				{ isEmpty(mostRecent) || reportsWithData.length < 2

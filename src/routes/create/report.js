@@ -1,9 +1,10 @@
 import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import { Link, withRouter } from 'react-router-dom';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
+import Helmet from 'react-helmet';
 import linkState from 'linkstate';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
@@ -72,46 +73,49 @@ class CreateReport extends Component {
 		const { busy, organisations } = state;
 
 		return (
-			<Form standalone onSubmit={this.onSubmit}>
-				<header>
-					<h1>Create a report</h1>
-				</header>
-				<section>
-					<Alert message={error} type="error" />
-					<Input
-						type="select"
-						label="Organisation"
-						required
-						value={organisation}
-						onChange={linkState(this, 'organisation', 'target.value')}
-						options={map(organisations, (organisation) => ({ value: organisation._id, text: organisation.name }))}
-						disabled={busy}
-					/>
-					<Input
-						label="Name"
-						required
-						value={name}
-						onChange={this.onChangeName}
-						onBlur={this.onBlurName}
-						disabled={busy}
-					/>
-					<Input
-						label="URL"
-						help="This will be the URL for your report. You will not be able to change it later, so choose carefully."
-						prefix={`${organisation.length > 10 ? '...' : window.location.hostname}/${organisation ? `${organisation}/` : ''}`}
-						required
-						value={id}
-						onChange={linkState(this, 'id')}
-						onBlur={this.onBlurId}
-						long={organisation.length > 10}
-						disabled={busy}
-					/>
-				</section>
-				<footer>
-					<Button type="submit" disabled={busy}>Create report</Button>
-					<Link to="/">Cancel</Link>
-				</footer>
-			</Form>
+			<Fragment>
+				<Helmet title="Create a report" />
+				<Form standalone onSubmit={this.onSubmit}>
+					<header>
+						<h1>Create a report</h1>
+					</header>
+					<section>
+						<Alert message={error} type="error" />
+						<Input
+							type="select"
+							label="Organisation"
+							required
+							value={organisation}
+							onChange={linkState(this, 'organisation', 'target.value')}
+							options={map(organisations, (organisation) => ({ value: organisation._id, text: organisation.name }))}
+							disabled={busy}
+						/>
+						<Input
+							label="Name"
+							required
+							value={name}
+							onChange={this.onChangeName}
+							onBlur={this.onBlurName}
+							disabled={busy}
+						/>
+						<Input
+							label="URL"
+							help="This will be the URL for your report. You will not be able to change it later, so choose carefully."
+							prefix={`${organisation.length > 10 ? '...' : window.location.hostname}/${organisation ? `${organisation}/` : ''}`}
+							required
+							value={id}
+							onChange={linkState(this, 'id')}
+							onBlur={this.onBlurId}
+							long={organisation.length > 10}
+							disabled={busy}
+						/>
+					</section>
+					<footer>
+						<Button type="submit" disabled={busy}>Create report</Button>
+						<Link to="/">Cancel</Link>
+					</footer>
+				</Form>
+			</Fragment>
 		);
 	}
 }

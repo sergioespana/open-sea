@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
+import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -19,6 +20,8 @@ const PageHeader = ({ orgId, organisation }) => (
 	</Header>
 );
 
+const Head = ({ organisation }) => <Helmet title={`${organisation.name} / Reports`} />;
+
 const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
@@ -27,6 +30,7 @@ const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(ob
 	if (isEmpty(reports)) return (
 		<Fragment>
 			<PageHeader orgId={orgId} organisation={organisation} />
+			<Head organisation={organisation} />
 			<Container>
 				<Placeholder>
 					<h1>Whoa there!</h1>
@@ -40,6 +44,7 @@ const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(ob
 	return (
 		<Fragment>
 			<PageHeader orgId={orgId} organisation={organisation} />
+			<Head organisation={organisation} />
 			<Container>
 				<Table
 					data={reports}

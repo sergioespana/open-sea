@@ -4,6 +4,7 @@ import { Link, NavLink, Redirect, Switch } from 'react-router-dom';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
+import Helmet from 'react-helmet';
 import OrganisationSettingsAccess from './access';
 import OrganisationSettingsDetails from './details';
 import Route from 'components/Route';
@@ -15,6 +16,7 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 
 	return (
 		<Fragment>
+			<Helmet title={`${organisation.name} / Settings`} />
 			<Header>
 				<Breadcrumbs>
 					<Link to={`/${orgId}`}>{ organisation.name }</Link>

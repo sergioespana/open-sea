@@ -9,6 +9,7 @@ import DashboardOverview from './dashboard/overview';
 import DashboardRoutes from './dashboard';
 import DefaultNavigation from 'navigation';
 import Dropzone from 'components/Dropzone';
+import Helmet from 'react-helmet';
 import Nav from 'components/Navigation';
 import OrganisationNavigation from 'navigation/organisation';
 import OrganisationRoutes from './organisation';
@@ -33,6 +34,13 @@ const Navigation = ({ expanded }) => (
 	</Nav>
 );
 
+const Head = () => (
+	<Helmet
+		titleTemplate="%s — openSEA"
+		defaultTitle="openSEA"
+	/>
+);
+
 const MainRoutes = inject(app('state'))(observer((props) => {
 	const { state } = props;
 	const { authed, expanded, listening, loading } = state;
@@ -41,6 +49,7 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 
 	if (loading) return (
 		<div id="app">
+			<Head />
 			<Navigation expanded={expanded} />
 			<Switch>
 				<Route path="/account" component={AccountRoutes} />
@@ -51,6 +60,7 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 
 	return (
 		<Dropzone id="app">
+			<Head />
 			<Navigation expanded={expanded} />
 			<CreateDrawer />
 			<SearchDrawer />

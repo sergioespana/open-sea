@@ -4,6 +4,7 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
 import Header from 'components/Header';
+import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import MdLock from 'react-icons/lib/md/lock';
@@ -11,12 +12,19 @@ import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';
 
+const Head = () => (
+	<Helmet>
+		<title>dashboard / organisations</title>
+	</Helmet>
+);
+
 const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
 	const { AuthStore, ReportsStore, state } = props;
 	const { organisations } = state;
 
 	if (isEmpty(organisations)) return (
 		<Fragment>
+			<Head />
 			<Header>
 				<h1>Organisations</h1>
 			</Header>
@@ -32,6 +40,7 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 
 	return (
 		<Fragment>
+			<Head />
 			<Header>
 				<h1>Organisations</h1>
 			</Header>
