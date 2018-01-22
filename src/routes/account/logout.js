@@ -1,10 +1,18 @@
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { app } from 'mobx-app';
 
-@inject('AuthStore') @observer class Logout extends Component {
-	componentDidMount = () => this.props.AuthStore.authed && this.props.AuthStore.logout();
-	render = () => this.props.AuthStore.authed ? null : <Redirect to="/account/signin" />;
+@inject(app('AuthStore'))
+@observer
+class AccountLogout extends Component {
+
+	componentDidMount() {
+		const { AuthStore, state } = this.props;
+		const { authed } = state;
+		return authed && AuthStore.signOut();
+	}
+
+	render = () => null;
 }
 
-export default Logout;
+export default AccountLogout;

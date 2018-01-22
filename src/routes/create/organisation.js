@@ -1,62 +1,143 @@
-import React, { PureComponent } from 'react';
-import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
+import Form, { Alert, Input } from 'components/Form';
+import { inject, observer } from 'mobx-react';
+import { Link, withRouter } from 'react-router-dom';
+import React, { Component, Fragment } from 'react';
+import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
-import { inject } from 'mobx-react';
-import Input from 'components/Input';
-import { Link } from 'react-router-dom';
+import isString from 'lodash/isString';
 import linkState from 'linkstate';
-import Main from 'components/Main';
-import slug from 'slug';
+import omit from 'lodash/omit';
+import slug from 'slugify';
 
-@inject('OrganisationsStore') class New extends PureComponent {
+@inject(app('OrganisationsStore', 'VisualStore'))
+@observer
+class CreateOrganisation extends Component {
 	state = {
+		name: '',
+		id: '',
+		description: '',
 		isPublic: false,
-		name: 'My Organisation'
+		avatar: '',
+		error: ''
 	}
 
-	onSubmit = (event) => {
-		event.preventDefault();
-		let { OrganisationsStore } = this.props,
-			{ isPublic, name } = this.state;
+	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
 
-		// TODO: Handle these settings (second arg) in create method
-		return OrganisationsStore.create(name, { isPublic });
+	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
+
+	onChangeAvatar = ({ target: { files } }) => this.setState({ avatar: files[0] });
+
+	onChangeName = ({ target: { value } }) => {
+		const { name, id } = this.state;
+		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
+	}
+
+	onBlurName = () => {
+		const { name } = this.state;
+		return this.setState({ name: this.sanitize(name) });
+	}
+
+	onBlurId = () => {
+		const { name, id } = this.state;
+		return id === '' ? this.setState({ id: this.slugify(name) }) : this.setState({ id: this.slugify(id) });
+	}
+
+	onSubmit = async (event) => {
+		const { id } = this.state;
+		const organisation = { ...omit(this.state, 'error', 'id'), _id: id };
+		const { history, OrganisationsStore, VisualStore } = this.props;
+
+		event.preventDefault();
+		this.setState({ error: null });
+		VisualStore.setBusy(true);
+		
+		const { code: code1 } = await OrganisationsStore.create(organisation);
+		if (code1) {
+			VisualStore.setBusy(false);
+			this.handleError(code1);
+			return;
+		}
+
+		const { code: code2 } = await OrganisationsStore.addUser(id);
+		VisualStore.setBusy(false);
+		if (code2) this.handleError(code2);
+		else history.push(`/${id}`);
+	}
+
+	handleError = (code) => {
+		switch (code) {
+			case 'already-exists': return this.setState({ error: `An organisation with ID "${this.state.id}" already exists.` });
+			default: return this.setState({ error: 'An unknown error has occurred' });
+		}
 	}
 
 	render = () => {
-		let { name, isPublic } = this.state,
-			sluggedName = slug(name).toLowerCase(),
-			disableButton = sluggedName === '' || sluggedName === 'my-organisation';
+		const { state } = this.props;
+		const { busy } = state;
+		const { name, description, id, isPublic, error } = this.state;
+		const avatar = isString(this.state.avatar) ? this.state.avatar : URL.createObjectURL(this.state.avatar);
 
 		return (
-			<Main>
+			<Fragment>
 				<Helmet title="Create an organisation" />
-				<StandaloneForm
-					title="Create a new organisation"
-					onSubmit={this.onSubmit}
-				>
-					<Input
-						label="Organisation name"
-						help={<span>Your organisation's ID will be <strong>{ sluggedName }</strong></span>}
-						value={name}
-						onChange={linkState(this, 'name')}
-					/>
-					<Input
-						label="Access level"
-						help="This is a public organisation"
-						type="checkbox"
-						value={isPublic}
-						onChange={linkState(this, 'isPublic', 'target.checked')}
-					/>
-					<FormButtonsContainer>
-						<Button type="submit" disabled={disableButton}>Create organisation</Button>
+				<Form standalone onSubmit={this.onSubmit}>
+					<header>
+						<h1>Create an organisation</h1>
+					</header>
+					<section>
+						<Alert message={error} type="error" />
+						<Input
+							label="Name"
+							required
+							value={name}
+							onChange={this.onChangeName}
+							onBlur={this.onBlurName}
+							disabled={busy}
+						/>
+						<Input
+							label="URL"
+							help="This will be the URL for your organisation. You will not be able to change it later, so choose carefully."
+							prefix={`${window.location.hostname}/`}
+							required
+							value={id}
+							onChange={linkState(this, 'id')}
+							onBlur={this.onBlurId}
+							disabled={busy}
+						/>
+						<Input
+							type="text"
+							label="Description"
+							long
+							value={description}
+							onChange={linkState(this, 'description')}
+							disabled={busy}
+						/>
+						<Input
+							type="checkbox"
+							label="Privacy"
+							secondLabel="This is a public organisation"
+							help={isPublic ? 'Public organisations can be viewed by anyone, but other rights have to explicitly be assigned.' : 'Private organisations are only visible to you and anyone who has been given direct access to the organisation.'}
+							value={isPublic}
+							onChange={linkState(this, 'isPublic')}
+							disabled={busy}
+						/>
+						<Input
+							type="image"
+							label="Avatar"
+							value={avatar}
+							onChange={this.onChangeAvatar}
+							disabled={busy}
+						/>
+					</section>
+					<footer>
+						<Button type="submit" disabled={busy}>Create organisation</Button>
 						<Link to="/">Cancel</Link>
-					</FormButtonsContainer>
-				</StandaloneForm>
-			</Main>
+					</footer>
+				</Form>
+			</Fragment>
 		);
 	}
 }
 
-export default New;
+export default withRouter(CreateOrganisation);

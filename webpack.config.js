@@ -4,21 +4,24 @@ const autoprefixer = require('autoprefixer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const OfflinePlugin = require('offline-plugin');
-const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 const UglifyJsWebpackPlugin = require('uglifyjs-webpack-plugin');
+const WebpackBundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const WebpackChunkHash = require('webpack-chunk-hash');
+const WebpackWorkboxPlugin = require('workbox-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-	entry: path.resolve(__dirname, 'src/index.js'),
+	entry: [
+		'babel-polyfill',
+		path.resolve(__dirname, 'src/index.js')
+	],
 
 	output: {
 		path: path.resolve(__dirname, 'build'),
 		publicPath: '/',
-		filename: isProd ? '[name].[chunkhash:8].js' : '[name].js',
-		chunkFilename: '[name].[chunkhash:8].js'
+		filename: '[name].[hash:10].js',
+		chunkFilename: '[name].[chunkhash:10].js'
 	},
 
 	resolve: {
@@ -26,9 +29,10 @@ module.exports = {
 		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.less', '.scss', '.sass', '.styl', '.css'],
 		alias: {
 			components: path.resolve(__dirname, 'src/components'),
+			mixins: path.resolve(__dirname, 'src/mixins'),
+			navigation: path.resolve(__dirname, 'src/navigation'),
 			routes: path.resolve(__dirname, 'src/routes'),
-			stores: path.resolve(__dirname, 'src/stores'),
-			styles: path.resolve(__dirname, 'src/styles')
+			stores: path.resolve(__dirname, 'src/stores')
 		}
 	},
 
@@ -62,8 +66,8 @@ module.exports = {
 							loader: 'postcss-loader',
 							options: {
 								ident: 'postcss',
-								sourceMap: true,
-								plugins: [autoprefixer({ browsers: ['> 1%', 'last 2 versions', 'IE >= 9'] })]
+								sourceMap: isProd,
+								plugins: [autoprefixer({ browsers: ['last 2 versions'] })]
 							}
 						}
 					]
@@ -90,16 +94,21 @@ module.exports = {
 			'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
 		}),
 		new ExtractTextWebpackPlugin({
-			filename: isProd ? 'style.[contenthash:8].css' : 'style.css',
+			filename: isProd ? 'style.[contenthash:10].css' : 'style.css',
 			disable: !isProd,
 			allChunks: true
 		}),
+		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 		new webpack.optimize.CommonsChunkPlugin({
-			children: true,
-			async: false,
-			minChunks: 2
+			name: 'vendor',
+			filename: '[name].[hash:10].js',
+			minChunks: ({ resource }) => /node_modules/.test(resource)
 		}),
 		new CopyWebpackPlugin([
+			{
+				from: path.resolve(__dirname, 'src/assets'),
+				to: path.resolve(__dirname, 'build/assets')
+			},
 			{
 				from: path.resolve(__dirname, 'src/manifest.json'),
 				to: path.resolve(__dirname, 'build/manifest.json')
@@ -108,29 +117,32 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, 'src/index.html'),
 			minify: { collapseWhitespace: true }
-		}),
-		new ProgressBarWebpackPlugin({
-			format: 'Build [:bar] \u001b[32m\u001b[1m:percent\u001b[22m\u001b[39m (:elapseds) \u001b[2m:msg\u001b[22m',
-			renderThrottle: 100,
-			summary: false,
-			clear: true
 		})
 	].concat(isProd ? [
 		new webpack.HashedModuleIdsPlugin(),
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		new WebpackChunkHash(),
-		new UglifyJsWebpackPlugin({ uglifyOptions: { ecma: 8 } }),
-		new OfflinePlugin({
-			ServiceWorker: {
-				cacheName: 'open-sea-cache',
-				navigateFallbackURL: '/',
-				events: true,
-				minify: true
-			}
+		new UglifyJsWebpackPlugin({
+			sourceMap: isProd,
+			uglifyOptions: { ecma: 8 }
+		}),
+		new WebpackWorkboxPlugin({
+			globDirectory: path.resolve(__dirname, 'build'),
+			globPatterns: ['**/*.{html,js}'],
+			swDest: path.resolve(__dirname, 'build/sw.js'),
+			clientsClaim: true,
+			skipWaiting: true,
+			runtimeCaching: [
+				{
+					urlPattern: new RegExp('https://firebasestorage.googleapis.com'),
+					handler: 'staleWhileRevalidate'
+				}
+			]
 		})
 	] : [
 		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin()
+		new webpack.HotModuleReplacementPlugin(),
+		new WebpackBundleAnalyzerPlugin()
 	]),
 
 	devtool: isProd ? 'source-map' : 'cheap-module-eval-source-map',
@@ -139,6 +151,7 @@ module.exports = {
 		contentBase: path.join(__dirname, 'src'),
 		historyApiFallback: true,
 		inline: true,
-		hot: true
+		hot: true,
+		open: true
 	}
 };

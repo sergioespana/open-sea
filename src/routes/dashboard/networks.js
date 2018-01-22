@@ -1,15 +1,18 @@
+import React, { Fragment } from 'react';
+import Container from 'components/Container';
 import Header from 'components/Header';
 import Helmet from 'react-helmet';
-import Main from 'components/Main';
-import React from 'react';
 
-const Networks = () => (
-	<Main>
+const DashboardNetworks = () => (
+	<Fragment>
 		<Helmet>
-			<title>home / networks</title>
+			<title>dashboard / networks</title>
 		</Helmet>
-		<Header title="Networks" />
-	</Main>
+		<Header>
+			<h1>Networks</h1>
+		</Header>
+		<Container />
+	</Fragment>
 );
 
-export default Networks;
+export default DashboardNetworks;

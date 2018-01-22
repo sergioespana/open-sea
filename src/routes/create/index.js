@@ -1,15 +1,18 @@
-import { Redirect, Route, Switch } from 'react-router-dom';
-import Organisation from './organisation';
+import { Redirect, Switch } from 'react-router-dom';
+import CreateOrganisation from './organisation';
+import CreateReport from './report';
 import React from 'react';
-import Report from './report';
+import Route from 'components/Route';
 
-const Create = () => (
-	<Switch>
-		<Redirect from="/create" exact to="/" />
-		<Route path="/create/organisation" component={Organisation} />
-		<Route path="/create/network" />
-		<Route path="/create/report" component={Report} />
-	</Switch>
+const CreateRoutes = () => (
+	<main>
+		<Switch>
+			<Route path="/create/report" exact component={CreateReport} />
+			<Route path="/create/organisation" exact component={CreateOrganisation} />
+			<Route path="/create/network" exact />
+			<Redirect from="*" to="/dashboard/overview" />
+		</Switch>
+	</main>
 );
 
-export default Create;
+export default CreateRoutes;

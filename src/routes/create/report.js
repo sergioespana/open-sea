@@ -1,65 +1,123 @@
-import React, { PureComponent } from 'react';
-import StandaloneForm, { FormButtonsContainer } from 'components/StandaloneForm';
+import Form, { Alert, Input } from 'components/Form';
+import { inject, observer } from 'mobx-react';
+import { Link, withRouter } from 'react-router-dom';
+import React, { Component, Fragment } from 'react';
+import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
-import { inject } from 'mobx-react';
-import Input from 'components/Input';
-import { Link } from 'react-router-dom';
 import linkState from 'linkstate';
-import Main from 'components/Main';
-import slug from 'slug';
+import map from 'lodash/map';
+import omit from 'lodash/omit';
+import { parse } from 'query-string';
+import slug from 'slugify';
 
-@inject('OrganisationsStore', 'ReportsStore') class New extends PureComponent {
+@inject(app('ReportsStore', 'VisualStore'))
+@observer
+class CreateReport extends Component {
 	state = {
-		name: 'My Report',
-		org: ''
+		error: '',
+		id: '',
+		name: '',
+		organisation: ''
 	}
 
-	onSubmit = (event) => {
+	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
+
+	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
+
+	onChangeName = ({ target: { value } }) => {
+		const { name, id } = this.state;
+		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
+	}
+
+	onBlurName = () => {
+		const { name } = this.state;
+		return this.setState({ name: this.sanitize(name) });
+	}
+
+	onBlurId = () => {
+		const { name, id } = this.state;
+		return id === '' ? this.setState({ id: this.slugify(name) }) : this.setState({ id: this.slugify(id) });
+	}
+
+	onSubmit = async (event) => {
+		const { organisation: orgId, id } = this.state;
+		const report = { ...omit(this.state, 'error', 'id', 'organisation'), _id: id };
+		const { history, ReportsStore, VisualStore } = this.props;
+
 		event.preventDefault();
-		let { ReportsStore } = this.props,
-			{ name, org } = this.state;
-		
-		return ReportsStore.create(org, name);
+		this.setState({ error: null });
+		VisualStore.setBusy(true);
+
+		const { code } = await ReportsStore.create(orgId, report);
+		VisualStore.setBusy(false);
+		if (code) this.handleError(code);
+		else history.push(`/${orgId}/${id}`);
+	}
+
+	handleError = (code) => {
+		switch (code) {
+			case 'already-exists': return this.setState({ error: `A report with ID "${this.state.id}" already exists.` });
+			default: return this.setState({ error: 'An unknown error has occurred' });
+		}
+	}
+
+	componentWillMount = () => {
+		const organisation = (parse(location.search) || {}).organisation || '';
+		this.setState({ organisation });
 	}
 
 	render = () => {
-		const { name, org } = this.state,
-			{ OrganisationsStore } = this.props;
-		
-		let sluggedName = slug(name).toLowerCase();
-		if (sluggedName === '') sluggedName = 'my-report';
-		
-		const disableButton = sluggedName === 'my-report' || org === '';
+		const { error, id, name, organisation } = this.state;
+		const { state } = this.props;
+		const { busy, organisations } = state;
 
 		return (
-			<Main>
+			<Fragment>
 				<Helmet title="Create a report" />
-				<StandaloneForm
-					title="Create a new report"
-					onSubmit={this.onSubmit}
-				>
-					<Input
-						label="Report name"
-						help={<span>Your report's ID will be <strong>{ sluggedName }</strong></span>}
-						value={name}
-						onChange={linkState(this, 'name')}
-					/>
-					<Input
-						type="select"
-						label="Organisation"
-						value={org}
-						options={Object.keys(OrganisationsStore.findById(null, true)).map((id) => { return { text: OrganisationsStore.findById(id, true).name, value: id }; })}
-						onChange={linkState(this, 'org')}
-					/>
-					<FormButtonsContainer>
-						<Button type="submit" disabled={disableButton}>Create report</Button>
+				<Form standalone onSubmit={this.onSubmit}>
+					<header>
+						<h1>Create a report</h1>
+					</header>
+					<section>
+						<Alert message={error} type="error" />
+						<Input
+							type="select"
+							label="Organisation"
+							required
+							value={organisation}
+							onChange={linkState(this, 'organisation', 'target.value')}
+							options={map(organisations, (organisation) => ({ value: organisation._id, text: organisation.name }))}
+							disabled={busy}
+						/>
+						<Input
+							label="Name"
+							required
+							value={name}
+							onChange={this.onChangeName}
+							onBlur={this.onBlurName}
+							disabled={busy}
+						/>
+						<Input
+							label="URL"
+							help="This will be the URL for your report. You will not be able to change it later, so choose carefully."
+							prefix={`${organisation.length > 10 ? '...' : window.location.hostname}/${organisation ? `${organisation}/` : ''}`}
+							required
+							value={id}
+							onChange={linkState(this, 'id')}
+							onBlur={this.onBlurId}
+							long={organisation.length > 10}
+							disabled={busy}
+						/>
+					</section>
+					<footer>
+						<Button type="submit" disabled={busy}>Create report</Button>
 						<Link to="/">Cancel</Link>
-					</FormButtonsContainer>
-				</StandaloneForm>
-			</Main>
+					</footer>
+				</Form>
+			</Fragment>
 		);
 	}
 }
 
-export default New;
+export default withRouter(CreateReport);

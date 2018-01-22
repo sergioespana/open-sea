@@ -1,70 +1,85 @@
+import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
-import { Link, Redirect } from 'react-router-dom';
 import React, { Component } from 'react';
-import Button from 'material-styled-components/Button';
+import { app } from 'mobx-app';
+import Button from 'components/Button';
+import { Link } from 'react-router-dom';
 import linkState from 'linkstate';
-import Main from 'components/Main';
 
-// TODO: Show indeterminate horizontal loader when signing up
-
-@inject('AuthStore') @observer class Signup extends Component {
+@inject(app('AuthStore'))
+@observer
+class AccountSignUp extends Component {
 	state = {
+		avatar: '',
 		email: '',
+		error: '',
+		name: '',
 		password: ''
 	}
 
-	handleFormSubmit = (event) => {
+	onChangeAvatar = ({ target: { files } }) => this.setState({ avatar: files[0] });
+
+	onSubmit = async (event) => {
+		const { avatar, email, name, password } = this.state;
+		const { AuthStore } = this.props;
+
 		event.preventDefault();
-		
-		const { AuthStore } = this.props,
-			{ email, password } = this.state;
-		
-		AuthStore.createUserWithEmailAndPassword(email, password);
+		this.setState({ error: null });
+		const { code } = await AuthStore.create(email, password, { avatar, name });
+		if (!code) return;
+
+		switch (code) {
+			case 'auth/email-already-in-use': return this.setState({ error: <span>The provided email address is already in use. You can log in <Link to="/account/signin">here</Link></span> });
+			case 'auth/invalid-email': return this.setState({ error: 'The provided email address is invalid.' });
+			case 'auth/weak-password': return this.setState({ error: 'The provided password is not strong enough.' });
+			default: return this.setState({ error: 'An unknown error has occurred.' });
+		}
 	}
 
-	render() {
-		const { email, password } = this.state,
-			{ AuthStore } = this.props;
+	render = () => {
+		const { avatar, email, error, name, password } = this.state;
 
-		return AuthStore.authed ? (
-			<Redirect to="/" />
-		) : (
-			<Main container slim style={{ textAlign: 'center' }}>
-				<h1>Sign up for a new account</h1>
-				<br />
-				<form onSubmit={this.handleFormSubmit}>
-					<input
+		return (
+			<Form standalone onSubmit={this.onSubmit}>
+				<header>
+					<h1>Welcome to openSEA</h1>
+				</header>
+				<section>
+					<Alert message={error} type="error" />
+					<Input
+						value={name}
+						label="Full name"
+						required
+						onChange={linkState(this, 'name')}
+					/>
+					<Input
 						type="email"
-						placeholder="Email"
 						value={email}
-						onInput={linkState(this, 'email')}
-						disabled={AuthStore.busy}
+						label="Email"
 						required
-					/><br />
-					<br />
-					<input
+						onChange={linkState(this, 'email')}
+					/>
+					<Input
 						type="password"
-						placeholder="Password"
 						value={password}
-						onInput={linkState(this, 'password')}
-						disabled={AuthStore.busy}
+						label="Password"
 						required
-					/><br />
-					<br />
-					<Button type="submit" primary raised disabled={AuthStore.busy}>Sign up</Button>
-				</form>
-				<br />
-				<br />
-				<p>--- Or ---</p>
-				<br />
-				<br />
-				<Button raised onClick={AuthStore.signUpWithGoogle} disabled={AuthStore.busy}>Sign up with Google</Button>
-				<br />
-				<br />
-				<p>Already have an account? <Link to="/login">Log in</Link></p>
-			</Main>
+						onChange={linkState(this, 'password')}
+					/>
+					<Input
+						type="image"
+						value={avatar}
+						label="Avatar"
+						onChange={this.onChangeAvatar}
+					/>
+				</section>
+				<footer>
+					<Button type="submit">Sign up</Button>
+					<Link to="/account/signin">Already have an account?</Link>
+				</footer>
+			</Form>
 		);
 	}
 }
 
-export default Signup;
+export default AccountSignUp;

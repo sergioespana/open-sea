@@ -1,35 +1,73 @@
+import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
+import React, { Fragment } from 'react';
+import { app } from 'mobx-app';
+import Button from 'components/Button';
 import Container from 'components/Container';
-import Header from 'components/Header';
 import Helmet from 'react-helmet';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
-import Main from 'components/Main';
 import moment from 'moment';
-import React from 'react';
+import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';
 
-const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { id } } }) => (
-	<Main>
-		<Helmet title={`${OrganisationsStore.findById(id, true).name} / reports`} />
-		<Header title="Reports" />
-		<Container>
-			<Table
-				columns={[ 'Report', 'Created', 'Last updated', 'Status' ]}
-				data={Object.keys(ReportsStore.findById(id, null, true)).map((key) => {
-					const report = ReportsStore.findById(id, key, true),
-						created = moment(report.created),
-						updated = report.updated ? moment(report.updated) : null;
-					return [
-						<Link to={`/${id}/${key}`}>{ report.name }</Link>,
-						moment().diff(created) > 86400000 ? created.format('DD-MM-YYYY') : created.fromNow(),
-						updated ? moment().diff(updated) > 86400000 ? updated.format('DD-MM-YYYY') : updated.fromNow() : 'Never',
-						null
-					];
-				})}
-				filters={[ 'Status' ]}
-			/>
-		</Container>
-	</Main>
-)));
+const PageHeader = ({ orgId, organisation }) => (
+	<Header>
+		<Breadcrumbs>
+			<Link to={`/${orgId}`}>{ organisation.name }</Link>
+		</Breadcrumbs>
+		<h1>Reports</h1>
+	</Header>
+);
 
-export default Overview;
+const Head = ({ organisation }) => <Helmet title={`${organisation.name} / Reports`} />;
+
+const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
+	const organisation = OrganisationsStore.getItem(orgId, '_id');
+	const reports = ReportsStore.getItems({ _orgId: orgId });
+
+	if (isEmpty(reports)) return (
+		<Fragment>
+			<PageHeader orgId={orgId} organisation={organisation} />
+			<Head organisation={organisation} />
+			<Container>
+				<Placeholder>
+					<h1>Whoa there!</h1>
+					<p>No reports exist for this organisation! To get started, create a report first.</p>
+					<p><Button to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
+				</Placeholder>
+			</Container>
+		</Fragment>
+	);
+
+	return (
+		<Fragment>
+			<PageHeader orgId={orgId} organisation={organisation} />
+			<Head organisation={organisation} />
+			<Container>
+				<Table
+					data={reports}
+					defaultSort="-updated"
+					columns={[
+						{
+							key: 'name',
+							label: 'Report',
+							value: ({ name }) => name,
+							format: (value, { _id, name }) => <Link to={`/${_id}`}>{ name }</Link>
+						},
+						{
+							key: 'updated',
+							label: 'Last updated',
+							value: ({ created, updated }) => updated || created,
+							format: (value) => moment().diff(value) > 86400000 ? moment(value).format('DD-MM-YYYY') : moment(value).fromNow()
+						},
+						{ key: 'status', label: 'Status' }
+					]}
+				/>
+			</Container>
+		</Fragment>
+	);
+}));
+
+export default OrganisationReports;

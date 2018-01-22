@@ -1,42 +1,69 @@
-import { Redirect, Route, Switch } from 'react-router-dom';
-import SideList, { Group, Heading, ListItem } from 'components/SideList';
+import { inject, observer } from 'mobx-react';
+import { NavLink as Link, Redirect, Switch } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import AccountLogout from './logout';
+import AccountProfile from './profile';
+import AccountSignIn from './signin';
+import AccountSignUp from './signup';
+import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Header from 'components/Header';
-import Main from 'components/Main';
-import Profile from './profile';
-import React from 'react';
+import Route from 'components/Route';
+import Sidenav from 'components/Sidenav';
 
-const Account = () => (
-	<Main>
-		<Header title="Settings" />
-		<Container flex>
-			<SideList>
-				<Heading>General</Heading>
-				<Group>
-					<ListItem to="/account/profile">Account settings</ListItem>
-					<ListItem to="/account/notifications">Notifications</ListItem>
-					<ListItem to="/account/logout">Sign out</ListItem>
-				</Group>
-				<Heading>Security</Heading>
-				<Group>
-					<ListItem to="/account/sessions">Sessions</ListItem>
-				</Group>
-				<Heading>Integrations and features</Heading>
-				<Group>
-					<ListItem to="/account/find-integrations">Find integrations</ListItem>
-					<ListItem to="/account/manage-integration">Manage integrations</ListItem>
-				</Group>
-			</SideList>
-			<Switch>
-				<Redirect from="/account" exact to="/account/profile" replace />
-				<Route path="/account/profile" component={Profile} />
-				<Route path="/account/notifications" />
-				<Route path="/account/sessions" />
-				<Route path="/account/find-integrations" />
-				<Route path="/account/manage-integrations" />
-			</Switch>
-		</Container>
-	</Main>
+const AccountNavigation = () => (
+	<Sidenav>
+		<Link to="/account/profile">Profile</Link>
+		<Link to="/account/notifications">Notifications</Link>
+		<Link to="/account/logout">Sign out</Link>
+	</Sidenav>
 );
 
-export default Account;
+const AccountAuthenticationRoutes = () => (
+	<Switch>
+		<Route path="/account/signin" exact component={AccountSignIn} unauthedOnly />
+		<Route path="/account/signup" exact component={AccountSignUp} unauthedOnly />
+		<Route path="/account/logout" exact component={AccountLogout} authedOnly />
+	</Switch>
+);
+
+const AccountMainRoutes = () => (
+	<Fragment>
+		<Header>
+			<h1>Account</h1>
+		</Header>
+		<Container flex>
+			<AccountNavigation />
+			<Container>
+				<Switch>
+					<Redirect from="/account" exact to="/account/profile" replace />
+					<Route path="/account/profile" exact component={AccountProfile} authedOnly />
+				</Switch>
+			</Container>
+		</Container>
+	</Fragment>
+);
+
+const AccountRoutes = inject(app('state'))(observer((props) => {
+	const { state } = props;
+	const { loading } = state;
+
+	if (loading) return (
+		<main>
+			<Switch>
+				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+			</Switch>
+		</main>
+	);
+
+	return (
+		<main>
+			<Switch>
+				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+				<Route path="*" component={AccountMainRoutes} />
+			</Switch>
+		</main>
+	);
+}));
+
+export default AccountRoutes;

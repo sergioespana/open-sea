@@ -1,0 +1,62 @@
+{
+	"type": "object",
+	"properties": {
+		"name": { "type": "string" },
+		"description": { "type": "string" },
+		"version": { "type": "string" },
+		"metrics": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"help": { "type": "string" },
+					"type": {
+						"type": "string",
+						"enum": ["text", "number", "list", "likert" ]
+					}
+				},
+				"required": ["name", "help", "type"]
+			}
+		},
+		"indicators": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"type": {
+						"type": "string",
+						"enum": ["text", "number", "percentage", "list" ]
+					},
+					"value": { "type": "string" }
+				},
+				"required": ["name", "type"]
+			}
+		},
+		"reportItems": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"chart": {
+						"type": "string",
+						"enum": ["line", "bar", "scatter", "pie", "percentage"]
+					},
+					"data": {
+						"type": "array",
+						"items": { "type": "string" }
+					},
+					"useHistoricData": {
+						"enum": [false, "sum", "average"],
+						"default": false
+					}
+				},
+				"required": ["name", "data", "useHistoricData"]
+			}
+		}
+	},
+	"required": ["metrics", "indicators"]
+}

@@ -1,19 +1,23 @@
-import { inject, observer } from 'mobx-react';
-import { Switch, Redirect, Route } from 'react-router-dom';
-import Overview from './overview';
+import OrganisationDownloads from './downloads';
+import OrganisationOverview from './overview';
+import OrganisationReportRoutes from './report';
+import OrganisationReports from './reports';
+import OrganisationSettings from './settings';
 import React from 'react';
-import Report from './report';
-import Reports from './reports';
-import Settings from './settings';
+import Route from 'components/Route';
+import { Switch } from 'react-router-dom';
 
-const Organisation = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore, match: { params: { org } } }) => (
-	<Switch>
-		<Redirect from={`/${org}`} exact to={`/${org}/overview`} replace />
-		<Route path="/:id/overview" component={Overview} />
-		<Route path="/:id/reports" component={Reports} />
-		<Route path="/:id/settings" component={Settings} />
-		<Route path="/:id/:rep" component={Report} />
-	</Switch>
-)));
+const OrganisationRoutes = (props) => (
+	<main>
+		<Switch>
+			<Route path="/:orgId" exact component={OrganisationOverview} />
+			<Route path="/:orgId/overview" exact component={OrganisationOverview} />
+			<Route path="/:orgId/reports" exact component={OrganisationReports} />
+			<Route path="/:orgId/downloads" exact component={OrganisationDownloads} />
+			<Route path="/:orgId/settings" component={OrganisationSettings} />
+			<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
+		</Switch>
+	</main>
+);
 
-export default Organisation;
+export default OrganisationRoutes;

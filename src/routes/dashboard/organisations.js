@@ -1,41 +1,95 @@
 import { inject, observer } from 'mobx-react';
+import React, { Fragment } from 'react';
+import { app } from 'mobx-app';
+import Button from 'components/Button';
 import Container from 'components/Container';
 import Header from 'components/Header';
 import Helmet from 'react-helmet';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
-import Main from 'components/Main';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
-import React from 'react';
+import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';
 
-const Overview = inject('OrganisationsStore', 'ReportsStore')(observer(({ OrganisationsStore, ReportsStore }) => (
-	<Main>
-		<Helmet>
-			<title>home / organisations</title>
-		</Helmet>
-		<Header title="Organisations" />
-		<Container>
-			<Table
-				columns={[ 'Organisation', 'Network', 'Owner', 'Last updated', 'Reports', '' ]}
-				data={Object.keys(OrganisationsStore.findById(null, true)).map((key) => {
-					const org = OrganisationsStore.findById(key, true),
-						reports = ReportsStore.findById(key),
-						updated = org.updated ? moment(org.updated) : null;
-					
-					return [
-						<span><img src={org.avatar || 'https://via.placeholder.com/24x24/00695C'} /><Link to={`/${key}`}>{ org.name }</Link></span>,
-						null,
-						org.role === 'owner' ? <Link to="/account/profile">You</Link> : null,
-						updated ? moment().diff(updated) > 86400000 ? updated.format('DD-MM-YYYY') : updated.fromNow() : 'Never',
-						reports ? reports.size : 'Counting...',
-						org.isPublic ? null : <MdLock width={16} height={16} />
-					];
-				})}
-				filters={[ 'Owner', 'Network' ]}
-			/>
-		</Container>
-	</Main>
-)));
+const Head = () => (
+	<Helmet>
+		<title>dashboard / organisations</title>
+	</Helmet>
+);
 
-export default Overview;
+const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
+	const { AuthStore, ReportsStore, state } = props;
+	const { organisations } = state;
+
+	if (isEmpty(organisations)) return (
+		<Fragment>
+			<Head />
+			<Header>
+				<h1>Organisations</h1>
+			</Header>
+			<Container>
+				<Placeholder>
+					<h1>Whoa there!</h1>
+					<p>You don't seem to have access to any organisations.</p>
+					<p><Button to="/create/organisation">Create an organisation</Button></p>
+				</Placeholder>
+			</Container>
+		</Fragment>
+	);
+
+	return (
+		<Fragment>
+			<Head />
+			<Header>
+				<h1>Organisations</h1>
+			</Header>
+			<Container>
+				<Table
+					data={organisations}
+					defaultSort="-updated"
+					columns={[
+						{
+							key: 'name',
+							label: 'Organisation',
+							value: ({ name }) => name,
+							format: (value, { _id, avatar, name }) => <span><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></span>
+						},
+						{
+							key: 'network',
+							label: 'Network',
+							value: ({ network }) => network
+						},
+						{
+							key: 'owner',
+							label: 'Owner',
+							value: ({ owner }) => owner,
+							format: (value) => {
+								const user = AuthStore.getItem(value, '_uid') || {};
+								return user._isCurrent ? <Link to="/account">You</Link> : user.name;
+							}
+						},
+						{
+							key: 'updated',
+							label: 'Last updated',
+							value: ({ created, updated }) => updated || created,
+							format: (value) => moment().diff(value) > 86400000 ? moment(value).format('DD-MM-YYYY') : moment(value).fromNow()
+						},
+						{
+							key: '_reports',
+							label: 'Reports',
+							value: ({ _id: _orgId }) => ReportsStore.getItems({ _orgId }).length
+						},
+						{
+							key: 'isPublic',
+							value: ({ isPublic }) => isPublic,
+							format: (value) => !value && <MdLock width="1rem" height="1rem" />
+						}
+					]}
+				/>
+			</Container>
+		</Fragment>
+	);
+}));
+
+export default DashboardOrganisations;
