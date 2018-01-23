@@ -6,7 +6,7 @@ import Container from 'components/Container';
 import Header from 'components/Header';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';

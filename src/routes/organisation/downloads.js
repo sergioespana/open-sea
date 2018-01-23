@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 
 const OrganisationDownloads = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore } = props;

@@ -1,14 +1,15 @@
 import Form, { Alert, Input } from 'components/Form';
 import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';
 import isEqual from 'lodash/isEqual';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
+import { withRouter } from 'react-router-dom';
 
 @inject(app('OrganisationsStore', 'ReportsStore', 'VisualStore'))
 @observer

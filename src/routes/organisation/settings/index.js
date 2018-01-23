@@ -1,7 +1,8 @@
 import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, NavLink, Redirect, Switch } from 'react-router-dom';
+import { Link, NavLink } from 'components/Link';
 import React, { Fragment } from 'react';
+import { Redirect, Switch } from 'react-router-dom';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';

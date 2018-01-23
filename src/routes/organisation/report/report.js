@@ -1,6 +1,5 @@
 import Header, { Breadcrumbs } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
@@ -9,8 +8,10 @@ import Container from 'components/Container';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
 import Placeholder from 'components/Placeholder';
+import { withRouter } from 'react-router-dom';
 
 @inject(app('OrganisationsStore', 'ReportsStore'))
 @observer

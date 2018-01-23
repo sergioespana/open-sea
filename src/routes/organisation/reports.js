@@ -6,7 +6,7 @@ import Button from 'components/Button';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';

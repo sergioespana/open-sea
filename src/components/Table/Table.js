@@ -1,12 +1,13 @@
-import { Link, withRouter } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
 import React, { Component, Fragment } from 'react';
 import find from 'lodash/find';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
 import MdArrowDropDown from 'react-icons/lib/md/arrow-drop-down';
 import MdArrowDropUp from 'react-icons/lib/md/arrow-drop-up';
 import sortBy from 'lodash/sortBy';
 import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
 
 const Filters = styled(({ hidden, ...props }) => !hidden && <div {...props} />)`
 	text-transform: uppercase;

@@ -9,7 +9,7 @@ import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';

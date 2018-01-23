@@ -1,6 +1,6 @@
 import { darken, readableColor } from 'polished';
 import { createElement } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import styled from 'styled-components';
 
 const Button = styled(({ ...props }) => createElement(props.to ? Link : 'button', { ...props, type: props.to ? null : props.type || 'button' }))`

@@ -1,14 +1,15 @@
 import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
 import isString from 'lodash/isString';
+import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import slug from 'slugify';
+import { withRouter } from 'react-router-dom';
 
 @inject(app('OrganisationsStore', 'VisualStore'))
 @observer

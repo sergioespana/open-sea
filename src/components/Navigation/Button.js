@@ -3,7 +3,7 @@ import React, { createElement } from 'react';
 import styled, { css } from 'styled-components';
 import isArray from 'lodash/isArray';
 import isString from 'lodash/isString';
-import { NavLink as Link } from 'react-router-dom';
+import { NavLink as Link } from 'components/Link';
 import map from 'lodash/map';
 
 const active = css`

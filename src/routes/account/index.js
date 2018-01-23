@@ -1,6 +1,6 @@
 import { inject, observer } from 'mobx-react';
-import { NavLink as Link, Redirect, Switch } from 'react-router-dom';
 import React, { Fragment } from 'react';
+import { Redirect, Switch } from 'react-router-dom';
 import AccountLogout from './logout';
 import AccountProfile from './profile';
 import AccountSignIn from './signin';
@@ -8,6 +8,7 @@ import AccountSignUp from './signup';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Header from 'components/Header';
+import { NavLink as Link } from 'components/Link';
 import Route from 'components/Route';
 import Sidenav from 'components/Sidenav';
 

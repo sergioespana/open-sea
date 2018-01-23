@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import linkState from 'linkstate';
 
 @inject(app('AuthStore'))
