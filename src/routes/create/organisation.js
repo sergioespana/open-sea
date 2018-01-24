@@ -68,7 +68,7 @@ class CreateOrganisation extends Component {
 
 	handleError = (code) => {
 		switch (code) {
-			case 'already-exists': return this.setState({ error: `An organisation with ID "${this.state.id}" already exists.` });
+			case 'already-exists': return this.setState({ error: `An organisation or network with ID "${this.state.id}" already exists.` });
 			default: return this.setState({ error: 'An unknown error has occurred' });
 		}
 	}

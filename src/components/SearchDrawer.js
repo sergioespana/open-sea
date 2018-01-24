@@ -8,6 +8,7 @@ import map from 'lodash/map';
 import MdArrowBack from 'react-icons/lib/md/arrow-back';
 import MdAssessment from 'react-icons/lib/md/assessment';
 import MdHome from 'react-icons/lib/md/home';
+import partition from 'lodash/partition';
 import { stringify } from 'query-string';
 import { withRouter } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ class SearchDrawer extends Component {
 		const { searchDrawerOpen: open } = state;
 		const toggle = VisualStore.toggleSearchDrawer;
 
-		const organisations = OrganisationsStore.search(query);
+		const [networks, organisations] = partition(OrganisationsStore.search(query), ['isNetwork', true]);
 		const reports = ReportsStore.search(query);
 
 		return (
@@ -76,6 +77,16 @@ class SearchDrawer extends Component {
 										placeholder="Search for organisations, reports, and more..."
 									/>
 								</form>
+							</Group>
+							<Group>
+								{ networks.length > 0 && <h3>Networks</h3> }
+								{ map(networks, ({ _id, avatar, name }) => (
+									<Button
+										key={_id}
+										to={`/${_id}`}
+										onClick={toggle}
+									><img src={avatar} style={{ width: 32, height: 32 }} />{ name }</Button>
+								)) }
 							</Group>
 							<Group>
 								{ organisations.length > 0 && <h3>Organisations</h3> }
