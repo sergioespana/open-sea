@@ -10,6 +10,7 @@ import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
+import reject from 'lodash/reject';
 import Table from 'components/Table';
 
 const Head = () => (
@@ -20,7 +21,7 @@ const Head = () => (
 
 const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
 	const { AuthStore, ReportsStore, state } = props;
-	const { organisations } = state;
+	const organisations = reject(state.organisations, ['isNetwork', true]);
 
 	if (isEmpty(organisations)) return (
 		<Fragment>
