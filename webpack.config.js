@@ -126,18 +126,17 @@ module.exports = {
 			sourceMap: isProd,
 			uglifyOptions: { ecma: 8 }
 		}),
+		new CopyWebpackPlugin([
+			{
+				from: require.resolve('workbox-sw'),
+				to: path.resolve(__dirname, 'build/workbox-sw.prod.js')
+			}
+		]),
 		new WebpackWorkboxPlugin({
 			globDirectory: path.resolve(__dirname, 'build'),
-			globPatterns: ['**/*.{html,js}'],
-			swDest: path.resolve(__dirname, 'build/sw.js'),
-			clientsClaim: true,
-			skipWaiting: true,
-			runtimeCaching: [
-				{
-					urlPattern: new RegExp('https://firebasestorage.googleapis.com'),
-					handler: 'staleWhileRevalidate'
-				}
-			]
+			globPatterns: ['**/*.{html,css,js}'],
+			swSrc: path.resolve(__dirname, 'src/sw.js'),
+			swDest: path.resolve(__dirname, 'build/sw.js')
 		})
 	] : [
 		new webpack.NamedModulesPlugin(),

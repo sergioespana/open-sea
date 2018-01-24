@@ -28,13 +28,23 @@ ReactDOM.render(<App />, document.body);
 
 if (module.hot) module.hot.accept();
 
-if (process.env.NODE_ENV !== 'development' && 'serviceWorker' in navigator) {
-	window.addEventListener('load', () => {
-		// TODO: Handle register without logging
-		// TODO: Handle other SW events
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', async () => {
 		// eslint-disable-next-line compat/compat
-		navigator.serviceWorker.register('/sw.js')
-			.then((res) => console.log('SW registered: ', res))
-			.catch((error) => console.log('SW registration failed: ', error));
+		const registration = await navigator.serviceWorker.register('/sw.js').catch((error) => false);
+		if (!registration) return;
+
+		// Immediately activate a waiting Service Worker on page load.
+		if (registration.waiting) registration.waiting.postMessage('skipWaiting');
+
+		// Listen for updates, then set a variable when one is ready to be activated. Upon relead,
+		// this function will load again and the new Service Worker will be activated.
+		registration.addEventListener('updatefound', () => {
+			const sw = registration.installing;
+			sw.addEventListener('statechange', () => {
+				if (sw.state === 'waiting') return window.swHasUpdated = true;
+				return window.swHasUpdated = false;
+			});
+		});
 	});
 }
