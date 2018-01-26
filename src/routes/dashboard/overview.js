@@ -8,11 +8,12 @@ import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
+import reject from 'lodash/reject';
 import Table from 'components/Table';
 
 const DashboardOverview = inject(app('state'))(observer((props) => {
 	const { state } = props;
-	const { organisations } = state;
+	const organisations = reject(state.organisations, ['isNetwork', true]);
 
 	return (
 		<Fragment>

@@ -5,6 +5,8 @@ import { app } from 'mobx-app';
 import MdAccountCircle from 'react-icons/lib/md/account-circle';
 import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
+import MdBusiness from 'react-icons/lib/md/business';
+import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
 import MdFileDownload from 'react-icons/lib/md/file-download';
 import MdHelp from 'react-icons/lib/md/help';
 import MdHome from 'react-icons/lib/md/home';
@@ -13,7 +15,12 @@ import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
 
 const iconProps = { width: 24, height: 24 };
-const links = (orgId) => [
+const links = ({ _id: orgId, isNetwork }) => isNetwork ? [
+	<Button to={`/${orgId}/overview`} key={`/${orgId}/overview`}><MdInbox {...iconProps} />Overview</Button>,
+	<Button to={`/${orgId}/organisations`} key={`/${orgId}/organisations`}><MdBusiness {...iconProps} />Organisations</Button>,
+	<Button to={`/${orgId}/compare`} key={`/${orgId}/compare`}><MdCompareArrows {...iconProps} />Compare</Button>,
+	<Button to={`/${orgId}/settings`} key={`/${orgId}/settings`}><MdSettings {...iconProps} />Settings</Button>
+] : [
 	<Button to={`/${orgId}/overview`} key={`/${orgId}/overview`}><MdInbox {...iconProps} />Overview</Button>,
 	<Button to={`/${orgId}/reports`} key={`/${orgId}/reports`}><MdAssessment {...iconProps} />Reports</Button>,
 	<Button to={`/${orgId}/downloads`} key={`/${orgId}/downloads`}><MdFileDownload {...iconProps} />Downloads</Button>,
@@ -41,7 +48,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 						<Header hidden={expanded} loading={loading}>
 							<Button to={`/${orgId}`} large><img src={organisation.avatar} />{ organisation.name }</Button>
 						</Header>
-						<Group hidden={expanded} loading={loading}>{ links(orgId) }</Group>
+						<Group hidden={expanded} loading={loading}>{ links(organisation) }</Group>
 					</Content>
 					<Content>
 						<Group loading={loading}>
@@ -55,9 +62,9 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 				<Inner>
 					<Content fullWidth>
 						<Header loading={loading}>
-							<Button to={`/${orgId}`} large><img src={organisation.avatar} />{ organisation.name }</Button>
+							<Button to={`/${orgId}`} large><img src={organisation.avatar} />{ organisation.name || 'Organisation' }</Button>
 						</Header>
-						<Group loading={loading}>{ links(orgId) }</Group>
+						<Group loading={loading}>{ links(organisation) }</Group>
 					</Content>
 				</Inner>
 			</Section>
