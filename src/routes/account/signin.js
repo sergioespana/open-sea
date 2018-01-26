@@ -5,8 +5,11 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
+import trim from 'lodash/trim';
 
-@inject(app('AuthStore'))
+const isBlank = (str) => !trim(str);
+
+@inject(app('AuthStore', 'VisualStore'))
 @observer
 class AccountSignIn extends Component {
 	state = {
@@ -17,11 +20,13 @@ class AccountSignIn extends Component {
 
 	onSubmit = async (event) => {
 		const { email, password } = this.state;
-		const { AuthStore } = this.props;
+		const { AuthStore, VisualStore } = this.props;
 
 		event.preventDefault();
 		this.setState({ error: null });
+		VisualStore.setBusy(true);
 		const { code } = await AuthStore.signIn(email, password);
+		VisualStore.setBusy(false);
 		if (!code) return;
 
 		switch (code) {
@@ -35,6 +40,9 @@ class AccountSignIn extends Component {
 
 	render = () => {
 		const { email, error, password } = this.state;
+		const { state } = this.props;
+		const { busy } = state;
+		const shouldPreventSubmit = isBlank(email) || isBlank(password) || busy;
 
 		return (
 			<Form standalone onSubmit={this.onSubmit}>
@@ -49,6 +57,7 @@ class AccountSignIn extends Component {
 						label="Email"
 						required
 						onChange={linkState(this, 'email')}
+						disabled={busy}
 					/>
 					<Input
 						type="password"
@@ -56,10 +65,14 @@ class AccountSignIn extends Component {
 						label="Password"
 						required
 						onChange={linkState(this, 'password')}
+						disabled={busy}
 					/>
 				</section>
 				<footer>
-					<Button type="submit">Log in</Button>
+					<Button
+						type="submit"
+						disabled={shouldPreventSubmit}
+					>Log in</Button>
 					<Link to="/account/signup">Need an account?</Link>
 				</footer>
 			</Form>

@@ -5,8 +5,11 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
+import trim from 'lodash/trim';
 
-@inject(app('AuthStore'))
+const isBlank = (str) => !trim(str);
+
+@inject(app('AuthStore', 'VisualStore'))
 @observer
 class AccountSignUp extends Component {
 	state = {
@@ -21,11 +24,13 @@ class AccountSignUp extends Component {
 
 	onSubmit = async (event) => {
 		const { avatar, email, name, password } = this.state;
-		const { AuthStore } = this.props;
+		const { AuthStore, VisualStore } = this.props;
 
 		event.preventDefault();
 		this.setState({ error: null });
+		VisualStore.setBusy(true);
 		const { code } = await AuthStore.create(email, password, { avatar, name });
+		VisualStore.setBusy(false);
 		if (!code) return;
 
 		switch (code) {
@@ -38,6 +43,9 @@ class AccountSignUp extends Component {
 
 	render = () => {
 		const { avatar, email, error, name, password } = this.state;
+		const { state } = this.props;
+		const { busy } = state;
+		const shouldPreventSubmit = isBlank(name) || isBlank(email) || isBlank(password) || busy;
 
 		return (
 			<Form standalone onSubmit={this.onSubmit}>
@@ -51,6 +59,7 @@ class AccountSignUp extends Component {
 						label="Full name"
 						required
 						onChange={linkState(this, 'name')}
+						disabled={busy}
 					/>
 					<Input
 						type="email"
@@ -58,6 +67,7 @@ class AccountSignUp extends Component {
 						label="Email"
 						required
 						onChange={linkState(this, 'email')}
+						disabled={busy}
 					/>
 					<Input
 						type="password"
@@ -65,16 +75,21 @@ class AccountSignUp extends Component {
 						label="Password"
 						required
 						onChange={linkState(this, 'password')}
+						disabled={busy}
 					/>
 					<Input
 						type="image"
 						value={avatar}
 						label="Avatar"
 						onChange={this.onChangeAvatar}
+						disabled={busy}
 					/>
 				</section>
 				<footer>
-					<Button type="submit">Sign up</Button>
+					<Button
+						type="submit"
+						disabled={shouldPreventSubmit}
+					>Sign up</Button>
 					<Link to="/account/signin">Already have an account?</Link>
 				</footer>
 			</Form>
