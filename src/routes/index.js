@@ -10,6 +10,7 @@ import DashboardRoutes from './dashboard';
 import DefaultNavigation from 'navigation';
 import Dropzone from 'components/Dropzone';
 import Helmet from 'react-helmet';
+import HiddenOnPrint from 'components/HiddenOnPrint';
 import Nav from 'components/Navigation';
 import OrganisationNavigation from 'navigation/organisation';
 import OrganisationRoutes from './organisation';
@@ -20,18 +21,20 @@ import SearchDrawer from 'components/SearchDrawer';
 const Landing = () => <main><DashboardOverview /></main>;
 
 const Navigation = ({ expanded }) => (
-	<Nav expanded={expanded}>
-		<Switch>
-			<Route path="/" exact component={DashboardNavigation} />
-			<Route path="/account/(signin|signup|logout)" exact />
-			<Route path="/account" component={DashboardNavigation} />
-			<Route path="/create" component={DefaultNavigation} />
-			<Route path="/dashboard" component={DashboardNavigation} />
-			<Route path="/search" component={DefaultNavigation} />
-			<Route path="/:orgId" component={OrganisationNavigation} />
-			<Route path="*" component={DefaultNavigation} />
-		</Switch>
-	</Nav>
+	<HiddenOnPrint>
+		<Nav expanded={expanded}>
+			<Switch>
+				<Route path="/" exact component={DashboardNavigation} />
+				<Route path="/account/(signin|signup|logout)" exact />
+				<Route path="/account" component={DashboardNavigation} />
+				<Route path="/create" component={DefaultNavigation} />
+				<Route path="/dashboard" component={DashboardNavigation} />
+				<Route path="/search" component={DefaultNavigation} />
+				<Route path="/:orgId" component={OrganisationNavigation} />
+				<Route path="*" component={DefaultNavigation} />
+			</Switch>
+		</Nav>
+	</HiddenOnPrint>
 );
 
 const Head = () => (

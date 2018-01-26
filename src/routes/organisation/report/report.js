@@ -7,6 +7,7 @@ import Chart from 'components/Chart';
 import Container from 'components/Container';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
+import HiddenOnPrint from 'components/HiddenOnPrint';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'components/Link';
 import map from 'lodash/map';
@@ -43,11 +44,14 @@ class OrganisationReport extends Component {
 		return (
 			<Fragment>
 				<Helmet title={`${organisation.name} / ${report.name}`} />
-				<Header secondary={(!isEmpty(model) && !isEmpty(data)) && <Button to={`/${orgId}/${repId}/data`}>Edit data</Button>}>
-					<Breadcrumbs>
-						<Link to={`/${orgId}`}>{ organisation.name }</Link>
-						<Link to={`/${orgId}/reports`}>Reports</Link>
-					</Breadcrumbs>
+				<Header secondary={(!isEmpty(model) && !isEmpty(data)) && <HiddenOnPrint><Button to={`/${orgId}/${repId}/data`}>Edit data</Button></HiddenOnPrint>}>
+					<HiddenOnPrint>
+						<Breadcrumbs>
+							<Link to={`/${orgId}`}>{ organisation.name }</Link>
+							<Link to={`/${orgId}/reports`}>Reports</Link>
+						</Breadcrumbs>
+					</HiddenOnPrint>
+					<HiddenOnPrint reverse><h1>{ organisation.name }</h1></HiddenOnPrint>
 					<h1>{ report.name }</h1>
 				</Header>
 				<Container>

@@ -4,6 +4,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 injectGlobal`
+	@page {
+        size:  auto;
+        margin: 0mm;
+    }
+
 	html, body {
 		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 		font-size: 16px;
@@ -11,6 +16,7 @@ injectGlobal`
 		margin: 0;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+		-webkit-print-color-adjust: exact;
 	}
 
 	*,
@@ -28,7 +34,7 @@ ReactDOM.render(<App />, document.body);
 
 if (module.hot) module.hot.accept();
 
-if ('serviceWorker' in navigator) {
+if (process.env.NODE_ENV !== 'development' && 'serviceWorker' in navigator) {
 	window.addEventListener('load', async () => {
 		// eslint-disable-next-line compat/compat
 		const registration = await navigator.serviceWorker.register('/sw.js').catch((error) => false);

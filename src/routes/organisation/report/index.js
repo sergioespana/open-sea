@@ -8,7 +8,6 @@ const OrganisationReportRoutes = () => (
 	<Switch>
 		<Route path="/:orgId/:repId" exact component={OrganisationReport} />
 		<Route path="/:orgId/:repId/data" exact component={OrganisationReportData} />
-		<Route path="/:orgId/:repId/export" exact />
 	</Switch>
 );
 
