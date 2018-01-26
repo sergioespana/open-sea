@@ -26,20 +26,13 @@ class CreateOrganisation extends Component {
 		error: ''
 	}
 
-	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
-
-	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
-
+	slugify = (str) => slug(str, { lower: true, remove: /[=`#%^$*_+~.()'"!\\:@]/g });
+	
 	onChangeAvatar = ({ target: { files } }) => this.setState({ avatar: files[0] });
 
 	onChangeName = ({ target: { value } }) => {
 		const { name, id } = this.state;
 		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
-	}
-
-	onBlurName = () => {
-		const { name } = this.state;
-		return this.setState({ name: this.sanitize(name) });
 	}
 
 	onBlurId = () => {

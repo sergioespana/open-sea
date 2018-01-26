@@ -25,18 +25,11 @@ class CreateReport extends Component {
 		organisation: ''
 	}
 
-	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
-
-	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
+	slugify = (str) => slug(str, { lower: true, remove: /[=`#%^$*_+~.()'"!\\:@]/g });
 
 	onChangeName = ({ target: { value } }) => {
 		const { name, id } = this.state;
 		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
-	}
-
-	onBlurName = () => {
-		const { name } = this.state;
-		return this.setState({ name: this.sanitize(name) });
 	}
 
 	onBlurId = () => {
