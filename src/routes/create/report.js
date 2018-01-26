@@ -10,7 +10,10 @@ import map from 'lodash/map';
 import omit from 'lodash/omit';
 import { parse } from 'query-string';
 import slug from 'slugify';
+import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
+
+const isBlank = (str) => !trim(str);
 
 @inject(app('ReportsStore', 'VisualStore'))
 @observer
@@ -72,6 +75,7 @@ class CreateReport extends Component {
 		const { error, id, name, organisation } = this.state;
 		const { state } = this.props;
 		const { busy, organisations } = state;
+		const shouldPreventSubmit = isBlank(name) || isBlank(id) || isBlank(organisation) || busy;
 
 		return (
 			<Fragment>
@@ -112,7 +116,7 @@ class CreateReport extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={busy}>Create report</Button>
+						<Button type="submit" disabled={shouldPreventSubmit}>Create report</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>

@@ -9,7 +9,10 @@ import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import slug from 'slugify';
+import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
+
+const isBlank = (str) => !trim(str);
 
 @inject(app('OrganisationsStore', 'VisualStore'))
 @observer
@@ -78,6 +81,7 @@ class CreateOrganisation extends Component {
 		const { busy } = state;
 		const { name, description, id, isPublic, error } = this.state;
 		const avatar = isString(this.state.avatar) ? this.state.avatar : URL.createObjectURL(this.state.avatar);
+		const shouldPreventSubmit = isBlank(name) || isBlank(id) || busy;
 
 		return (
 			<Fragment>
@@ -132,7 +136,7 @@ class CreateOrganisation extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={busy}>Create organisation</Button>
+						<Button type="submit" disabled={shouldPreventSubmit}>Create organisation</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>
