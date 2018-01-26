@@ -12,21 +12,6 @@ const Group = styled(({ hidden, loading, ...props }) => !hidden && <nav {...prop
 		padding-bottom: 16px;
 	}
 
-	h3 {
-		color: ${({ theme }) => theme.text.secondary};
-		font-weight: 700;
-		font-size: 0.75rem;
-		text-transform: uppercase;
-		padding: 7px 10px;
-		margin: 0;
-		width: 100%;
-
-		&:not(:first-child) {
-			margin-top: 5px;
-			border-top: 1px solid #ccc;
-		}
-	}
-
 	// Loading styles
 	${(props) => props.loading && loading(0.3)}
 `;

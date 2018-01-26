@@ -14,20 +14,6 @@ const Sidenav = styled(({ children, ...props }) => (
 		display: flex;
 		flex-direction: column;
 
-		h3 {
-			color: ${({ theme }) => theme.text.secondary};
-			font-weight: 700;
-			font-size: 0.75rem;
-			text-transform: uppercase;
-			padding: 7px 10px;
-			margin: 0;
-
-			&:not(:first-child) {
-				margin-top: 5px;
-				border-top: 1px solid #ccc;
-			}
-		}
-
 		a {
 			padding: 7px 10px;
 			
