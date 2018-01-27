@@ -11,7 +11,6 @@ const PageHeader = ({ orgId, organisation }) => (
 		<Section>
 			<Breadcrumbs>
 				<Link to={`/${orgId}`}>{ organisation.name }</Link>
-				<Link to={`/${orgId}/organisations`}>Organisations</Link>
 			</Breadcrumbs>
 			<h1>Organisations</h1>
 		</Section>

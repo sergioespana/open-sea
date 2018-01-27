@@ -58,9 +58,9 @@ class OrganisationReport extends Component {
 					</Section>
 					<HiddenOnPrint>
 						<Actions>
-							{ (!isEmpty(model) && !isEmpty(data)) && <Button bg="light" color="primary" to={`/${orgId}/${repId}/data`}>Edit data</Button> }
-							<Button bg="light" color="primary" onClick={window.print}>Export</Button>
-							<Button bg="light" color="primary"><MdMoreVert width={24} height={24} style={{ transform: 'rotate(90deg)' }} /></Button>
+							{ (!isEmpty(model) && !isEmpty(data)) && <Button bg="light" to={`/${orgId}/${repId}/data`}>Edit data</Button> }
+							<Button bg="light" onClick={window.print}>Export</Button>
+							<Button bg="light"><MdMoreVert width={24} height={24} style={{ transform: 'rotate(90deg)' }} /></Button>
 						</Actions>
 					</HiddenOnPrint>
 				</Header>
@@ -78,7 +78,7 @@ class OrganisationReport extends Component {
 						<Placeholder>
 							<h1>Whoa there!</h1>
 							<p>No data exists for this report. Add some data to get started.</p>
-							<p><Button to={`/${orgId}/${repId}/data`}>Add data</Button></p>
+							<p><Button cta color="#ffffff" to={`/${orgId}/${repId}/data`}>Add data</Button></p>
 						</Placeholder>
 					) : map(reportItems, (item, i) => {
 						const data = {

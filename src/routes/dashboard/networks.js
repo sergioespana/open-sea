@@ -35,7 +35,7 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 				<Placeholder>
 					<h1>Whoa there!</h1>
 					<p>You don't seem to have access to any networks.</p>
-					<p><Button to="/create/network">Create a network</Button></p>
+					<p><Button cta color="#ffffff" to="/create/network">Create a network</Button></p>
 				</Placeholder>
 			</Container>
 		</Fragment>

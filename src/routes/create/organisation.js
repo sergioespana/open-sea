@@ -129,7 +129,12 @@ class CreateOrganisation extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={shouldPreventSubmit}>Create organisation</Button>
+						<Button
+							cta
+							color="#ffffff"
+							type="submit"
+							disabled={shouldPreventSubmit}
+						>Create organisation</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>

@@ -1,9 +1,9 @@
-import { darken, lighten, readableColor } from 'polished';
 import { createElement } from 'react';
+import { darken } from 'polished';
 import { Link } from 'components/Link';
 import styled from 'styled-components';
 
-const Button = styled(({ bg, color, large, ...props }) => createElement(props.to ? Link : 'button', { ...props, type: props.to ? null : props.type || 'button' }))`
+const Button = styled(({ bg, color, cta, ...props }) => createElement(props.to ? Link : 'button', { ...props, type: props.to ? null : props.type || 'button' }))`
 	height: 32px;
 	width: auto;
 	padding: 4px 10px;
@@ -12,30 +12,28 @@ const Button = styled(({ bg, color, large, ...props }) => createElement(props.to
 	justify-content: center;
 	font-family: inherit;
 	font-size: 0.875rem;
-	font-weight: ${({ large }) => large ? 700 : 'inherit'};
-	color: ${({ color, theme }) => theme.text[color] || theme.text.primary};
-	background-color: ${({ bg, theme }) => theme[bg] || theme.primary};
+	font-weight: ${({ cta }) => cta ? 700 : 'inherit'};
+	color: ${({ color, theme }) => theme.text[color] || color || theme.text.primary};
+	background-color: ${({ bg, theme }) => theme[bg] || bg || theme.primary};
+	border-radius: 3px;
 	border: none;
 
 	&:not(:first-child) {
 		margin-left: 4px;
 	}
-
-	&:first-child {
-		border-top-left-radius: 3px;
-		border-bottom-left-radius: 3px;
-	}
-	
-	&:last-child {
-		border-top-right-radius: 3px;
-		border-bottom-right-radius: 3px;
-	}
 	
 	:hover {
 		cursor: pointer;
-		color: ${({ color, theme }) => theme.text[color] || theme.text.primary};
-		background-color: ${({ bg, theme }) => theme[bg] || theme.primary};
+		color: ${({ color, theme }) => theme.text[color] || color || theme.text.primary};
+		background-color: ${({ bg, theme }) => theme[bg] || bg || theme.primary}; // TODO: Make slightly lighter or darker depending on luminance.
 		text-decoration: none;
+	}
+
+	:active {
+		${({ bg, theme }) => bg === 'light' && `
+			color: ${theme.text.contrast};
+			background-color: ${theme.primary};
+		`}
 	}
 	
 	:focus:not(:active) {

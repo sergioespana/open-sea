@@ -87,6 +87,8 @@ class AccountSignUp extends Component {
 				</section>
 				<footer>
 					<Button
+						color="#ffffff"
+						cta
 						type="submit"
 						disabled={shouldPreventSubmit}
 					>Sign up</Button>

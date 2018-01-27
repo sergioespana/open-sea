@@ -41,7 +41,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				<Placeholder>
 					<h1>Whoa there!</h1>
 					<p>No reports exist for this organisation! To get started, create a report first.</p>
-					<p><Button to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
+					<p><Button cta color="#ffffff" to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
 				</Placeholder>
 			</Container>
 		</Fragment>

@@ -129,7 +129,12 @@ class CreateNetwork extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={shouldPreventSubmit}>Create network</Button>
+						<Button
+							cta
+							color="#ffffff"
+							type="submit"
+							disabled={shouldPreventSubmit}
+						>Create network</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>

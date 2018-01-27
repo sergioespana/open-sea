@@ -109,7 +109,12 @@ class CreateReport extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={shouldPreventSubmit}>Create report</Button>
+						<Button
+							cta
+							color="#ffffff"
+							type="submit"
+							disabled={shouldPreventSubmit}
+						>Create report</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>
