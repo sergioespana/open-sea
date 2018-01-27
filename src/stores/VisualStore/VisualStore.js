@@ -8,7 +8,11 @@ const VisualStore = (state, initial) => {
 		busy: false,
 		expanded: computed(() => localStorage.getItem('navExpanded')),
 		createDrawerOpen: false,
-		searchDrawerOpen: false
+		searchDrawerOpen: false,
+		snackbar: {
+			open: false,
+			message: ''
+		}
 	});
 
 	return actions(state);

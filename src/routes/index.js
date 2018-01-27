@@ -17,6 +17,7 @@ import OrganisationRoutes from './organisation';
 import React from 'react';
 import Route from 'components/Route';
 import SearchDrawer from 'components/SearchDrawer';
+import Snackbar from 'components/Snackbar';
 
 const Landing = () => <main><DashboardOverview /></main>;
 
@@ -58,6 +59,7 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 				<Route path="/account" component={AccountRoutes} />
 				<Route path="*" />
 			</Switch>
+			<Snackbar />
 		</div>
 	);
 
@@ -76,6 +78,7 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 				<Route path="/search" authedOnly />
 				<Route path="/:orgId" component={OrganisationRoutes} authedOnly />
 			</Switch>
+			<Snackbar />
 		</Dropzone>
 	);
 }));

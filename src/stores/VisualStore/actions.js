@@ -12,8 +12,14 @@ const actions = (state) => {
 
 	const toggleSearchDrawer = action(() => state.searchDrawerOpen = !state.searchDrawerOpen);
 
+	const showSnackbar = action((message) => state.snackbar = { open: true, message });
+
+	const hideSnackbar = action((delay) => delay ? setTimeout(hideSnackbar, delay) : state.snackbar = { open: false, message: '' });
+
 	return {
 		setBusy,
+		showSnackbar,
+		hideSnackbar,
 		toggle,
 		toggleCreateDrawer,
 		toggleSearchDrawer
