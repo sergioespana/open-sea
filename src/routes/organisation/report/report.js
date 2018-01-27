@@ -1,4 +1,4 @@
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Actions, Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
@@ -11,6 +11,7 @@ import HiddenOnPrint from 'components/HiddenOnPrint';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'components/Link';
 import map from 'lodash/map';
+import MdMoreVert from 'react-icons/lib/md/more-vert';
 import Placeholder from 'components/Placeholder';
 import { withRouter } from 'react-router-dom';
 
@@ -44,15 +45,24 @@ class OrganisationReport extends Component {
 		return (
 			<Fragment>
 				<Helmet title={`${organisation.name} / ${report.name}`} />
-				<Header secondary={(!isEmpty(model) && !isEmpty(data)) && <HiddenOnPrint><Button to={`/${orgId}/${repId}/data`}>Edit data</Button></HiddenOnPrint>}>
+				<Header>
+					<Section>
+						<HiddenOnPrint>
+							<Breadcrumbs>
+								<Link to={`/${orgId}`}>{ organisation.name }</Link>
+								<Link to={`/${orgId}/reports`}>Reports</Link>
+							</Breadcrumbs>
+						</HiddenOnPrint>
+						<HiddenOnPrint reverse><h1>{ organisation.name }</h1></HiddenOnPrint>
+						<h1>{ report.name }</h1>
+					</Section>
 					<HiddenOnPrint>
-						<Breadcrumbs>
-							<Link to={`/${orgId}`}>{ organisation.name }</Link>
-							<Link to={`/${orgId}/reports`}>Reports</Link>
-						</Breadcrumbs>
+						<Actions>
+							{ (!isEmpty(model) && !isEmpty(data)) && <Button bg="light" color="primary" to={`/${orgId}/${repId}/data`}>Edit data</Button> }
+							<Button bg="light" color="primary" onClick={window.print}>Export</Button>
+							<Button bg="light" color="primary"><MdMoreVert width={24} height={24} style={{ transform: 'rotate(90deg)' }} /></Button>
+						</Actions>
 					</HiddenOnPrint>
-					<HiddenOnPrint reverse><h1>{ organisation.name }</h1></HiddenOnPrint>
-					<h1>{ report.name }</h1>
 				</Header>
 				<Container>
 					{ isEmpty(model) ? (

@@ -1,4 +1,4 @@
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
@@ -13,10 +13,12 @@ import Table from 'components/Table';
 
 const PageHeader = ({ orgId, organisation }) => (
 	<Header>
-		<Breadcrumbs>
-			<Link to={`/${orgId}`}>{ organisation.name }</Link>
-		</Breadcrumbs>
-		<h1>Reports</h1>
+		<Section>
+			<Breadcrumbs>
+				<Link to={`/${orgId}`}>{ organisation.name }</Link>
+			</Breadcrumbs>
+			<h1>Reports</h1>
+		</Section>
 	</Header>
 );
 

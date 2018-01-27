@@ -61,6 +61,8 @@ injectGlobal`
 		text-transform: uppercase;
 		padding: 7px 10px;
 		margin: 0;
+		text-align: left;
+		width: 100%;
 
 		&:not(:first-child) {
 			margin-top: 5px;

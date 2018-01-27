@@ -1,4 +1,4 @@
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import { Link, NavLink } from 'components/Link';
 import React, { Fragment } from 'react';
@@ -19,10 +19,12 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 		<Fragment>
 			<Helmet title={`${organisation.name} / Settings`} />
 			<Header>
-				<Breadcrumbs>
-					<Link to={`/${orgId}`}>{ organisation.name }</Link>
-				</Breadcrumbs>
-				<h1>Settings</h1>
+				<Section>
+					<Breadcrumbs>
+						<Link to={`/${orgId}`}>{ organisation.name }</Link>
+					</Breadcrumbs>
+					<h1>Settings</h1>
+				</Section>
 			</Header>
 			<Container flex>
 				<Sidenav>

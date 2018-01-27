@@ -1,8 +1,8 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
-import Header from 'components/Header';
 import Helmet from 'react-helmet';
 import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
@@ -21,7 +21,9 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 				<title>dashboard / home</title>
 			</Helmet>
 			<Header>
-				<h1>Dashboard</h1>
+				<Section>
+					<h1>Dashboard</h1>
+				</Section>
 			</Header>
 			<Container flex>
 				<Placeholder>

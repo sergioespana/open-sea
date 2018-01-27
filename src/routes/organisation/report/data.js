@@ -1,5 +1,5 @@
 import Form, { Alert, Input } from 'components/Form';
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
@@ -59,12 +59,14 @@ class OrganisationReportData extends Component {
 			<Fragment>
 				<Helmet title={`${organisation.name} / ${report.name} / Data`} />
 				<Header>
-					<Breadcrumbs>
-						<Link to={`/${orgId}`}>{ organisation.name }</Link>
-						<Link to={`/${orgId}/reports`}>Reports</Link>
-						<Link to={`/${orgId}/${repId}`}>{ report.name }</Link>
-					</Breadcrumbs>
-					<h1>Data</h1>
+					<Section>
+						<Breadcrumbs>
+							<Link to={`/${orgId}`}>{ organisation.name }</Link>
+							<Link to={`/${orgId}/reports`}>Reports</Link>
+							<Link to={`/${orgId}/${repId}`}>{ report.name }</Link>
+						</Breadcrumbs>
+						<h1>Data</h1>
+					</Section>
 				</Header>
 				<Container>
 					<Form onSubmit={this.onSubmit}>

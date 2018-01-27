@@ -1,3 +1,4 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
@@ -7,7 +8,6 @@ import AccountSignIn from './signin';
 import AccountSignUp from './signup';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
-import Header from 'components/Header';
 import { NavLink as Link } from 'components/Link';
 import Route from 'components/Route';
 import Sidenav from 'components/Sidenav';
@@ -31,7 +31,9 @@ const AccountAuthenticationRoutes = () => (
 const AccountMainRoutes = () => (
 	<Fragment>
 		<Header>
-			<h1>Account</h1>
+			<Section>
+				<h1>Account</h1>
+			</Section>
 		</Header>
 		<Container flex>
 			<AccountNavigation />

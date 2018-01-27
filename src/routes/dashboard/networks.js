@@ -1,10 +1,10 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
 import filter from 'lodash/filter';
-import Header from 'components/Header';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'components/Link';
@@ -27,7 +27,9 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 		<Fragment>
 			<Head />
 			<Header>
-				<h1>Networks</h1>
+				<Section>
+					<h1>Networks</h1>
+				</Section>
 			</Header>
 			<Container>
 				<Placeholder>
