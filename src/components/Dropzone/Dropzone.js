@@ -30,8 +30,16 @@ class Dropzone extends Component {
 	onDragLeave = () => this.state.dragging && this.setState({ dragging: false });
 
 	onDrop = (accepted, rejected) => {
+		const { VisualStore } = this.props;
+
 		this.onDragLeave();
-		if (accepted.length === 0 && rejected.length > 0) return alert('file rejected'); // FIXME: Alerts are bad.
+		VisualStore.hideSnackbar();
+
+		if (accepted.length === 0 && rejected.length > 0) {
+			VisualStore.showSnackbar('Dropped file is of unsupported file type');
+			VisualStore.hideSnackbar(4000);
+			return;
+		}
 
 		const file = accepted[0];
 		const fr = new FileReader();
@@ -40,16 +48,24 @@ class Dropzone extends Component {
 	}
 
 	onFileRead = async ({ target: { result } }) => {
-		if (!result) return alert('could not read file'); // FIXME: Alerts are ugly.
+		const { VisualStore } = this.props;
 
-		const { history, ReportsStore, VisualStore } = this.props;
+		if (!result) {
+			VisualStore.showSnackbar('Dropped file could not be read');
+			VisualStore.hideSnackbar(4000);
+			return;
+		}
+
+		const { history, ReportsStore } = this.props;
 		const model = ReportsStore.parseTextToModel(result);
 		const validationErrors = ReportsStore.validateModel(model);
 		
 		if (validationErrors.length > 0) {
-			// FIXME: Properly handle errors.
+			// TODO: Build error message from first error and show that
 			console.log(validationErrors);
-			return alert('error in model');
+			VisualStore.showSnackbar('Your model contains errors');
+			VisualStore.hideSnackbar(4000);
+			return;
 		}
 		
 		const { params: { orgId, repId } } = matchPath(location.pathname, { path: '/:orgId/:repId' });
