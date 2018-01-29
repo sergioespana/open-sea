@@ -9,7 +9,9 @@ import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
+import isUndefined from 'lodash/isUndefined';
 import { Link } from 'components/Link';
+import Lozenge from '@atlaskit/lozenge';
 import map from 'lodash/map';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
@@ -101,8 +103,13 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								hidden: true
 							},
 							{
-								key: 'Status',
-								label: 'Status'
+								key: 'status',
+								label: 'Status',
+								value: ({ data, model }) => {
+									if (isUndefined(model) && isUndefined(data)) return { label: 'New', value: 'new' };
+									return { label: 'In Progress', value: 'inprogress' };
+								},
+								format: (value) => <Lozenge appearance={value.value}>{ value.label }</Lozenge>
 							}
 						]}
 					/>
