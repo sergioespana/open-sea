@@ -75,6 +75,8 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 						},
 						{
 							key: 'isPublic',
+							label: 'Public',
+							labelHidden: true,
 							value: ({ isPublic }) => isPublic,
 							format: (value) => !value && <MdLock width="1rem" height="1rem" />
 						}

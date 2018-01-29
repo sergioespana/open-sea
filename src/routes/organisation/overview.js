@@ -85,6 +85,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 					<h1>Reports</h1>
 					<Table
 						disableSorting
+						disableFiltering
 						defaultSort="-updated"
 						data={reports}
 						limit={4}

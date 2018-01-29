@@ -34,6 +34,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 					<h1>Organisations</h1>
 					<Table
 						disableSorting
+						disableFiltering
 						defaultSort="-updated"
 						data={organisations}
 						limit={4}
