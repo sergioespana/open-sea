@@ -1,3 +1,4 @@
+import { AutoDismissFlag as Flag, FlagGroup } from '@atlaskit/flag';
 import { inject, observer } from 'mobx-react';
 import { Redirect, Switch } from 'react-router-dom';
 import AccountRoutes from './account';
@@ -11,13 +12,13 @@ import DefaultNavigation from 'navigation';
 import Dropzone from 'components/Dropzone';
 import Helmet from 'react-helmet';
 import HiddenOnPrint from 'components/HiddenOnPrint';
+import map from 'lodash/map';
 import Nav from 'components/Navigation';
 import OrganisationNavigation from 'navigation/organisation';
 import OrganisationRoutes from './organisation';
 import React from 'react';
 import Route from 'components/Route';
 import SearchDrawer from 'components/SearchDrawer';
-import Snackbar from 'components/Snackbar';
 
 const Landing = () => <main><DashboardOverview /></main>;
 
@@ -45,9 +46,9 @@ const Head = () => (
 	/>
 );
 
-const MainRoutes = inject(app('state'))(observer((props) => {
-	const { state } = props;
-	const { authed, expanded, listening, loading } = state;
+const MainRoutes = inject(app('VisualStore'))(observer((props) => {
+	const { state, VisualStore } = props;
+	const { authed, expanded, flags, listening, loading } = state;
 
 	if (!listening) return null;
 
@@ -59,7 +60,6 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 				<Route path="/account" component={AccountRoutes} />
 				<Route path="*" />
 			</Switch>
-			<Snackbar />
 		</div>
 	);
 
@@ -78,7 +78,7 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 				<Route path="/search" authedOnly />
 				<Route path="/:orgId" component={OrganisationRoutes} authedOnly />
 			</Switch>
-			<Snackbar />
+			<FlagGroup onDismissed={VisualStore.dismissFlag}>{ map(flags, (flag) => <Flag key={flag.id} {...flag} />) }</FlagGroup>
 		</Dropzone>
 	);
 }));

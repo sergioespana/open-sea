@@ -49,6 +49,18 @@
 		"workbox-webpack-plugin": "^2.1.2"
 	},
 	"dependencies": {
+		"@atlaskit/avatar": "^9.0.0",
+		"@atlaskit/button": "^6.3.1",
+		"@atlaskit/css-reset": "^1.2.0",
+		"@atlaskit/dropdown-menu": "^3.11.6",
+		"@atlaskit/flag": "^6.2.2",
+		"@atlaskit/icon": "^10.8.0",
+		"@atlaskit/inline-edit": "^4.5.12",
+		"@atlaskit/lozenge": "^3.5.0",
+		"@atlaskit/modal-dialog": "^3.3.7",
+		"@atlaskit/navigation": "^27.0.8",
+		"@atlaskit/page": "^5.0.10",
+		"@atlaskit/util-shared-styles": "^2.10.6",
 		"firebase": "^4.6.2",
 		"frappe-charts": "^0.0.8",
 		"fuse.js": "^3.2.0",

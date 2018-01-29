@@ -1,6 +1,8 @@
 import { action } from 'mobx';
 import isBoolean from 'lodash/isBoolean';
 import localStorage from 'mobx-localstorage';
+import reject from 'lodash/reject';
+import slugify from 'slugify';
 
 const actions = (state) => {
 
@@ -12,14 +14,14 @@ const actions = (state) => {
 
 	const toggleSearchDrawer = action(() => state.searchDrawerOpen = !state.searchDrawerOpen);
 
-	const showSnackbar = action((message) => state.snackbar = { open: true, message });
+	const showFlag = (obj) => state.flags = [...state.flags, { ...obj, id: slugify(obj.title, { lower: true }) }];
 
-	const hideSnackbar = action((delay) => delay ? setTimeout(hideSnackbar, delay) : state.snackbar = { open: false, message: '' });
+	const dismissFlag = (id) => state.flags = reject(state.flags, { id });
 
 	return {
+		dismissFlag,
 		setBusy,
-		showSnackbar,
-		hideSnackbar,
+		showFlag,
 		toggle,
 		toggleCreateDrawer,
 		toggleSearchDrawer
