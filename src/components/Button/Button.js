@@ -1,4 +1,4 @@
-import { darken, lighten } from 'polished';
+import { darken, lighten, transparentize } from 'polished';
 import { createElement } from 'react';
 import { Link } from 'components/Link';
 import styled from 'styled-components';
@@ -41,6 +41,16 @@ const getHoverBackgroundColor = ({ appearance, disabled, selected, theme }) => {
 	}
 };
 
+const getActiveColor = (props) => {
+	if (props.appearance === 'default') return props.theme.primary;
+	return getColor(props);
+};
+
+const getActiveBackgroundColor = (props) => {
+	if (['primary', 'warning', 'help'].includes(props.appearance)) return darken(0.03, getBackgroundColor(props));
+	if (['default', 'subtle'].includes(props.appearance)) return transparentize(0.7, props.theme.primary);
+};
+
 const getDisabledColor = ({ theme }) => theme.text.secondary;
 
 const getDisabledBackgroundColor = (props) => getBackgroundColor(props) === 'transparent' ? 'transparent' : props.theme.light;
@@ -54,6 +64,8 @@ const Button = styled((props) => {
 	color: (props) => getColor(props),
 	backgroundColor: (props) => getBackgroundColor(props),
 	hoverBackgroundColor: (props) => getHoverBackgroundColor(props),
+	activeColor: (props) => getActiveColor(props),
+	activeBackgroundColor: (props) => getActiveBackgroundColor(props),
 	disabledColor: (props) => getDisabledColor(props),
 	disabledBackgroundColor: (props) => getDisabledBackgroundColor(props)
 })`
@@ -73,11 +85,16 @@ const Button = styled((props) => {
 
 	color: ${({ color }) => color};
 	background-color: ${({ backgroundColor }) => backgroundColor};
-
+	
 	:hover {
 		cursor: pointer;
 		background-color: ${ ({ hoverBackgroundColor }) => hoverBackgroundColor };
 		text-decoration: ${({ appearance }) => ['link', 'subtle-link'].includes(appearance) ? 'underline' : 'none'};
+	}	
+
+	:active {
+		color: ${({ activeColor }) => activeColor};
+		background-color: ${({ activeBackgroundColor }) => activeBackgroundColor};
 	}
 
 	&[disabled] {
