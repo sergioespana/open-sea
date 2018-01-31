@@ -23,7 +23,7 @@ const OrganisationRoutes = inject(app('OrganisationsStore'))(observer((props) =>
 				<Route path="/:orgId/organisations" exact component={NetworkOrganisations} />
 				<Route path="/:orgId/compare" exact />
 				<Route path="/:orgId/compare/:orgs+" />
-				<Route path="/:orgId/settings" />
+				<Route path="/:orgId/settings" component={OrganisationSettings} />
 			</Switch>
 		</main>
 	);

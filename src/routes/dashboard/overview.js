@@ -28,8 +28,8 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 			<Container flex>
 				<Placeholder>
 					<img src="/assets/images/empty-state-checklist.svg" />
-					<h1>You're all caught up!</h1>
-					<p>No organisations require your attention right now.</p>
+					<h1>All done!</h1>
+					<p>No organisations or networks require your attention right now.</p>
 				</Placeholder>
 				<section style={{ flex: '0 0 375px' }}>
 					<h1>Organisations</h1>

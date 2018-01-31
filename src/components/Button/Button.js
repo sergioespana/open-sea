@@ -79,11 +79,11 @@ const Button = styled((props) => {
 	align-items: center;
 	justify-content: center;
 	font-family: inherit;
+	${({ appearance }) => appearance === 'primary' && `font-weight: 500;`}
 	text-decoration: none;
 	border-radius: 3px;
 	border: none;
 	transition: background-color 100ms ease-out;
-
 	color: ${({ color }) => color};
 	background-color: ${({ backgroundColor }) => backgroundColor};
 	

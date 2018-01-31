@@ -56,7 +56,7 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 							key: 'name',
 							label: 'Network',
 							value: ({ name }) => name,
-							format: (value, { _id, avatar, name }) => <span><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></span>
+							format: (value, { _id, avatar, name }) => <div><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></div>
 						},
 						{
 							key: 'owner',
