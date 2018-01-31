@@ -24,7 +24,7 @@ const Alert = styled(({ color, message, type, ...props }) => !message ? null : (
 	border: 1px solid ${({ color }) => color};
 	border-radius: 5px;
 	background-color: ${({ color }) => lighten(0.11, color)};
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 	line-height: 24px;
 
 	p {

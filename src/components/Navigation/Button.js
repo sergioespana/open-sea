@@ -58,7 +58,7 @@ const Button = styled(({ children, icon, large, round, ...props }) => {
 	display: inline-flex;
 	flex-wrap: nowrap;
 	align-items: center;
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 	
 	svg {
 		flex-shrink: 0;

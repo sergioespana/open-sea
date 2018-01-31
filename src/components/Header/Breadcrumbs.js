@@ -19,7 +19,7 @@ const Breadcrumbs = styled(({ ...props }) => {
 		padding: 0 10px 0 0;
 		display: inline;
 		color: ${({ theme }) => theme.text.secondary};
-		font-size: 0.875rem;
+		/* font-size: 0.875rem */;
 
 		a:not(:hover) {
 			color: inherit;

@@ -79,7 +79,6 @@ const Button = styled((props) => {
 	align-items: center;
 	justify-content: center;
 	font-family: inherit;
-	font-size: 0.875rem;
 	text-decoration: none;
 	border-radius: 3px;
 	border: none;

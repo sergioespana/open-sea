@@ -15,7 +15,7 @@ import uniq from 'lodash/uniq';
 import { withRouter } from 'react-router-dom';
 
 const Filters = styled(({ hidden, ...props }) => !hidden && <div {...props} />)`
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 	margin: 20px 0 10px 0;
 
 	h3 {
@@ -127,7 +127,7 @@ class Table extends Component {
 export default withRouter(styled(Table)`
 	width: 100%;
 	text-align: left;
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 	border-collapse: collapse;
 
 	thead,
