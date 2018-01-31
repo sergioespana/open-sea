@@ -85,7 +85,7 @@ class OrganisationReportData extends Component {
 							)) }
 						</section>
 						<footer>
-							<Button cta color="#ffffff" type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
+							<Button appearance="primary" type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
 							<Link to={`/${orgId}/${repId}`}>Cancel</Link>
 						</footer>
 					</Form>

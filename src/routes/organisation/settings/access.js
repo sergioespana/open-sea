@@ -17,7 +17,7 @@ const OrganisationSettingsAccess = () => (
 					{ text: 'Owner', value: 'owner' }
 				]}
 			/>
-			<Button cta color="#ffffff" type="submit">Add</Button>
+			<Button appearance="primary" type="submit">Add</Button>
 		</section>
 	</Form>
 );

@@ -59,8 +59,8 @@ class OrganisationReport extends Component {
 					<HiddenOnPrint>
 						<Actions>
 							{ (!isEmpty(model) && !isEmpty(data)) && <Button bg="light" to={`/${orgId}/${repId}/data`}>Edit data</Button> }
-							<Button bg="light" onClick={window.print}>Export</Button>
-							<Button bg="light"><MdMoreVert width={24} height={24} style={{ transform: 'rotate(90deg)' }} /></Button>
+							<Button onClick={window.print}>Export</Button>
+							<Button><MdMoreVert width={24} height={24} style={{ transform: 'rotate(90deg)' }} /></Button>
 						</Actions>
 					</HiddenOnPrint>
 				</Header>

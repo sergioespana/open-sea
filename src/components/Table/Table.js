@@ -1,6 +1,6 @@
 import { parse, stringify } from 'query-string';
 import React, { Component, Fragment } from 'react';
-import Button from '@atlaskit/button';
+import Button from 'components/Button';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
 import isBoolean from 'lodash/isBoolean';

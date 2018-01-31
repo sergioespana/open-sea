@@ -35,7 +35,7 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 				<Placeholder>
 					<h1>Whoa there!</h1>
 					<p>You don't seem to have access to any organisations.</p>
-					<p><Button cta color="#ffffff" to="/create/organisation">Create an organisation</Button></p>
+					<p><Button appearance="primary" to="/create/organisation">Create an organisation</Button></p>
 				</Placeholder>
 			</Container>
 		</Fragment>

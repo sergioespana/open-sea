@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { Link } from 'components/Link';
 import styled from 'styled-components';
 
-const getColor = ({ appearance, disabled, selected, theme }) => {
+const getColor = ({ appearance = 'default', disabled, selected, theme }) => {
 	if (disabled) return lighten(0.05, theme.text.secondary);
 
 	switch (appearance) {
@@ -17,7 +17,7 @@ const getColor = ({ appearance, disabled, selected, theme }) => {
 	}
 };
 
-const getBackgroundColor = ({ appearance, disabled, selected, theme }) => {
+const getBackgroundColor = ({ appearance = 'default', disabled, selected, theme }) => {
 	switch (appearance) {
 		case 'primary': return selected ? '#113B34' : theme.primary;
 		case 'link': return 'transparent';
@@ -29,7 +29,7 @@ const getBackgroundColor = ({ appearance, disabled, selected, theme }) => {
 	}
 };
 
-const getHoverBackgroundColor = ({ appearance, disabled, selected, theme }) => {
+const getHoverBackgroundColor = ({ appearance = 'default', disabled, selected, theme }) => {
 	switch (appearance) {
 		case 'primary': return selected ? '#113B34' : lighten(0.1, theme.primary);
 		case 'link': return 'transparent';
@@ -42,13 +42,15 @@ const getHoverBackgroundColor = ({ appearance, disabled, selected, theme }) => {
 };
 
 const getActiveColor = (props) => {
-	if (props.appearance === 'default') return props.theme.primary;
+	const appearance = props.appearance || 'default';
+	if (appearance === 'default') return props.theme.primary;
 	return getColor(props);
 };
 
 const getActiveBackgroundColor = (props) => {
-	if (['primary', 'warning', 'help'].includes(props.appearance)) return darken(0.03, getBackgroundColor(props));
-	if (['default', 'subtle'].includes(props.appearance)) return transparentize(0.7, props.theme.primary);
+	const appearance = props.appearance || 'default';
+	if (['primary', 'warning', 'help'].includes(appearance)) return darken(0.03, getBackgroundColor(props));
+	if (['default', 'subtle'].includes(appearance)) return transparentize(0.7, props.theme.primary);
 };
 
 const getDisabledColor = ({ theme }) => theme.text.secondary;
@@ -56,7 +58,7 @@ const getDisabledColor = ({ theme }) => theme.text.secondary;
 const getDisabledBackgroundColor = (props) => getBackgroundColor(props) === 'transparent' ? 'transparent' : props.theme.light;
 
 const Button = styled((props) => {
-	const { appearance, color, backgroundColor, hoverBackgroundColor, disabledColor, disabledBackgroundColor, isSelected, ...rest } = props;
+	const { activeColor, activeBackgroundColor, appearance, color, backgroundColor, hoverBackgroundColor, disabledColor, disabledBackgroundColor, isSelected, ...rest } = props;
 	const to = rest.disabled ? undefined : rest.to;
 	const type = to ? null : rest.type || 'button';
 	return createElement(to ? Link : 'button', { ...rest, to, type });
@@ -88,6 +90,7 @@ const Button = styled((props) => {
 	
 	:hover {
 		cursor: pointer;
+		color: ${({ color }) => color};
 		background-color: ${ ({ hoverBackgroundColor }) => hoverBackgroundColor };
 		text-decoration: ${({ appearance }) => ['link', 'subtle-link'].includes(appearance) ? 'underline' : 'none'};
 	}	
