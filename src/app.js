@@ -50,14 +50,10 @@ injectGlobal`
 		}
 	}
 
-	p {
-		/* font-size: 0.875rem; */
-	}
-
 	h3 {
 		color: ${theme.text.secondary};
 		font-weight: 700;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		text-transform: uppercase;
 		padding: 7px 10px;
 		margin: 0;

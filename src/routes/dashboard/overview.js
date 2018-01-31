@@ -27,6 +27,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 			</Header>
 			<Container flex>
 				<Placeholder>
+					<img src="/assets/images/empty-state-checklist.svg" />
 					<h1>You're all caught up!</h1>
 					<p>No organisations require your attention right now.</p>
 				</Placeholder>
@@ -43,7 +44,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 								key: 'name',
 								label: 'Organisation',
 								value: ({ name }) => name,
-								format: (value, { _id, avatar, name }) => <span><img src={ avatar } /><Link to={ `/${_id}` }>{ name }</Link></span>
+								format: (value, { _id, avatar, name }) => <div><img src={ avatar } /><Link to={ `/${_id}` }>{ name }</Link></div>
 							},
 							{
 								key: 'updated',

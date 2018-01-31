@@ -27,7 +27,7 @@ const Container = styled(({ flex, ...props }) => <div {...props} />)`
 	& > section {
 
 		h1 {
-			font-size: 1rem;
+			font-size: 1.125rem;
 			font-weight: 600;
 		}
 	}

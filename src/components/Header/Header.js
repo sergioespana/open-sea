@@ -9,7 +9,7 @@ const Header = styled(({ ...props }) => <header {...props} />)`
 	h1 {
 		margin: 0;
 		font-weight: 500;
-		font-size: 1.5rem;
+		font-size: 1.625rem;
 	}
 `;
 
