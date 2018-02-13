@@ -3,10 +3,12 @@ import React, { Component } from 'react';
 import { app } from 'mobx-app';
 import AuthForm from 'components/AuthForm';
 import Button from 'components/Button';
+import Error from '@atlaskit/icon/glyph/error';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
+import upperFirst from 'lodash/upperFirst';
 
 const isBlank = (str) => !trim(str);
 
@@ -33,14 +35,23 @@ class AccountSignIn extends Component {
 		return this.handleError(code);
 	}
 
-	handleError = (code) => {
+	handleError = (code) => this.props.VisualStore.showFlag({
+		title: upperFirst(code.split('/')[1].split('-').join(' ')),
+		description: this.getMessage(code),
+		appearance: 'error',
+		icon: <Error />,
+		actions: [
+			{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+		]
+	});
+
+	getMessage = (code) => {
 		switch (code) {
-			case 'auth/reset-sent': return this.setState({ alert: { type: 'info', message: 'A password reset link was sent to your email address.' } });
-			case 'auth/invalid-email': return this.setState({ alert: { type: 'error', message: 'The provided email address is invalid.' } });
-			case 'auth/user-disabled': return this.setState({ alert: { type: 'error', message: <span>Your account is currently disabled. Please <Link to="/contact">contact support</Link>.</span> } });
-			case 'auth/user-not-found': return this.setState({ alert: { type: 'error', message: <span>No account exists for this email address. You may sign up for an account <Link to="/account/signup">here</Link>.</span> } });
-			case 'auth/wrong-password': return this.setState({ alert: { type: 'error', message: <span>The provided password is incorrect for this account. <a onClick={this.resetPassword}>Forgot your password?</a></span> } });
-			default: return this.setState({ alert: { type: 'error', message: 'An unknown error has occurred.' } });
+			case 'auth/invalid-email': return 'The provided email address is invalid.';
+			case 'auth/user-disabled': return 'Your account is currently disabled.';
+			case 'auth/user-not-found': return 'No account exists for this email address.';
+			case 'auth/wrong-password': return 'The provided password is incorrect for this account.';
+			default: return 'An unknown error has occurred.';
 		}
 	}
 

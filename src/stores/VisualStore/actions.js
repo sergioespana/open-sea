@@ -14,7 +14,7 @@ const actions = (state) => {
 
 	const toggleSearchDrawer = action(() => state.searchDrawerOpen = !state.searchDrawerOpen);
 
-	const showFlag = (obj) => state.flags = [...state.flags, { ...obj, id: slugify(obj.title, { lower: true }) }];
+	const showFlag = (obj) => state.flags = [{ ...obj, id: slugify(obj.title, { lower: true }) }, ...state.flags];
 
 	const dismissFlag = (id) => state.flags = reject(state.flags, { id });
 

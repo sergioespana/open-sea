@@ -36,6 +36,10 @@ const AuthForm = styled.form`
 			*:not(:last-child) {
 				margin-bottom: 24px;
 			}
+
+			img {
+				max-width: 60%;
+			}
 		}
 
 		& > div:not(:first-child) {

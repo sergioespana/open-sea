@@ -15,7 +15,8 @@ const isBlank = (str) => !trim(str);
 class AccountResetPassword extends Component {
 	state = {
 		email: '',
-		alert: {}
+		alert: {},
+		success: false
 	}
 
 	onSubmit = async (event) => {
@@ -23,18 +24,17 @@ class AccountResetPassword extends Component {
 		const { AuthStore, VisualStore } = this.props;
 
 		event.preventDefault();
-		this.setState({ alert: {} });
+		this.setState({ alert: {}, success: false });
 		VisualStore.setBusy(true);
 		const { code } = await AuthStore.resetPassword(email);
 		VisualStore.setBusy(false);
 
-		if (!code) return this.handleError('auth/reset-sent');
+		if (!code) return this.setState({ success: true });
 		return this.handleError(code);
 	}
 
 	handleError = (code) => {
 		switch (code) {
-			case 'auth/reset-sent': return this.setState({ alert: { type: 'info', message: 'A password reset link was sent to your email address.' } });
 			case 'auth/invalid-email': return this.setState({ alert: { type: 'error', message: 'The provided email address is invalid.' } });
 			case 'auth/user-disabled': return this.setState({ alert: { type: 'error', message: <span>Your account is currently disabled. Please <Link to="/contact">contact support</Link>.</span> } });
 			case 'auth/user-not-found': return this.setState({ alert: { type: 'error', message: <span>No account exists for this email address. You may sign up for an account <Link to="/account/signup">here</Link>.</span> } });
@@ -44,7 +44,7 @@ class AccountResetPassword extends Component {
 	}
 
 	render = () => {
-		const { email } = this.state;
+		const { email, success } = this.state;
 		const { state } = this.props;
 		const { busy } = state;
 		const shouldPreventSubmit = isBlank(email) || busy;
@@ -56,24 +56,31 @@ class AccountResetPassword extends Component {
 					<h1>Can't log in?</h1>
 				</header>
 				<section>
-					<div>
-						<TextField
-							type="email"
-							autoComplete="email"
-							value={email}
-							placeholder="Enter email"
-							required
-							onChange={linkState(this, 'email')}
-							disabled={busy}
-							fullWidth
-						/>
-						<Button
-							appearance="primary"
-							type="submit"
-							disabled={shouldPreventSubmit}
-							busy={busy}
-						>Send recovery link</Button>
-					</div>
+					{ success ? (
+						<div style={{ textAlign: 'center' }}>
+							<p>We've sent a password reset link to {email}.</p>
+							<img src="/assets/images/empty-state-confirmed.svg" />
+						</div>
+					) : (
+						<div>
+							<TextField
+								type="email"
+								autoComplete="email"
+								value={email}
+								placeholder="Enter email"
+								required
+								onChange={linkState(this, 'email')}
+								disabled={busy}
+								fullWidth
+							/>
+							<Button
+								appearance="primary"
+								type="submit"
+								disabled={shouldPreventSubmit}
+								busy={busy}
+							>Send recovery link</Button>
+						</div>
+					) }
 				</section>
 				<footer>
 					<Link to="/account/signin">Return to log in</Link>
