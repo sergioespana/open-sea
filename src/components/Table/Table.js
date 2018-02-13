@@ -69,10 +69,10 @@ class Table extends Component {
 		const { columns } = this.props;
 		const row = data[0];
 
-		return filter(columns, ({ hidden, key, value }) => {
+		return row ? filter(columns, ({ hidden, key, value }) => {
 			const res = value(row) || row[key];
 			return isString(res) || isBoolean(res);
-		});
+		}) : [];
 	}
 
 	getFilterElement = (data, { format, key, label, value }) => {
@@ -84,7 +84,7 @@ class Table extends Component {
 	}
 
 	render = () => {
-		const { className, columns = [], data: propsData = [], disableSorting, disableFiltering, limit, offset } = this.props;
+		const { className, columns = [], data: propsData = [], disableSorting, disableFiltering, footer = [], limit, offset } = this.props;
 
 		const data = this.sortData(propsData).slice(offset || 0, limit || propsData.length);
 		const filters = this.getFilters(data);
@@ -118,6 +118,12 @@ class Table extends Component {
 							}) }</tr>
 						)) }
 					</tbody>
+					<tfoot>
+						<tr>{ map(footer, (item, i) => {
+							console.log(item);
+							return <td key={i} colSpan={item ? item.props.colSpan : null}>{ item }</td>;
+						}) }</tr>
+					</tfoot>
 				</table>
 			</Fragment>
 		);
