@@ -58,6 +58,8 @@ const MainRoutes = inject(app('VisualStore'))(observer((props) => {
 			<Navigation expanded={expanded} />
 			<Switch>
 				<Route path="/account" component={AccountRoutes} />
+				<Route path="/(create|dashboard|search)" />
+				<Route path="/:orgId" component={OrganisationRoutes} />
 				<Route path="*" />
 			</Switch>
 		</div>
@@ -76,7 +78,7 @@ const MainRoutes = inject(app('VisualStore'))(observer((props) => {
 				<Route path="/create" component={CreateRoutes} authedOnly />
 				<Route path="/dashboard" component={DashboardRoutes} authedOnly />
 				<Route path="/search" authedOnly />
-				<Route path="/:orgId" component={OrganisationRoutes} authedOnly />
+				<Route path="/:orgId" component={OrganisationRoutes} />
 			</Switch>
 			<FlagGroup onDismissed={VisualStore.dismissFlag}>{ map(flags, (flag) => <Flag key={flag.id} {...flag} />) }</FlagGroup>
 		</Dropzone>

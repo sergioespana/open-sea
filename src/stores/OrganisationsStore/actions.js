@@ -1,6 +1,7 @@
 import { action, autorun } from 'mobx';
 import { firebase, prefixKeysWith, omitKeysWith } from '../helpers';
 import { collection } from 'mobx-app';
+import filter from 'lodash/filter';
 import Fuse from 'fuse.js';
 import gt from 'lodash/gt';
 import gte from 'lodash/gte';
@@ -24,7 +25,7 @@ const actions = (state) => {
 
 		added.forEach(async ({ doc }, i) => {
 			const data = prefixKeysWith({ id: doc.id, reports: [], ...doc.data() });
-			firebase.addFirebaseListener(`organisations/${doc.id}`, onOrganisationData(data, max, i));
+			firebase.addFirebaseListener(`organisations/${doc.id}`, onOrganisationData(data));
 			firebase.addFirebaseListener(`organisations/${doc.id}/reports`, onOrganisationReports(doc.id, max, i));
 		});
 
@@ -34,7 +35,7 @@ const actions = (state) => {
 		}));
 	};
 
-	const onOrganisationData = (data, max = 0, i = 0) => action((doc) => doc.exists && organisations.updateOrAdd({ ...data, ...doc.data() }, '_id'));
+	const onOrganisationData = (data) => action((doc) => doc.exists && organisations.updateOrAdd({ ...data, ...doc.data() }, '_id'));
 
 	const onOrganisationReports = (orgId, orgMax = 0, orgI = 0) => ({ docChanges, size }) => {
 		const max = size - 1;
@@ -73,6 +74,11 @@ const actions = (state) => {
 
 	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`users/${uid}/organisations/${orgId}`, { role }).then(() => ({})).catch((error) => error);
 
+	const findById = (orgId) => {
+		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData({ _id: orgId }));
+		firebase.addFirebaseListener(`organisations/${orgId}/reports`, onOrganisationReports(orgId));
+	};
+
 	let searchable = new Fuse(state.organisations, { keys: ['name', '_id'] });
 	const search = (query) => searchable.search(query);
 	
@@ -80,12 +86,16 @@ const actions = (state) => {
 
 	autorun(() => {
 		const { authed, listening } = state;
+
 		if (!listening) return;
+
+		// FIXME: We still need to set loading to false when we're NOT on an organisation route and are unauthed.
 		if (listening && !authed) {
 			organisations.clear();
 			reports.clear();
-			return setLoading(false);
+			return;
 		}
+		
 		setLoading(true);
 		firebase.addFirebaseListener(`users/${authed._uid}/organisations`, onUserOrganisations);
 	});
@@ -96,7 +106,9 @@ const actions = (state) => {
 		...organisations,
 		addUser,
 		create,
-		search
+		findById,
+		search,
+		setLoading
 	};
 };
 

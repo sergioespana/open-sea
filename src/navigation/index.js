@@ -6,7 +6,7 @@ import MdHome from 'react-icons/lib/md/home';
 
 const iconProps = { width: 24, height: 24 };
 
-const OrganisationNavigation = inject(app('state'))(observer((props) => {
+const DefaultNavigation = inject(app('state'))(observer((props) => {
 	const { state } = props;
 	const { loading } = state;
 
@@ -25,4 +25,4 @@ const OrganisationNavigation = inject(app('state'))(observer((props) => {
 	);
 }));
 
-export default OrganisationNavigation;
+export default DefaultNavigation;

@@ -2,6 +2,7 @@ import { Content, Expander, Group, Header, Inner, Button, Section } from 'compon
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
+import DefaultNavigation from './';
 import MdAccountCircle from 'react-icons/lib/md/account-circle';
 import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
@@ -15,7 +16,7 @@ import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
 
 const iconProps = { width: 24, height: 24 };
-const links = ({ _id: orgId, isNetwork }) => isNetwork ? [
+const links = ({ _id: orgId, isNetwork, isPublic }) => isNetwork ? [
 	<Button to={`/${orgId}/overview`} key={`/${orgId}/overview`}><MdInbox {...iconProps} />Overview</Button>,
 	<Button to={`/${orgId}/organisations`} key={`/${orgId}/organisations`}><MdBusiness {...iconProps} />Organisations</Button>,
 	<Button to={`/${orgId}/compare`} key={`/${orgId}/compare`}><MdCompareArrows {...iconProps} />Compare</Button>,
@@ -30,8 +31,10 @@ const links = ({ _id: orgId, isNetwork }) => isNetwork ? [
 const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(observer((props) => {
 	const { match, OrganisationsStore, state, VisualStore } = props;
 	const { params: { orgId } } = match;
-	const { expanded, loading } = state;
+	const { authed, expanded, loading } = state;
 	const organisation = OrganisationsStore.getItem(orgId, '_id') || {};
+
+	if (!authed && !loading && !organisation.isPublic) return <DefaultNavigation />;
 
 	return (
 		<Fragment>
@@ -39,7 +42,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 				<Inner>
 					<Content fill>
 						<Header loading={loading}>
-							<Button to="/" round><MdHome {...iconProps} /></Button>
+							<Button to={authed ? '/' : '/product'} round><MdHome {...iconProps} /></Button>
 						</Header>
 						<Group loading={loading}>
 							<Button round onClick={VisualStore.toggleSearchDrawer}><MdSearch {...iconProps} /></Button>
@@ -68,7 +71,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 					</Content>
 				</Inner>
 			</Section>
-			<Expander toggle={VisualStore.toggle} expanded={expanded} />
+			<Expander toggle={VisualStore.toggle} expanded={expanded}  hidden={!authed && !organisation.isPublic} />
 		</Fragment>
 	);
 }));
