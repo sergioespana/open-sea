@@ -22,6 +22,7 @@ class AccountResetPassword extends Component {
 		const { email } = this.state;
 		const { AuthStore, VisualStore } = this.props;
 
+		event.preventDefault();
 		this.setState({ alert: {} });
 		VisualStore.setBusy(true);
 		const { code } = await AuthStore.resetPassword(email);
