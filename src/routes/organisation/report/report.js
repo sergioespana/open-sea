@@ -67,6 +67,7 @@ class OrganisationReport extends Component {
 				<Container>
 					{ isEmpty(model) ? (
 						<Placeholder>
+							<img src="/assets/images/empty-state-no-model.svg" />
 							<h1>Whoa there!</h1>
 							<p>
 								<span>No model exists for this report. Drop one on the screen to get started</span>
@@ -76,9 +77,10 @@ class OrganisationReport extends Component {
 						</Placeholder>
 					) : isEmpty(data) ? (
 						<Placeholder>
+							<img src="/assets/images/empty-state-no-data.svg" />
 							<h1>Whoa there!</h1>
 							<p>No data exists for this report. Add some data to get started.</p>
-							<p><Button cta color="#ffffff" to={`/${orgId}/${repId}/data`}>Add data</Button></p>
+							<p><Button appearance="primary" to={`/${orgId}/${repId}/data`}>Add data</Button></p>
 						</Placeholder>
 					) : map(reportItems, (item, i) => {
 						const data = {
