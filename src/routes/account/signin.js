@@ -73,6 +73,7 @@ class AccountSignIn extends Component {
 					<div>
 						<TextField
 							type="email"
+							autoComplete="email"
 							value={email}
 							placeholder="Enter email"
 							required
@@ -82,6 +83,7 @@ class AccountSignIn extends Component {
 						/>
 						<TextField
 							type="password"
+							autoComplete="current-password"
 							value={password}
 							placeholder="Enter password"
 							required

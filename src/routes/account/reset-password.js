@@ -58,6 +58,7 @@ class AccountResetPassword extends Component {
 					<div>
 						<TextField
 							type="email"
+							autoComplete="email"
 							value={email}
 							placeholder="Enter email"
 							required
