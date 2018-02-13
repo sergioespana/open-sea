@@ -91,6 +91,7 @@ class AccountSignUp extends Component {
 							appearance="primary"
 							type="submit"
 							disabled={shouldPreventSubmit}
+							busy={busy}
 						>Sign up</Button>
 					</div>
 				</section>

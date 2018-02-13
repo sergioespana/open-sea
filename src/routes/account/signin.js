@@ -33,19 +33,6 @@ class AccountSignIn extends Component {
 		return this.handleError(code);
 	}
 
-	resetPassword = async (event) => {
-		const { email } = this.state;
-		const { AuthStore, VisualStore } = this.props;
-
-		this.setState({ alert: {} });
-		VisualStore.setBusy(true);
-		const { code } = await AuthStore.resetPassword(email);
-		VisualStore.setBusy(false);
-
-		if (!code) return this.handleError('auth/reset-sent');
-		return this.handleError(code);
-	}
-
 	handleError = (code) => {
 		switch (code) {
 			case 'auth/reset-sent': return this.setState({ alert: { type: 'info', message: 'A password reset link was sent to your email address.' } });
@@ -95,6 +82,7 @@ class AccountSignIn extends Component {
 							appearance="primary"
 							type="submit"
 							disabled={shouldPreventSubmit}
+							busy={busy}
 						>Log in</Button>
 					</div>
 					<div>

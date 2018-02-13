@@ -1,6 +1,8 @@
 import { darken, lighten, transparentize } from 'polished';
-import { createElement } from 'react';
+import React, { createElement } from 'react';
 import { Link } from 'components/Link';
+import omit from 'lodash/omit';
+import Spinner from 'components/Spinner';
 import styled from 'styled-components';
 
 const getColor = ({ appearance = 'default', disabled, selected, theme }) => {
@@ -58,10 +60,11 @@ const getDisabledColor = ({ theme }) => theme.text.secondary;
 const getDisabledBackgroundColor = (props) => getBackgroundColor(props) === 'transparent' ? 'transparent' : props.theme.light;
 
 const Button = styled((props) => {
-	const { activeColor, activeBackgroundColor, appearance, color, backgroundColor, hoverBackgroundColor, disabledColor, disabledBackgroundColor, isSelected, ...rest } = props;
+	const rest = omit(props, 'activeColor', 'activeBackgroundColor', 'appearance', 'busy', 'color', 'backgroundColor', 'hoverBackgroundColor', 'disabledColor', 'disabledBackgroundColor', 'isSelected');
 	const to = rest.disabled ? undefined : rest.to;
 	const type = to ? null : rest.type || 'button';
-	return createElement(to ? Link : 'button', { ...rest, to, type });
+	const children = props.busy ? <Spinner /> : rest.children;
+	return createElement(to ? Link : 'button', { ...rest, children, to, type });
 }).attrs({
 	color: (props) => getColor(props),
 	backgroundColor: (props) => getBackgroundColor(props),
@@ -101,9 +104,12 @@ const Button = styled((props) => {
 
 	&[disabled] {
 		cursor: not-allowed;
-		color: ${({ disabledColor }) => disabledColor};
-		background-color: ${({ disabledBackgroundColor }) => disabledBackgroundColor};
-		text-decoration: none;
+
+		${({ busy, disabledColor, disabledBackgroundColor }) => !busy && `
+			color: ${disabledColor};
+			background-color: ${disabledBackgroundColor};
+			text-decoration: none;
+		`}
 	}
 `;
 
