@@ -1,13 +1,14 @@
 import { action, autorun } from 'mobx';
 import { firebase, prefixKeysWith, omitKeysWith } from '../helpers';
 import { collection } from 'mobx-app';
-import filter from 'lodash/filter';
 import Fuse from 'fuse.js';
+import get from 'lodash/get';
 import gt from 'lodash/gt';
 import gte from 'lodash/gte';
 import isBoolean from 'lodash/isBoolean';
 import isObject from 'lodash/isObject';
 import isString from 'lodash/isString';
+import { matchPath } from 'react-router-dom';
 import partition from 'lodash/partition';
 import reject from 'lodash/reject';
 
@@ -89,10 +90,14 @@ const actions = (state) => {
 
 		if (!listening) return;
 
-		// FIXME: We still need to set loading to false when we're NOT on an organisation route and are unauthed.
 		if (listening && !authed) {
 			organisations.clear();
 			reports.clear();
+
+			const match = matchPath(location.pathname, { path: '/:orgId' });
+			const orgId = get(match, 'params.orgId');
+
+			if (!orgId || ['account', 'create', 'dashboard'].includes(orgId)) return setLoading(false);
 			return;
 		}
 		
