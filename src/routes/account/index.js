@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import AccountLogout from './logout';
 import AccountProfile from './profile';
+import AccountResetPassword from './reset-password';
 import AccountSignIn from './signin';
 import AccountSignUp from './signup';
 import { app } from 'mobx-app';
@@ -24,6 +25,7 @@ const AccountAuthenticationRoutes = () => (
 	<Switch>
 		<Route path="/account/signin" exact component={AccountSignIn} unauthedOnly />
 		<Route path="/account/signup" exact component={AccountSignUp} unauthedOnly />
+		<Route path="/account/reset-password" component={AccountResetPassword} unauthedOnly />
 		<Route path="/account/logout" exact component={AccountLogout} authedOnly />
 	</Switch>
 );
@@ -54,7 +56,7 @@ const AccountRoutes = inject(app('state'))(observer((props) => {
 	if (loading) return (
 		<main>
 			<Switch>
-				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+				<Route path="/account/(signin|signup|logout|reset-password)" component={AccountAuthenticationRoutes} />
 			</Switch>
 		</main>
 	);
@@ -62,7 +64,7 @@ const AccountRoutes = inject(app('state'))(observer((props) => {
 	return (
 		<main>
 			<Switch>
-				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+				<Route path="/account/(signin|signup|logout|reset-password)" component={AccountAuthenticationRoutes} />
 				<Route path="*" component={AccountMainRoutes} />
 			</Switch>
 		</main>

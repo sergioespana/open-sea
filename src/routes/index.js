@@ -27,7 +27,7 @@ const Navigation = ({ expanded }) => (
 		<Nav expanded={expanded}>
 			<Switch>
 				<Route path="/" exact component={DashboardNavigation} />
-				<Route path="/account/(signin|signup|logout)" exact />
+				<Route path="/account/(signin|signup|logout|reset-password)" exact />
 				<Route path="/account" component={DashboardNavigation} />
 				<Route path="/create" component={DefaultNavigation} />
 				<Route path="/dashboard" component={DashboardNavigation} />

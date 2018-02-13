@@ -35,7 +35,7 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 					<NavLink to={`/${orgId}/settings/export`} exact>Export data</NavLink>
 					<NavLink to={`/${orgId}/settings/delete`} exact>Delete organisation</NavLink>
 				</Sidenav>
-				<Container>
+				<Container style={{ flex: 'auto' }}>
 					<Switch>
 						<Redirect from={`/${orgId}/settings`} exact to={`/${orgId}/settings/details`} replace />
 						<Route path="/:orgId/settings/details" component={OrganisationSettingsDetails} />
