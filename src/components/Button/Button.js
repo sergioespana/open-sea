@@ -79,7 +79,7 @@ const Button = styled((props) => {
 	align-items: center;
 	justify-content: center;
 	font-family: inherit;
-	${({ appearance }) => appearance === 'primary' && `font-weight: 500;`}
+	${({ appearance, disabled }) => (appearance === 'primary' && !disabled) && `font-weight: 500;`}
 	text-decoration: none;
 	border-radius: 3px;
 	border: none;
@@ -104,10 +104,6 @@ const Button = styled((props) => {
 		color: ${({ disabledColor }) => disabledColor};
 		background-color: ${({ disabledBackgroundColor }) => disabledBackgroundColor};
 		text-decoration: none;
-	}
-
-	&:not(:first-child) {
-		margin-left: 4px;
 	}
 `;
 

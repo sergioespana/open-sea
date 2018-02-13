@@ -49,6 +49,12 @@ injectGlobal`
 			text-decoration: underline;
 		}
 	}
+	
+	h1 {
+		margin: 0;
+		font-weight: 500;
+		font-size: 1.625rem;
+	}
 
 	h3 {
 		color: ${theme.text.secondary};
