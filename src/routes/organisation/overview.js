@@ -60,27 +60,31 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 			<Head organisation={organisation} />
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container flex>
-				{ isEmpty(mostRecent) || reportsWithData.length < 2
-					? <Placeholder />
-					: map(reportItems, (item, i) => {
-						const data = {
-							labels: map(reportsWithData, ({ name }) => name),
-							datasets: map(item.data, (indId) => ({
-								title: indicators[indId].name,
-								values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
-							}))
-						};
+				<section style={{ flex: 'auto', display: 'flex', flexWrap: 'wrap' }}>
+					{ isEmpty(mostRecent) || reportsWithData.length < 2
+						? <Placeholder />
+						: map(reportItems, (item, i) => {
+							const data = {
+								labels: map(reportsWithData, ({ name }) => name),
+								datasets: map(item.data, (indId) => ({
+									title: indicators[indId].name,
+									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
+								}))
+							};
 
-						return (
-							<Chart
-								key={i}
-								title={item.name}
-								type="line"
-								data={data}
-							/>
-						);
-					})
-				}
+							return (
+								<Chart
+									key={i}
+									title={item.name}
+									type="line"
+									data={data}
+									colors={item.colors || []}
+									style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
+								/>
+							);
+						})
+					}
+				</section>
 				<section style={{ flex: '0 0 375px' }}>
 					<h1>Reports</h1>
 					<Table

@@ -4,6 +4,15 @@
 		"name": { "type": "string" },
 		"description": { "type": "string" },
 		"version": { "type": "string" },
+		"categories": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" }
+				}
+			}
+		},
 		"metrics": {
 			"type": "object",
 			"additionalProperties": {
@@ -26,6 +35,7 @@
 				"properties": {
 					"name": { "type": "string" },
 					"description": { "type": "string" },
+					"category": { "type": "string" },
 					"type": {
 						"type": "string",
 						"enum": ["text", "number", "percentage", "list" ]
@@ -42,19 +52,28 @@
 				"properties": {
 					"name": { "type": "string" },
 					"chart": {
-						"type": "string",
-						"enum": ["line", "bar", "scatter", "pie", "percentage"]
+						"type": "object",
+						"properties": {
+							"data": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"type": {
+								"type": "string",
+								"enum": ["line", "bar", "scatter", "pie", "percentage"]
+							}
+						},
+						"required": ["data", "type"]
 					},
-					"data": {
-						"type": "array",
-						"items": { "type": "string" }
-					},
-					"useHistoricData": {
-						"enum": [false, "sum", "average"],
-						"default": false
+					"value": { "type": "string" },
+					"width": {
+						"type": "number",
+						"default": 100
 					}
 				},
-				"required": ["name", "data", "useHistoricData"]
+				"required": ["name", "width"]
 			}
 		}
 	},

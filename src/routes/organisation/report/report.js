@@ -5,6 +5,7 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Chart from 'components/Chart';
 import Container from 'components/Container';
+import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import HiddenOnPrint from 'components/HiddenOnPrint';
@@ -29,6 +30,45 @@ class OrganisationReport extends Component {
 		history.push(`/${orgId}/${repId}/data`);
 	}
 
+	renderReportItems = (items) => {
+		const { match: { params: { orgId, repId } }, ReportsStore } = this.props;
+		const report = ReportsStore.getItem(`${orgId}/${repId}`, '_id');
+		const model = report.model || {};
+		const indicators = model.indicators || {};
+
+		return map(items, (item, i) => {
+			if (!item.chart) {
+				if (!item.value) return null;
+
+				const value = ReportsStore.compute(orgId, repId, item.value);
+				return (
+					<div style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}>
+						<h2>{ item.name }</h2>
+						<h1>{ value }</h1>
+					</div>
+				);
+			}
+
+			const data = {
+				labels: map(item.data, (indId) => indicators[indId].name),
+				datasets: [{
+					values: map(item.data, (indId) => ReportsStore.compute(orgId, repId, indId))
+				}]
+			};
+
+			return (
+				<Chart
+					key={i}
+					title={item.name}
+					type={item.chart === 'pie' ? 'percentage' : item.chart}
+					data={data}
+					colors={item.colors || []}
+					style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
+				/>
+			);
+		});
+	}
+
 	render = () => {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = this.props;
 		const organisation = OrganisationsStore.getItem(orgId, '_id');
@@ -36,7 +76,7 @@ class OrganisationReport extends Component {
 		const report = ReportsStore.getItem(`${orgId}/${repId}`, '_id');
 		const data = report._data;
 		const model = report.model || {};
-		const indicators = model.indicators || {};
+		const categories = model.categories || [];
 		const reportItems = model.reportItems || [];
 
 		const mostRecent = findLast(reports, 'model') || {};
@@ -64,7 +104,7 @@ class OrganisationReport extends Component {
 						</Actions>
 					</HiddenOnPrint>
 				</Header>
-				<Container>
+				<Container flex wrap>
 					{ isEmpty(model) ? (
 						<Placeholder>
 							<img src="/assets/images/empty-state-no-model.svg" />
@@ -82,24 +122,9 @@ class OrganisationReport extends Component {
 							<p>No data exists for this report. Add some data to get started.</p>
 							<p><Button appearance="primary" to={`/${orgId}/${repId}/data`}>Add data</Button></p>
 						</Placeholder>
-					) : map(reportItems, (item, i) => {
-						const data = {
-							labels: map(item.data, (indId) => indicators[indId].name),
-							datasets: [{
-								values: map(item.data, (indId) => ReportsStore.compute(orgId, repId, indId))
-							}]
-						};
-
-						return (
-							<Chart
-								key={i}
-								title={item.name}
-								type={item.chart === 'pie' ? 'percentage' : item.chart}
-								data={data}
-								colors={item.colors || []}
-							/>
-						);
-					}) }
+					) : categories.length > 0
+						? map(categories, (category) => this.renderReportItems(filter(reportItems, { category })))
+						: this.renderReportItems(reportItems) }
 				</Container>
 			</Fragment>
 		);
