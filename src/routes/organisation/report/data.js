@@ -1,14 +1,15 @@
 import Form, { Alert, Input } from 'components/Form';
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';
 import isEqual from 'lodash/isEqual';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
+import { withRouter } from 'react-router-dom';
 
 @inject(app('OrganisationsStore', 'ReportsStore', 'VisualStore'))
 @observer
@@ -58,12 +59,14 @@ class OrganisationReportData extends Component {
 			<Fragment>
 				<Helmet title={`${organisation.name} / ${report.name} / Data`} />
 				<Header>
-					<Breadcrumbs>
-						<Link to={`/${orgId}`}>{ organisation.name }</Link>
-						<Link to={`/${orgId}/reports`}>Reports</Link>
-						<Link to={`/${orgId}/${repId}`}>{ report.name }</Link>
-					</Breadcrumbs>
-					<h1>Data</h1>
+					<Section>
+						<Breadcrumbs>
+							<Link to={`/${orgId}`}>{ organisation.name }</Link>
+							<Link to={`/${orgId}/reports`}>Reports</Link>
+							<Link to={`/${orgId}/${repId}`}>{ report.name }</Link>
+						</Breadcrumbs>
+						<h1>Data</h1>
+					</Section>
 				</Header>
 				<Container>
 					<Form onSubmit={this.onSubmit}>
@@ -82,7 +85,7 @@ class OrganisationReportData extends Component {
 							)) }
 						</section>
 						<footer>
-							<Button type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
+							<Button appearance="primary" type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
 							<Link to={`/${orgId}/${repId}`}>Cancel</Link>
 						</footer>
 					</Form>

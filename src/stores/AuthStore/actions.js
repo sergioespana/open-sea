@@ -37,6 +37,8 @@ const actions = (state) => {
 		firebase.auth.signOut();
 	};
 
+	const resetPassword = async (email) => firebase.auth.sendPasswordResetEmail(email).then(() => ({})).catch((error) => error);
+
 	const create = async (email, password, obj) => {
 		const defaults = {
 			avatar: '/assets/images/profile-avatar-placeholder.png',
@@ -65,6 +67,7 @@ const actions = (state) => {
 	return {
 		...users,
 		create,
+		resetPassword,
 		signIn,
 		signOut
 	};

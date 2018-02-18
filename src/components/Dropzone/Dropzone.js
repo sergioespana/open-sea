@@ -2,10 +2,12 @@ import { inject, observer } from 'mobx-react';
 import { matchPath, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 import { app } from 'mobx-app';
+import Error from '@atlaskit/icon/glyph/error';
 import get from 'lodash/get';
 import isNull from 'lodash/isNull';
 import isUndefined from 'lodash/isUndefined';
 import styled from 'styled-components';
+import trimStart from 'lodash/trimStart';
 import Zone from 'react-dropzone';
 
 const Overlay = styled(({ hidden, ...props }) => !hidden && <div {...props} />)`
@@ -30,8 +32,22 @@ class Dropzone extends Component {
 	onDragLeave = () => this.state.dragging && this.setState({ dragging: false });
 
 	onDrop = (accepted, rejected) => {
+		const { VisualStore } = this.props;
+
 		this.onDragLeave();
-		if (accepted.length === 0 && rejected.length > 0) return alert('file rejected'); // FIXME: Alerts are bad.
+
+		if (accepted.length === 0 && rejected.length > 0) {
+			VisualStore.showFlag({
+				title: 'Unsupported file type',
+				description: 'The file you dropped is of an unsupported file type. Please upload a .yml file.',
+				appearance: 'error',
+				icon: <Error />,
+				actions: [
+					{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+				]
+			});
+			return;
+		}
 
 		const file = accepted[0];
 		const fr = new FileReader();
@@ -40,16 +56,38 @@ class Dropzone extends Component {
 	}
 
 	onFileRead = async ({ target: { result } }) => {
-		if (!result) return alert('could not read file'); // FIXME: Alerts are ugly.
+		const { VisualStore } = this.props;
 
-		const { history, ReportsStore, VisualStore } = this.props;
+		if (!result) {
+			VisualStore.showFlag({
+				title: 'Unable to read file',
+				description: 'The file you dropped could not be parsed. Make sure it is a proper .yml configuration file.',
+				appearance: 'error',
+				icon: <Error />,
+				actions: [
+					{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+				]
+			});
+			return;
+		}
+
+		const { history, ReportsStore } = this.props;
 		const model = ReportsStore.parseTextToModel(result);
 		const validationErrors = ReportsStore.validateModel(model);
 		
 		if (validationErrors.length > 0) {
-			// FIXME: Properly handle errors.
-			console.log(validationErrors);
-			return alert('error in model');
+			const error = validationErrors[0];
+
+			VisualStore.showFlag({
+				title: 'Your model contains errors',
+				description: `In object "${trimStart(error.dataPath, '.')}", field "${error.keyword}" ${error.message}.`,
+				appearance: 'error',
+				icon: <Error />,
+				actions: [
+					{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+				]
+			});
+			return;
 		}
 		
 		const { params: { orgId, repId } } = matchPath(location.pathname, { path: '/:orgId/:repId' });

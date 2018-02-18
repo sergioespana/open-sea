@@ -1,13 +1,15 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { NavLink as Link, Redirect, Switch } from 'react-router-dom';
 import React, { Fragment } from 'react';
+import { Redirect, Switch } from 'react-router-dom';
 import AccountLogout from './logout';
 import AccountProfile from './profile';
+import AccountResetPassword from './reset-password';
 import AccountSignIn from './signin';
 import AccountSignUp from './signup';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
-import Header from 'components/Header';
+import { NavLink as Link } from 'components/Link';
 import Route from 'components/Route';
 import Sidenav from 'components/Sidenav';
 
@@ -23,6 +25,7 @@ const AccountAuthenticationRoutes = () => (
 	<Switch>
 		<Route path="/account/signin" exact component={AccountSignIn} unauthedOnly />
 		<Route path="/account/signup" exact component={AccountSignUp} unauthedOnly />
+		<Route path="/account/reset-password" component={AccountResetPassword} unauthedOnly />
 		<Route path="/account/logout" exact component={AccountLogout} authedOnly />
 	</Switch>
 );
@@ -30,7 +33,9 @@ const AccountAuthenticationRoutes = () => (
 const AccountMainRoutes = () => (
 	<Fragment>
 		<Header>
-			<h1>Account</h1>
+			<Section>
+				<h1>Account</h1>
+			</Section>
 		</Header>
 		<Container flex>
 			<AccountNavigation />
@@ -51,7 +56,7 @@ const AccountRoutes = inject(app('state'))(observer((props) => {
 	if (loading) return (
 		<main>
 			<Switch>
-				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+				<Route path="/account/(signin|signup|logout|reset-password)" component={AccountAuthenticationRoutes} />
 			</Switch>
 		</main>
 	);
@@ -59,7 +64,7 @@ const AccountRoutes = inject(app('state'))(observer((props) => {
 	return (
 		<main>
 			<Switch>
-				<Route path="/account/(signin|signup|logout)" component={AccountAuthenticationRoutes} />
+				<Route path="/account/(signin|signup|logout|reset-password)" component={AccountAuthenticationRoutes} />
 				<Route path="*" component={AccountMainRoutes} />
 			</Switch>
 		</main>

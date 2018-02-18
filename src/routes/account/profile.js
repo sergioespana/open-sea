@@ -25,7 +25,7 @@ const AccountProfile = inject(app('AuthStore'))(observer((props) => {
 				/>
 			</section>
 			<footer>
-				<Button>Update</Button>
+				<Button appearance="primary">Update</Button>
 			</footer>
 		</Form>
 	);

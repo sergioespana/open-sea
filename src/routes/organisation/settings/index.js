@@ -1,7 +1,8 @@
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
-import { Link, NavLink, Redirect, Switch } from 'react-router-dom';
+import { Link, NavLink } from 'components/Link';
 import React, { Fragment } from 'react';
+import { Redirect, Switch } from 'react-router-dom';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
 import Helmet from 'react-helmet';
@@ -18,10 +19,12 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 		<Fragment>
 			<Helmet title={`${organisation.name} / Settings`} />
 			<Header>
-				<Breadcrumbs>
-					<Link to={`/${orgId}`}>{ organisation.name }</Link>
-				</Breadcrumbs>
-				<h1>Settings</h1>
+				<Section>
+					<Breadcrumbs>
+						<Link to={`/${orgId}`}>{ organisation.name }</Link>
+					</Breadcrumbs>
+					<h1>Settings</h1>
+				</Section>
 			</Header>
 			<Container flex>
 				<Sidenav>
@@ -32,7 +35,7 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 					<NavLink to={`/${orgId}/settings/export`} exact>Export data</NavLink>
 					<NavLink to={`/${orgId}/settings/delete`} exact>Delete organisation</NavLink>
 				</Sidenav>
-				<Container>
+				<Container style={{ flex: 'auto' }}>
 					<Switch>
 						<Redirect from={`/${orgId}/settings`} exact to={`/${orgId}/settings/details`} replace />
 						<Route path="/:orgId/settings/details" component={OrganisationSettingsDetails} />

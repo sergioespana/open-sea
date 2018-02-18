@@ -10,7 +10,7 @@ const Wrapper = styled(({ ...props }) => <div {...props} />)`
 	padding: 4px 0;
 	margin: 1px 0;
 	color: ${({ theme }) => theme.text.secondary};
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 `;
 const labelStyles = css`
 	padding: 5px 15px 0 0;

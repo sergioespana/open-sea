@@ -1,18 +1,19 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Container from 'components/Container';
-import Header from 'components/Header';
 import Helmet from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
+import reject from 'lodash/reject';
 import Table from 'components/Table';
 
 const DashboardOverview = inject(app('state'))(observer((props) => {
 	const { state } = props;
-	const { organisations } = state;
+	const organisations = reject(state.organisations, ['isNetwork', true]);
 
 	return (
 		<Fragment>
@@ -20,17 +21,21 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 				<title>dashboard / home</title>
 			</Helmet>
 			<Header>
-				<h1>Dashboard</h1>
+				<Section>
+					<h1>Dashboard</h1>
+				</Section>
 			</Header>
 			<Container flex>
 				<Placeholder>
-					<h1>You're all caught up!</h1>
-					<p>No organisations require your attention right now.</p>
+					<img src="/assets/images/empty-state-checklist.svg" />
+					<h1>All done!</h1>
+					<p>No organisations or networks require your attention right now.</p>
 				</Placeholder>
 				<section style={{ flex: '0 0 375px' }}>
 					<h1>Organisations</h1>
 					<Table
 						disableSorting
+						disableFiltering
 						defaultSort="-updated"
 						data={organisations}
 						limit={4}
@@ -39,7 +44,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 								key: 'name',
 								label: 'Organisation',
 								value: ({ name }) => name,
-								format: (value, { _id, avatar, name }) => <span><img src={ avatar } /><Link to={ `/${_id}` }>{ name }</Link></span>
+								format: (value, { _id, avatar, name }) => <div><img src={ avatar } /><Link to={ `/${_id}` }>{ name }</Link></div>
 							},
 							{
 								key: 'updated',

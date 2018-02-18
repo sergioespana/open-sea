@@ -2,11 +2,13 @@ import { action, autorun } from 'mobx';
 import { firebase, prefixKeysWith, omitKeysWith } from '../helpers';
 import { collection } from 'mobx-app';
 import Fuse from 'fuse.js';
+import get from 'lodash/get';
 import gt from 'lodash/gt';
 import gte from 'lodash/gte';
 import isBoolean from 'lodash/isBoolean';
 import isObject from 'lodash/isObject';
 import isString from 'lodash/isString';
+import { matchPath } from 'react-router-dom';
 import partition from 'lodash/partition';
 import reject from 'lodash/reject';
 
@@ -24,7 +26,7 @@ const actions = (state) => {
 
 		added.forEach(async ({ doc }, i) => {
 			const data = prefixKeysWith({ id: doc.id, reports: [], ...doc.data() });
-			firebase.addFirebaseListener(`organisations/${doc.id}`, onOrganisationData(data, max, i));
+			firebase.addFirebaseListener(`organisations/${doc.id}`, onOrganisationData(data));
 			firebase.addFirebaseListener(`organisations/${doc.id}/reports`, onOrganisationReports(doc.id, max, i));
 		});
 
@@ -34,7 +36,7 @@ const actions = (state) => {
 		}));
 	};
 
-	const onOrganisationData = (data, max = 0, i = 0) => action((doc) => doc.exists && organisations.updateOrAdd({ ...data, ...doc.data() }, '_id'));
+	const onOrganisationData = (data) => action((doc) => doc.exists && organisations.updateOrAdd({ ...data, ...doc.data() }, '_id'));
 
 	const onOrganisationReports = (orgId, orgMax = 0, orgI = 0) => ({ docChanges, size }) => {
 		const max = size - 1;
@@ -73,6 +75,11 @@ const actions = (state) => {
 
 	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`users/${uid}/organisations/${orgId}`, { role }).then(() => ({})).catch((error) => error);
 
+	const findById = (orgId) => {
+		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData({ _id: orgId }));
+		firebase.addFirebaseListener(`organisations/${orgId}/reports`, onOrganisationReports(orgId));
+	};
+
 	let searchable = new Fuse(state.organisations, { keys: ['name', '_id'] });
 	const search = (query) => searchable.search(query);
 	
@@ -80,12 +87,20 @@ const actions = (state) => {
 
 	autorun(() => {
 		const { authed, listening } = state;
+
 		if (!listening) return;
+
 		if (listening && !authed) {
 			organisations.clear();
 			reports.clear();
-			return setLoading(false);
+
+			const match = matchPath(location.pathname, { path: '/:orgId' });
+			const orgId = get(match, 'params.orgId');
+
+			if (!orgId || ['account', 'create', 'dashboard'].includes(orgId)) return setLoading(false);
+			return;
 		}
+		
 		setLoading(true);
 		firebase.addFirebaseListener(`users/${authed._uid}/organisations`, onUserOrganisations);
 	});
@@ -96,7 +111,9 @@ const actions = (state) => {
 		...organisations,
 		addUser,
 		create,
-		search
+		findById,
+		search,
+		setLoading
 	};
 };
 

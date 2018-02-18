@@ -1,19 +1,26 @@
-import { Link, withRouter } from 'react-router-dom';
 import { parse, stringify } from 'query-string';
 import React, { Component, Fragment } from 'react';
+import Button from 'components/Button';
+import filter from 'lodash/filter';
 import find from 'lodash/find';
+import isBoolean from 'lodash/isBoolean';
+import isString from 'lodash/isString';
+import { Link } from 'components/Link';
 import map from 'lodash/map';
 import MdArrowDropDown from 'react-icons/lib/md/arrow-drop-down';
 import MdArrowDropUp from 'react-icons/lib/md/arrow-drop-up';
 import sortBy from 'lodash/sortBy';
 import styled from 'styled-components';
+import uniq from 'lodash/uniq';
+import { withRouter } from 'react-router-dom';
 
 const Filters = styled(({ hidden, ...props }) => !hidden && <div {...props} />)`
-	text-transform: uppercase;
-	color: ${({ theme }) => theme.text.secondary};
-	font-size: 0.75rem;
-	font-weight: 500;
+	/* font-size: 0.875rem */;
 	margin: 20px 0 10px 0;
+
+	h3 {
+		display: inline;
+	}
 `;
 
 class Table extends Component {
@@ -58,18 +65,37 @@ class Table extends Component {
 		return value ? value(o) : o[sort];
 	}
 
-	render = () => {
-		const { className, columns = [], data: propsData = [], disableSorting, filters, limit, offset, ...props } = this.props;
+	getFilters = (data) => {
+		const { columns } = this.props;
+		const row = data[0];
 
-		let data = this.sortData(propsData).slice(offset || 0, limit || propsData.length);
+		return row ? filter(columns, ({ hidden, key, value }) => {
+			const res = value(row) || row[key];
+			return isString(res) || isBoolean(res);
+		}) : [];
+	}
+
+	getFilterElement = (data, { format, key, label, value }) => {
+		const row = data[0];
+		const res = value(row) || row[key];
+
+		if (isBoolean(res)) return <Button key={key}>{ label }</Button>;
+		return null;
+	}
+
+	render = () => {
+		const { className, columns = [], data: propsData = [], disableSorting, disableFiltering, footer = [], limit, offset } = this.props;
+
+		const data = this.sortData(propsData).slice(offset || 0, limit || propsData.length);
+		const filters = this.getFilters(data);
 
 		return (
 			<Fragment>
-				<Filters hidden={!filters}>Filter by: { map(filters, (key) => <span>{ key }</span>) }</Filters>
+				<Filters hidden={disableFiltering || filters.length === 0}><h3>Filter by: </h3>{ map(filters, (filter) => this.getFilterElement(data, filter)) }</Filters>
 				<table className={className}>
 					<thead>
-						<tr>{ map(columns, ({ hidden, key, label }) => {
-							if (hidden) return null;
+						<tr>{ map(columns, ({ hidden, key, label, labelHidden }) => {
+							if (hidden || labelHidden) return null;
 							if (disableSorting) return <th key={key}><span>{ label }</span></th>;
 							return (
 								<th key={key}>
@@ -92,6 +118,12 @@ class Table extends Component {
 							}) }</tr>
 						)) }
 					</tbody>
+					<tfoot>
+						<tr>{ map(footer, (item, i) => {
+							console.log(item);
+							return <td key={i} colSpan={item ? item.props.colSpan : null}>{ item }</td>;
+						}) }</tr>
+					</tfoot>
 				</table>
 			</Fragment>
 		);
@@ -101,7 +133,7 @@ class Table extends Component {
 export default withRouter(styled(Table)`
 	width: 100%;
 	text-align: left;
-	font-size: 0.875rem;
+	/* font-size: 0.875rem */;
 	border-collapse: collapse;
 
 	thead,
@@ -146,7 +178,7 @@ export default withRouter(styled(Table)`
 	td {
 		padding: 7px 10px;
 
-		span {
+		div {
 			display: flex;
 			align-items: center;
 		}

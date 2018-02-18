@@ -41,7 +41,7 @@ injectGlobal`
 	a {
 		color: #0052CC;
 		text-decoration: none;
-		font-size: 0.875rem;
+		/* font-size: 0.875rem; */
 		
 		:hover {
 			cursor: pointer;
@@ -49,9 +49,27 @@ injectGlobal`
 			text-decoration: underline;
 		}
 	}
+	
+	h1 {
+		margin: 0;
+		font-weight: 500;
+		font-size: 1.625rem;
+	}
 
-	p {
+	h3 {
+		color: ${theme.text.secondary};
+		font-weight: 700;
 		font-size: 0.875rem;
+		text-transform: uppercase;
+		padding: 7px 10px;
+		margin: 0;
+		text-align: left;
+		width: 100%;
+
+		&:not(:first-child) {
+			margin-top: 5px;
+			border-top: 1px solid #ccc;
+		}
 	}
 `;
 

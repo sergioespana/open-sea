@@ -7,6 +7,7 @@ const VisualStore = (state, initial) => {
 	extendObservable(state, {
 		busy: false,
 		expanded: computed(() => localStorage.getItem('navExpanded')),
+		flags: [],
 		createDrawerOpen: false,
 		searchDrawerOpen: false
 	});

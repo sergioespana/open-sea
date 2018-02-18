@@ -1,14 +1,18 @@
 import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component, Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
 import isString from 'lodash/isString';
+import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import slug from 'slugify';
+import trim from 'lodash/trim';
+import { withRouter } from 'react-router-dom';
+
+const isBlank = (str) => !trim(str);
 
 @inject(app('OrganisationsStore', 'VisualStore'))
 @observer
@@ -22,20 +26,13 @@ class CreateOrganisation extends Component {
 		error: ''
 	}
 
-	slugify = (str) => slug(str, { remove: /[=`#%^$*_+~.()'"!\-:@]/g });
-
-	sanitize = (str) => str.replace(/[^a-z0-9áéíóúñü .,_-]/gim, '').trim();
-
+	slugify = (str) => slug(str, { lower: true, remove: /[=`#%^$*_+~.()'"!\\:@]/g });
+	
 	onChangeAvatar = ({ target: { files } }) => this.setState({ avatar: files[0] });
 
 	onChangeName = ({ target: { value } }) => {
 		const { name, id } = this.state;
 		return id === this.slugify(name) ? this.setState({ name: value, id: this.slugify(value) }) : this.setState({ name: value });
-	}
-
-	onBlurName = () => {
-		const { name } = this.state;
-		return this.setState({ name: this.sanitize(name) });
 	}
 
 	onBlurId = () => {
@@ -67,7 +64,7 @@ class CreateOrganisation extends Component {
 
 	handleError = (code) => {
 		switch (code) {
-			case 'already-exists': return this.setState({ error: `An organisation with ID "${this.state.id}" already exists.` });
+			case 'already-exists': return this.setState({ error: `An organisation or network with ID "${this.state.id}" already exists.` });
 			default: return this.setState({ error: 'An unknown error has occurred' });
 		}
 	}
@@ -77,6 +74,7 @@ class CreateOrganisation extends Component {
 		const { busy } = state;
 		const { name, description, id, isPublic, error } = this.state;
 		const avatar = isString(this.state.avatar) ? this.state.avatar : URL.createObjectURL(this.state.avatar);
+		const shouldPreventSubmit = isBlank(name) || isBlank(id) || busy;
 
 		return (
 			<Fragment>
@@ -131,7 +129,11 @@ class CreateOrganisation extends Component {
 						/>
 					</section>
 					<footer>
-						<Button type="submit" disabled={busy}>Create organisation</Button>
+						<Button
+							appearance="primary"
+							type="submit"
+							disabled={shouldPreventSubmit}
+						>Create organisation</Button>
 						<Link to="/">Cancel</Link>
 					</footer>
 				</Form>

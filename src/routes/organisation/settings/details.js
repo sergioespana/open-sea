@@ -24,7 +24,7 @@ const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((
 				/>
 			</section>
 			<footer>
-				<Button>Save changes</Button>
+				<Button appearance="primary" type="submit">Save changes</Button>
 			</footer>
 		</Form>
 	);

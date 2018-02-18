@@ -1,4 +1,4 @@
-import Header, { Breadcrumbs } from 'components/Header';
+import Header, { Breadcrumbs, Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
@@ -9,7 +9,9 @@ import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
+import isUndefined from 'lodash/isUndefined';
+import { Link } from 'components/Link';
+import Lozenge from '@atlaskit/lozenge';
 import map from 'lodash/map';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
@@ -17,10 +19,12 @@ import Table from 'components/Table';
 
 const PageHeader = ({ orgId, organisation }) => (
 	<Header>
-		<Breadcrumbs>
-			<Link to={`/${orgId}`}>{ organisation.name }</Link>
-		</Breadcrumbs>
-		<h1>Overview</h1>
+		<Section>
+			<Breadcrumbs>
+				<Link to={`/${orgId}`}>{ organisation.name }</Link>
+			</Breadcrumbs>
+			<h1>Overview</h1>
+		</Section>
 	</Header>
 );
 
@@ -39,7 +43,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				<Placeholder>
 					<h1>Whoa there!</h1>
 					<p>No reports exist for this organisation! To get started, create a report first.</p>
-					<p><Button to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
+					<p><Button appearance="primary" to={`/create/report?organisation=${orgId}`}>Create a report</Button></p>
 				</Placeholder>
 			</Container>
 		</Fragment>
@@ -56,31 +60,36 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 			<Head organisation={organisation} />
 			<PageHeader orgId={orgId} organisation={organisation} />
 			<Container flex>
-				{ isEmpty(mostRecent) || reportsWithData.length < 2
-					? <Placeholder />
-					: map(reportItems, (item, i) => {
-						const data = {
-							labels: map(reportsWithData, ({ name }) => name),
-							datasets: map(item.data, (indId) => ({
-								title: indicators[indId].name,
-								values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
-							}))
-						};
+				<section style={{ flex: 'auto', display: 'flex', flexWrap: 'wrap' }}>
+					{ isEmpty(mostRecent) || reportsWithData.length < 2
+						? <Placeholder />
+						: map(reportItems, (item, i) => {
+							const data = {
+								labels: map(reportsWithData, ({ name }) => name),
+								datasets: map(item.data, (indId) => ({
+									title: indicators[indId].name,
+									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
+								}))
+							};
 
-						return (
-							<Chart
-								key={i}
-								title={item.name}
-								type="line"
-								data={data}
-							/>
-						);
-					})
-				}
+							return (
+								<Chart
+									key={i}
+									title={item.name}
+									type="line"
+									data={data}
+									colors={item.colors || []}
+									style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
+								/>
+							);
+						})
+					}
+				</section>
 				<section style={{ flex: '0 0 375px' }}>
 					<h1>Reports</h1>
 					<Table
 						disableSorting
+						disableFiltering
 						defaultSort="-updated"
 						data={reports}
 						limit={4}
@@ -99,8 +108,13 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								hidden: true
 							},
 							{
-								key: 'Status',
-								label: 'Status'
+								key: 'status',
+								label: 'Status',
+								value: ({ data, model }) => {
+									if (isUndefined(model) && isUndefined(data)) return { label: 'New', value: 'new' };
+									return { label: 'In Progress', value: 'inprogress' };
+								},
+								format: (value) => <Lozenge appearance={value.value}>{ value.label }</Lozenge>
 							}
 						]}
 					/>

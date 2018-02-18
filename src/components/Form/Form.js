@@ -40,7 +40,7 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 		}
 
 		& > p {
-			font-size: 0.875rem;
+			/* font-size: 0.875rem */;
 		}
 	}
 

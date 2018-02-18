@@ -1,7 +1,6 @@
 import { lighten, mix, readableColor, transparentize } from 'polished';
 
 const primary = '#00695C';
-// const primary = '#0747a6';
 
 const theme = {
 	primary,

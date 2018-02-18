@@ -1,15 +1,16 @@
+import Header, { Section } from 'components/Header';
 import { inject, observer } from 'mobx-react';
 import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
-import Header from 'components/Header';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
-import { Link } from 'react-router-dom';
+import { Link } from 'components/Link';
 import MdLock from 'react-icons/lib/md/lock';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
+import reject from 'lodash/reject';
 import Table from 'components/Table';
 
 const Head = () => (
@@ -20,19 +21,21 @@ const Head = () => (
 
 const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
 	const { AuthStore, ReportsStore, state } = props;
-	const { organisations } = state;
+	const organisations = reject(state.organisations, ['isNetwork', true]);
 
 	if (isEmpty(organisations)) return (
 		<Fragment>
 			<Head />
 			<Header>
-				<h1>Organisations</h1>
+				<Section>
+					<h1>Organisations</h1>
+				</Section>
 			</Header>
 			<Container>
 				<Placeholder>
 					<h1>Whoa there!</h1>
 					<p>You don't seem to have access to any organisations.</p>
-					<p><Button to="/create/organisation">Create an organisation</Button></p>
+					<p><Button appearance="primary" to="/create/organisation">Create an organisation</Button></p>
 				</Placeholder>
 			</Container>
 		</Fragment>
@@ -53,7 +56,7 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 							key: 'name',
 							label: 'Organisation',
 							value: ({ name }) => name,
-							format: (value, { _id, avatar, name }) => <span><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></span>
+							format: (value, { _id, avatar, name }) => <div><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></div>
 						},
 						{
 							key: 'network',
@@ -82,6 +85,8 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 						},
 						{
 							key: 'isPublic',
+							label: 'Public',
+							labelHidden: true,
 							value: ({ isPublic }) => isPublic,
 							format: (value) => !value && <MdLock width="1rem" height="1rem" />
 						}

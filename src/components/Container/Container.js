@@ -3,6 +3,7 @@ import React from 'react';
 
 const flex = css`
 	display: flex;
+	${({ wrap }) => wrap && `flex-wrap: wrap;`}
 
 	& > section {
 		padding: 20px 20px 100px 20px;
@@ -21,13 +22,14 @@ const flex = css`
 	}
 `;
 
-const Container = styled(({ flex, ...props }) => <div {...props} />)`
+const Container = styled(({ flex, wrap, ...props }) => <div {...props} />)`
 	margin: 0 20px 20px;
 
 	& > section {
+		height: 100%;
 
 		h1 {
-			font-size: 1rem;
+			font-size: 1.125rem;
 			font-weight: 600;
 		}
 	}

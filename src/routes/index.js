@@ -1,3 +1,4 @@
+import { AutoDismissFlag as Flag, FlagGroup } from '@atlaskit/flag';
 import { inject, observer } from 'mobx-react';
 import { Redirect, Switch } from 'react-router-dom';
 import AccountRoutes from './account';
@@ -10,6 +11,8 @@ import DashboardRoutes from './dashboard';
 import DefaultNavigation from 'navigation';
 import Dropzone from 'components/Dropzone';
 import Helmet from 'react-helmet';
+import HiddenOnPrint from 'components/HiddenOnPrint';
+import map from 'lodash/map';
 import Nav from 'components/Navigation';
 import OrganisationNavigation from 'navigation/organisation';
 import OrganisationRoutes from './organisation';
@@ -20,18 +23,20 @@ import SearchDrawer from 'components/SearchDrawer';
 const Landing = () => <main><DashboardOverview /></main>;
 
 const Navigation = ({ expanded }) => (
-	<Nav expanded={expanded}>
-		<Switch>
-			<Route path="/" exact component={DashboardNavigation} />
-			<Route path="/account/(signin|signup|logout)" exact />
-			<Route path="/account" component={DashboardNavigation} />
-			<Route path="/create" component={DefaultNavigation} />
-			<Route path="/dashboard" component={DashboardNavigation} />
-			<Route path="/search" component={DefaultNavigation} />
-			<Route path="/:orgId" component={OrganisationNavigation} />
-			<Route path="*" component={DefaultNavigation} />
-		</Switch>
-	</Nav>
+	<HiddenOnPrint>
+		<Nav expanded={expanded}>
+			<Switch>
+				<Route path="/" exact component={DashboardNavigation} />
+				<Route path="/account/(signin|signup|logout|reset-password)" exact />
+				<Route path="/account" component={DashboardNavigation} />
+				<Route path="/create" component={DefaultNavigation} />
+				<Route path="/dashboard" component={DashboardNavigation} />
+				<Route path="/search" component={DefaultNavigation} />
+				<Route path="/:orgId" component={OrganisationNavigation} />
+				<Route path="*" component={DefaultNavigation} />
+			</Switch>
+		</Nav>
+	</HiddenOnPrint>
 );
 
 const Head = () => (
@@ -41,9 +46,9 @@ const Head = () => (
 	/>
 );
 
-const MainRoutes = inject(app('state'))(observer((props) => {
-	const { state } = props;
-	const { authed, expanded, listening, loading } = state;
+const MainRoutes = inject(app('VisualStore'))(observer((props) => {
+	const { state, VisualStore } = props;
+	const { authed, expanded, flags, listening, loading } = state;
 
 	if (!listening) return null;
 
@@ -53,6 +58,8 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 			<Navigation expanded={expanded} />
 			<Switch>
 				<Route path="/account" component={AccountRoutes} />
+				<Route path="/(create|dashboard|search)" />
+				<Route path="/:orgId" component={OrganisationRoutes} />
 				<Route path="*" />
 			</Switch>
 		</div>
@@ -71,8 +78,9 @@ const MainRoutes = inject(app('state'))(observer((props) => {
 				<Route path="/create" component={CreateRoutes} authedOnly />
 				<Route path="/dashboard" component={DashboardRoutes} authedOnly />
 				<Route path="/search" authedOnly />
-				<Route path="/:orgId" component={OrganisationRoutes} authedOnly />
+				<Route path="/:orgId" component={OrganisationRoutes} />
 			</Switch>
+			<FlagGroup onDismissed={VisualStore.dismissFlag}>{ map(flags, (flag) => <Flag key={flag.id} {...flag} />) }</FlagGroup>
 		</Dropzone>
 	);
 }));
