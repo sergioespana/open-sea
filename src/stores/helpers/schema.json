@@ -54,17 +54,20 @@
 					"chart": {
 						"type": "object",
 						"properties": {
+							"colors": {
+								"type": "array",
+								"items": { "type": "string" }
+							},
 							"data": {
 								"type": "array",
-								"items": {
-									"type": "string"
-								}
+								"items": { "type": "string" }
 							},
 							"type": {
 								"type": "string",
 								"enum": ["line", "bar", "scatter", "pie", "percentage"]
 							}
 						},
+						"additionalProperties": false,
 						"required": ["data", "type"]
 					},
 					"value": { "type": "string" },
