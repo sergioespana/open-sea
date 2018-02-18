@@ -1,13 +1,8 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId=**} {
+    match /{document=**} {
       allow read;
-      allow write: if request.auth.uid == userId;
-    }
-    match /organisations/{orgId=**} {
-      allow read: if resource.data.public == true;
-      allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/organisations/$(orgId));
-      allow write;
+      allow write: if request.auth.uid != null;
     }
   }
 }

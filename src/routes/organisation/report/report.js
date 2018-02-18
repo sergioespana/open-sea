@@ -10,6 +10,7 @@ import findLast from 'lodash/findLast';
 import Helmet from 'react-helmet';
 import HiddenOnPrint from 'components/HiddenOnPrint';
 import isEmpty from 'lodash/isEmpty';
+import isNumber from 'lodash/isNumber';
 import { Link } from 'components/Link';
 import map from 'lodash/map';
 import MdMoreVert from 'react-icons/lib/md/more-vert';
@@ -37,35 +38,42 @@ class OrganisationReport extends Component {
 		const indicators = model.indicators || {};
 
 		return map(items, (item, i) => {
-			if (!item.chart) {
-				if (!item.value) return null;
-
+			if (item.value) {
+				// FIXME: Properly display textual and numerical results differently.
 				const value = ReportsStore.compute(orgId, repId, item.value);
 				return (
-					<div style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}>
-						<h2>{ item.name }</h2>
-						<h1>{ value }</h1>
+					<div key={i} style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}>
+						<div className="chart-container">
+							<h6 className="title">{ item.name }</h6>
+							{ isNumber(value)
+								? <h1 style={{ marginLeft: 25 }}>{ value }</h1>
+								: <p style={{ marginLeft: 25 }}>{ value }</p> }
+						</div>
 					</div>
 				);
 			}
 
-			const data = {
-				labels: map(item.data, (indId) => indicators[indId].name),
-				datasets: [{
-					values: map(item.data, (indId) => ReportsStore.compute(orgId, repId, indId))
-				}]
-			};
+			if (item.chart) {
+				const data = {
+					labels: map(item.chart.data, (indId) => indicators[indId].name),
+					datasets: [{
+						values: map(item.chart.data, (indId) => ReportsStore.compute(orgId, repId, indId))
+					}]
+				};
+	
+				return (
+					<Chart
+						key={i}
+						title={item.name}
+						type={item.chart.type === 'pie' ? 'percentage' : item.chart.type}
+						data={data}
+						colors={item.chart.colors || []}
+						style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
+					/>
+				);
+			}
 
-			return (
-				<Chart
-					key={i}
-					title={item.name}
-					type={item.chart === 'pie' ? 'percentage' : item.chart}
-					data={data}
-					colors={item.colors || []}
-					style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
-				/>
-			);
+			return null;
 		});
 	}
 
@@ -76,7 +84,7 @@ class OrganisationReport extends Component {
 		const report = ReportsStore.getItem(`${orgId}/${repId}`, '_id');
 		const data = report._data;
 		const model = report.model || {};
-		const categories = model.categories || [];
+		const categories = model.categories || {};
 		const reportItems = model.reportItems || [];
 
 		const mostRecent = findLast(reports, 'model') || {};
@@ -123,7 +131,12 @@ class OrganisationReport extends Component {
 							<p><Button appearance="primary" to={`/${orgId}/${repId}/data`}>Add data</Button></p>
 						</Placeholder>
 					) : categories.length > 0
-						? map(categories, (category) => this.renderReportItems(filter(reportItems, { category })))
+						? map(categories, (category, catId) => (
+							<Fragment>
+								<h3>{ category.name }</h3>
+								{ this.renderReportItems(filter(reportItems, { category: catId })) }
+							</Fragment>
+						))
 						: this.renderReportItems(reportItems) }
 				</Container>
 			</Fragment>
