@@ -6,6 +6,7 @@ import get from 'lodash/get';
 import gt from 'lodash/gt';
 import gte from 'lodash/gte';
 import isBoolean from 'lodash/isBoolean';
+import isNull from 'lodash/isNull';
 import isObject from 'lodash/isObject';
 import isString from 'lodash/isString';
 import { matchPath } from 'react-router-dom';
@@ -16,6 +17,7 @@ const actions = (state) => {
 
 	const organisations = collection(state.organisations);
 	const reports = collection(state.reports);
+	const users = collection(state.users);
 
 	const onUserOrganisations = ({ docChanges, size }) => {
 		const max = size - 1;
@@ -36,7 +38,19 @@ const actions = (state) => {
 		}));
 	};
 
-	const onOrganisationData = (data) => action((doc) => doc.exists && organisations.updateOrAdd({ ...data, ...doc.data() }, '_id'));
+	const onOrganisationData = (initialData) => action(async (doc) => {
+		if (!doc.exists) return;
+
+		const data = doc.data();
+		const userExists = !isNull(users.getItem(data.owner, '_uid'));
+
+		if (!userExists) {
+			const user = (await firebase.getDoc(`users/${data.owner}`)).data();
+			users.updateOrAdd({ _uid: data.owner, ...user });
+		}
+
+		return organisations.updateOrAdd({ ...initialData, ...data }, '_id');
+	});
 
 	const onOrganisationReports = (orgId, orgMax = 0, orgI = 0) => ({ docChanges, size }) => {
 		const max = size - 1;
