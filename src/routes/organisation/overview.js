@@ -7,6 +7,7 @@ import Chart from 'components/Chart';
 import Container from 'components/Container';
 import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
+import flatten from 'lodash/flatten';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
@@ -75,6 +76,9 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								}))
 							};
 
+							const types = flatten(map(data.datasets, (set) => map(set.values, (value) => typeof value)));
+							if (types.includes('string')) return null;
+
 							return (
 								<Chart
 									key={i}
@@ -100,7 +104,8 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								key: 'name',
 								label: 'Report',
 								value: ({ name }) => name,
-								format: (value, { _id, name }) => <Link to={ `/${_id}` }>{ name }</Link>
+								// eslint-disable-next-line react/display-name
+								format: (value, { _id, name }) => <Link to={`/${_id}`}>{ name }</Link>
 							},
 							{
 								key: 'updated',
@@ -116,6 +121,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 									if (isUndefined(model) && isUndefined(data)) return { label: 'New', value: 'new' };
 									return { label: 'In Progress', value: 'inprogress' };
 								},
+								// eslint-disable-next-line react/display-name
 								format: (value) => <Lozenge appearance={value.value}>{ value.label }</Lozenge>
 							}
 						]}
