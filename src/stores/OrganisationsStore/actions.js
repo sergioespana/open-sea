@@ -45,12 +45,18 @@ const actions = (state) => {
 		const userExists = !isNull(users.getItem(data.owner, '_uid'));
 
 		if (!userExists) {
-			const user = (await firebase.getDoc(`users/${data.owner}`)).data();
-			users.updateOrAdd({ _uid: data.owner, ...user });
+			// FIXME: Somehow keep loading state through this. Maybe do this step in onOrganisationReports since that
+			// function turns off loading state?
+			// const user = (await firebase.getDoc(`users/${data.owner}`)).data();
+			// users.updateOrAdd({ _uid: data.owner, ...user });
+			// FIXME: temporary solution below
+			firebase.addFirebaseListener(`users/${data.owner}`, onUserData);
 		}
 
 		return organisations.updateOrAdd({ ...initialData, ...data }, '_id');
 	});
+
+	const onUserData = action((doc) => doc.exists && users.updateOrAdd({ _uid: doc.id, ...doc.data() }));
 
 	const onOrganisationReports = (orgId, orgMax = 0, orgI = 0) => ({ docChanges, size }) => {
 		const max = size - 1;
