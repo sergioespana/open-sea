@@ -69,7 +69,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								datasets: item.value ? [{
 									title: indicators[item.value].name,
 									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, item.value))
-								}] : map((item.chart || item).data, (indId) => ({
+								}] : map(item.chart.data, (indId) => ({
 									title: indicators[indId].name,
 									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
 								}))
@@ -81,7 +81,6 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 									title={item.name}
 									type="line"
 									data={data}
-									colors={(item.chart || item).colors || []}
 									style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
 								/>
 							);
