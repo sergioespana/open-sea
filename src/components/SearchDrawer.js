@@ -14,7 +14,7 @@ import { withRouter } from 'react-router-dom';
 
 const iconProps = { width: 24, height: 24 };
 
-@inject(app('OrganisationsStore', 'ReportsStore', 'VisualStore'))
+@inject(app('AuthStore', 'OrganisationsStore', 'ReportsStore', 'VisualStore'))
 @observer
 class SearchDrawer extends Component {
 	state = {
@@ -42,12 +42,13 @@ class SearchDrawer extends Component {
 
 	render = () => {
 		const { query } = this.state;
-		const { OrganisationsStore, ReportsStore, state, VisualStore } = this.props;
+		const { AuthStore, OrganisationsStore, ReportsStore, state, VisualStore } = this.props;
 		const { searchDrawerOpen: open } = state;
 		const toggle = VisualStore.toggleSearchDrawer;
 
 		const [networks, organisations] = partition(OrganisationsStore.search(query), ['isNetwork', true]);
 		const reports = ReportsStore.search(query);
+		const users = AuthStore.search(query);
 
 		return (
 			<Drawer open={open} onRequestClose={toggle}>
@@ -116,6 +117,16 @@ class SearchDrawer extends Component {
 											<span style={{ fontSize: '0.75rem' }}>{ OrganisationsStore.getItem(_orgId, '_id').name }</span>
 										</div>
 									</Button>
+								)) }
+							</Group>
+							<Group>
+								{ users.length > 0 && <h3>Users</h3> }
+								{ map(users, ({ _uid, avatar, name }) => (
+									<Button
+										key={_uid}
+										to={`/dashboard/people/${_uid}`}
+										onClick={toggle}
+									><img src={avatar} style={{ width: 32, height: 32 }} />{ name }</Button>
 								)) }
 							</Group>
 						</Content>

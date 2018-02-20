@@ -2,6 +2,7 @@ import { Redirect, Switch } from 'react-router-dom';
 import DashboardNetworks from './networks';
 import DashboardOrganisations from './organisations';
 import DashboardOverview from './overview';
+import DashboardPeopleRoutes from './people';
 import React from 'react';
 import Route from 'components/Route';
 
@@ -11,6 +12,7 @@ const DashboardRoutes = () => (
 			<Route path="/dashboard/overview" exact component={DashboardOverview} />
 			<Route path="/dashboard/organisations" exact component={DashboardOrganisations} />
 			<Route path="/dashboard/networks" exact component={DashboardNetworks} />
+			<Route path="/dashboard/people" component={DashboardPeopleRoutes} />
 			<Redirect from="*" to="/dashboard/overview" />
 		</Switch>
 	</main>

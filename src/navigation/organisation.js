@@ -56,7 +56,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 					<Content>
 						<Group loading={loading}>
 							<Button round><MdHelp {...iconProps} /></Button>
-							<Button to="/account" round><MdAccountCircle {...iconProps} /></Button>
+							<Button to={`/dashboard/people/${authed._uid}`} round><MdAccountCircle {...iconProps} /></Button>
 						</Group>
 					</Content>
 				</Inner>
