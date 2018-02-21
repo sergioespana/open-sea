@@ -1,16 +1,15 @@
 import { action, autorun } from 'mobx';
 import { firebase, prefixKeysWith, omitKeysWith } from '../helpers';
 import { collection } from 'mobx-app';
+import eq from 'lodash/eq';
 import Fuse from 'fuse.js';
 import get from 'lodash/get';
 import gt from 'lodash/gt';
-import gte from 'lodash/gte';
 import isBoolean from 'lodash/isBoolean';
-import isNull from 'lodash/isNull';
 import isObject from 'lodash/isObject';
 import isString from 'lodash/isString';
+import isUndefined from 'lodash/isUndefined';
 import { matchPath } from 'react-router-dom';
-import partition from 'lodash/partition';
 import reject from 'lodash/reject';
 
 const actions = (state) => {
@@ -19,61 +18,62 @@ const actions = (state) => {
 	const reports = collection(state.reports);
 	const users = collection(state.users);
 
-	const onUserOrganisations = ({ docChanges, size }) => {
-		const max = size - 1;
-		
-		if (gt(0, max)) return setLoading(false);
-		
-		const [removed, added] = partition(docChanges, { type: 'removed' });
-
-		added.forEach(async ({ doc }, i) => {
-			const data = prefixKeysWith({ id: doc.id, reports: [], ...doc.data() });
-			firebase.addFirebaseListener(`organisations/${doc.id}`, onOrganisationData(data));
-			firebase.addFirebaseListener(`organisations/${doc.id}/reports`, onOrganisationReports(doc.id, max, i));
-		});
-
-		removed.forEach(action(({ doc: { id } }) => {
-			organisations.setItems(reject(state.organisations, { _id: id }));
-			firebase.removeFirebaseListener(`organisations/${id}`);
-		}));
-	};
-
-	const onOrganisationData = (initialData) => action(async (doc) => {
-		if (!doc.exists) return;
-
-		const data = doc.data();
-		const userExists = !isNull(users.getItem(data.owner, '_uid'));
-
-		if (!userExists) {
-			// FIXME: Somehow keep loading state through this. Maybe do this step in onOrganisationReports since that
-			// function turns off loading state?
-			// const user = (await firebase.getDoc(`users/${data.owner}`)).data();
-			// users.updateOrAdd({ _uid: data.owner, ...user });
-			// FIXME: temporary solution below
-			firebase.addFirebaseListener(`users/${data.owner}`, onUserData);
-		}
-
-		return organisations.updateOrAdd({ ...initialData, ...data }, '_id');
+	const incrementSnapshotSize = action((inc) => {
+		if (!isUndefined(state.initialSnapshotSize)) state.initialSnapshotSize += inc;
 	});
 
-	const onUserData = action((doc) => doc.exists && users.updateOrAdd({ _uid: doc.id, ...doc.data() }));
+	const incrementCount = action(() => {
+		if (!isUndefined(state.initialCount)) state.initialCount++;
+	});
 
-	const onOrganisationReports = (orgId, orgMax = 0, orgI = 0) => ({ docChanges, size }) => {
-		const max = size - 1;
+	const onUserOrganisations = firebase.onSnapshot({
+		before: ({ size }) => incrementSnapshotSize(size),
+		onAdded: ({ doc }) => findById(doc.id),
+		onRemoved: action(({ doc }) => {
+			organisations.setItems(reject(state.organisations, { _id: doc.id }));
+			firebase.removeFirebaseListener(`organisations/${doc.id}`);
+		})
+	});
 
-		if (gt(0, max) && gte(orgI, orgMax)) return setLoading(false);
+	const onOrganisationUsers = (orgId) => firebase.onSnapshot({
+		before: ({ size }) => incrementSnapshotSize(size),
+		onAdded: action(({ doc }) => {
+			// TODO: Store this role somewhere for the rest of the application
+			// to be able to access and use.
+			console.log(orgId, doc.id, doc.data().role);
+			return firebase.hasFirebaseListener(`users/${doc.id}`) ? incrementCount() : firebase.addFirebaseListener(`users/${doc.id}`, onUserData);
+		})
+	});
 
-		const [removed, added] = partition(docChanges, { type: 'removed' });
+	const onOrganisationReports = (orgId) => firebase.onSnapshot({
+		before: ({ size }) => incrementSnapshotSize(size),
+		onAdded: action(({ doc }) => {
+			incrementCount();
 
-		added.forEach(action(({ doc, doc: { id: repId } }, i) => {
+			const repId = doc.id;
+			const id = `${orgId}/${repId}`;
 			const report = doc.data();
-			reports.updateOrAdd({ ...prefixKeysWith({ orgId, repId, id: `${orgId}/${repId}` }, '_'), ...report, _data: report.data || {} }, '_id');
-			(i >= max && orgI >= orgMax) && setLoading(false);
-		}));
+			const identifiers = prefixKeysWith({ orgId, repId, id }, '_');
+			reports.updateOrAdd({ ...identifiers, ...report, _data: report.data || {} }, '_id');
+		}),
+		onRemoved: action(({ doc }) => {
+			const repId = doc.id;
+			const id = `${orgId}/${repId}`;
+			reports.setItems(reject(state.reports, { _id: id }));
+		})
+	});
 
-		removed.forEach(action(({ doc: { id: repId } }) => reports.setItems(reject(state.reports, { _id: `${orgId}/${repId}` }))));
-	};
+	const onOrganisationData = action((doc) => {
+		incrementCount();
+		return doc.exists && organisations.updateOrAdd({ _id: doc.id, ...doc.data() }, '_id');
+	});
 
+	const onUserData = action((doc) => {
+		incrementCount();
+		return doc.exists && users.updateOrAdd({ _uid: doc.id, ...doc.data() }, '_uid');
+	});
+
+	// TODO: this function could use some work.
 	const create = async (obj) => {
 		const id = obj._id;
 		const path = `organisations/${id}`;
@@ -81,7 +81,7 @@ const actions = (state) => {
 		if (await firebase.docExists(path)) return ({ code: 'already-exists' });
 
 		const avatar = await getAvatarString(obj.avatar, `${path}/${id}-avatar.png`);
-		const organisation = { created: new Date(), owner: state.authed._uid, ...omitKeysWith(obj, '_'), avatar };
+		const organisation = { created: new Date(), ...omitKeysWith(obj, '_'), avatar };
 
 		return await firebase.setDoc(path, organisation).then(() => ({})).catch((error) => error);
 	};
@@ -93,10 +93,12 @@ const actions = (state) => {
 		return avatar === '' ? placeholder : avatar;
 	};
 
+	// TODO: this function could use some work.
 	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`users/${uid}/organisations/${orgId}`, { role }).then(() => ({})).catch((error) => error);
 
 	const findById = (orgId) => {
-		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData({ _id: orgId }));
+		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);
+		firebase.addFirebaseListener(`organisations/${orgId}/users`, onOrganisationUsers(orgId));
 		firebase.addFirebaseListener(`organisations/${orgId}/reports`, onOrganisationReports(orgId));
 	};
 
@@ -104,6 +106,14 @@ const actions = (state) => {
 	const search = (query) => searchable.search(query);
 	
 	const setLoading = action((val) => state.loading = isBoolean(val) ? val : false);
+
+	autorun(() => {
+		const size = state.initialSnapshotSize;
+		const count = state.initialCount;
+		if (gt(count, 0) && eq(size, count)) {
+			setLoading(false);
+		}
+	});
 
 	autorun(() => {
 		const { authed, listening } = state;

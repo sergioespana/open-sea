@@ -3,11 +3,12 @@ import fb from 'firebase';
 import fromPairs from 'lodash/fromPairs';
 import get from 'lodash/get';
 import has from 'lodash/has';
+import isFunction from 'lodash/isFunction';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
 import { omitKeysWith } from './';
+import partition from 'lodash/partition';
 import reduce from 'lodash/reduce';
-import upperFirst from 'lodash/upperFirst';
 
 const firebase = fb.initializeApp({
 	apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
@@ -45,6 +46,8 @@ const removeAllListeners = () => {
 	});
 };
 
+export const hasFirebaseListener = (path) => listeners[path] !== undefined;
+
 export const addFirebaseListener = (path, cb) => {
 	if (has(listeners, path)) return;
 	addListener(fromPairs([[path, getRef(path).onSnapshot(cb)]]));
@@ -54,4 +57,12 @@ export const removeFirebaseListener = (path) => {
 	if (!path) return removeAllListeners();
 	get(listeners, path)();
 	setListeners(omit(listeners, path));
+};
+
+export const onSnapshot = ({ before, onAdded, onRemoved, after }) => (snapshot) => {
+	if (isFunction(before)) before(snapshot);
+	const [removed, added] = partition(snapshot.docChanges, { type: 'removed' });
+	if (isFunction(onAdded)) added.forEach(onAdded);
+	if (isFunction(onRemoved)) removed.forEach(onRemoved);
+	if (isFunction(after)) before(after);
 };
