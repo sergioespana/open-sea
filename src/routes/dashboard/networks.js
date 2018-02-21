@@ -64,7 +64,7 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 							value: ({ owner }) => owner,
 							format: (value) => {
 								const user = AuthStore.getItem(value, '_uid') || {};
-								return user._isCurrent ? <Link to="/account">You</Link> : user.name;
+								return <Link to={`/dashboard/people/${user._uid}`}>{ user._isCurrent ? 'You' : user.name }</Link>;
 							}
 						},
 						{

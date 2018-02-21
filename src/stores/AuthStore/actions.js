@@ -1,7 +1,8 @@
+import { action, autorun } from 'mobx';
 import { firebase, omitKeysWith } from '../helpers';
-import { action } from 'mobx';
 import { collection } from 'mobx-app';
 import find from 'lodash/find';
+import Fuse from 'fuse.js';
 import isString from 'lodash/isString';
 import map from 'lodash/map';
 
@@ -64,10 +65,16 @@ const actions = (state) => {
 	const startListening = () => firebase.auth.onAuthStateChanged(onAuthStateChanged);
 	startListening();
 
+	let searchable = new Fuse(state.users, { keys: ['name'] });
+	const search = (query) => searchable.search(query);
+
+	autorun(() => searchable = new Fuse(state.users, { keys: ['name'] }));
+
 	return {
 		...users,
 		create,
 		resetPassword,
+		search,
 		signIn,
 		signOut
 	};
