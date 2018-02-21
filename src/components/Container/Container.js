@@ -25,7 +25,7 @@ const flex = css`
 
 const Container = styled(({ flex, width, wrap, ...props }) => <div {...props} />)`
 	margin: ${({ width }) => isNumber(width) ? '0 auto 20px auto' : '0 20px 20px'};
-	width: ${({ width }) => `${width || 100}%`};
+	width: ${({ width }) => isNumber(width) ? `${width}%` : 'auto'};
 
 	& > section {
 		height: 100%;
