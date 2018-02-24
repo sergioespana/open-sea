@@ -1,7 +1,8 @@
 import * as stores from './stores';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { injectGlobal, ThemeProvider } from 'styled-components';
+import { Router, Route, Switch } from 'react-router-dom';
 import { createStore } from 'mobx-app';
+import history from './history';
 import MainApp from 'routes';
 import Product from 'routes/product';
 import { Provider } from 'mobx-react';
@@ -13,12 +14,12 @@ const { state, actions } = createStore(stores);
 const App = () => (
 	<Provider actions={actions} state={state}>
 		<ThemeProvider theme={theme}>
-			<BrowserRouter>
+			<Router history={history}>
 				<Switch>
 					<Route path="/product" component={Product} />
 					<Route path="*" component={MainApp} />
 				</Switch>
-			</BrowserRouter>
+			</Router>
 		</ThemeProvider>
 	</Provider>
 );
