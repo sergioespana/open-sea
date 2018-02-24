@@ -34,12 +34,6 @@
     babel-runtime "^6.26.0"
     styled-components "^1.4.6"
 
-"@atlaskit/css-reset@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/css-reset/-/css-reset-1.2.0.tgz#937ca26b3ba41d4c6b43596b136fcd0fc78b9ccf"
-  dependencies:
-    "@atlaskit/util-shared-styles" "^2.10.3"
-
 "@atlaskit/dropdown-menu@^3.11.6":
   version "3.11.6"
   resolved "https://registry.yarnpkg.com/@atlaskit/dropdown-menu/-/dropdown-menu-3.11.6.tgz#25e95d82aa62f36688ef4e18c6ccc285155f007a"
@@ -111,17 +105,6 @@
     "@atlaskit/theme" "^2.3.1"
     styled-components "^1.4.6"
 
-"@atlaskit/inline-edit@^4.5.12":
-  version "4.5.12"
-  resolved "https://registry.yarnpkg.com/@atlaskit/inline-edit/-/inline-edit-4.5.12.tgz#31c81ea995196b46acaf7c9f7212bea85de663bf"
-  dependencies:
-    "@atlaskit/button" "^6.3.1"
-    "@atlaskit/field-base" "^8.1.9"
-    "@atlaskit/icon" "^10.7.1"
-    "@atlaskit/theme" "^2.3.1"
-    classnames "^2.2.5"
-    styled-components "^1.4.6"
-
 "@atlaskit/item@^4.2.3", "@atlaskit/item@^4.2.9":
   version "4.2.9"
   resolved "https://registry.yarnpkg.com/@atlaskit/item/-/item-4.2.9.tgz#a52e04332bd712db0636b1bc6e131e2c25af6b55"
@@ -146,14 +129,6 @@
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/layer/-/layer-2.6.1.tgz#2e92ff6e1340e574d9982f850713f54cf7e75775"
   dependencies:
-    styled-components "^1.4.6"
-
-"@atlaskit/lozenge@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/lozenge/-/lozenge-3.5.0.tgz#ec3db8f97abf1c75b249e31d4ea54423757b63c2"
-  dependencies:
-    "@atlaskit/util-shared-styles" "^2.10.3"
-    babel-runtime "^6.26.0"
     styled-components "^1.4.6"
 
 "@atlaskit/modal-dialog@^3.3.7":
@@ -198,13 +173,6 @@
     prop-types "^15.5.10"
     raf-schd "^2.0.2"
     react-transition-group "^2.2.1"
-    styled-components "^1.4.6"
-
-"@atlaskit/page@^5.0.10":
-  version "5.0.10"
-  resolved "https://registry.yarnpkg.com/@atlaskit/page/-/page-5.0.10.tgz#f8685f5043674099fc6cb0a0450a7334519177d8"
-  dependencies:
-    "@atlaskit/util-shared-styles" "^2.10.3"
     styled-components "^1.4.6"
 
 "@atlaskit/polyfills@^1.4.0", "@atlaskit/polyfills@^1.4.1":
