@@ -76,6 +76,7 @@ class SearchDrawer extends Component {
 										autoFocus={open}
 										onChange={linkState(this, 'query')}
 										placeholder="Search for organisations, reports, and more..."
+										className="mousetrap"
 									/>
 								</form>
 							</Group>
