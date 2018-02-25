@@ -93,8 +93,7 @@ const actions = (state) => {
 		return avatar === '' ? placeholder : avatar;
 	};
 
-	// TODO: this function could use some work.
-	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`users/${uid}/organisations/${orgId}`, { role }).then(() => ({})).catch((error) => error);
+	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`organisations/${orgId}/users/${uid}`, { role, added: new Date() }).then(() => ({})).catch((error) => error);
 
 	const findById = (orgId) => {
 		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);
@@ -110,9 +109,7 @@ const actions = (state) => {
 	autorun(() => {
 		const size = state.initialSnapshotSize;
 		const count = state.initialCount;
-		if (gt(count, 0) && eq(size, count)) {
-			setLoading(false);
-		}
+		if (gt(count, 0) && eq(size, count)) setLoading(false);
 	});
 
 	autorun(() => {
