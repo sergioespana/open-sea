@@ -66,9 +66,9 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 						{
 							key: 'owner',
 							label: 'Owner',
-							value: ({ owner }) => owner,
-							format: (value) => {
-								const user = AuthStore.getItem(value, '_uid') || {};
+							value: ({ owner }) => (AuthStore.getItem(owner, '_uid') || {}).name,
+							format: (val, { owner }) => {
+								const user = AuthStore.getItem(owner, '_uid') || {};
 								return <Link to={`/dashboard/people/${user._uid}`}>{ user._isCurrent ? 'You' : user.name }</Link>;
 							}
 						},

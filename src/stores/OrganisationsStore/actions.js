@@ -38,9 +38,13 @@ const actions = (state) => {
 	const onOrganisationUsers = (orgId) => firebase.onSnapshot({
 		before: ({ size }) => incrementSnapshotSize(size),
 		onAdded: action(({ doc }) => {
-			// TODO: Store this role somewhere for the rest of the application
-			// to be able to access and use.
-			console.log(orgId, doc.id, doc.data().role);
+			const organisation = organisations.getItem(orgId, '_id');
+			const users = [...(organisation._users || [])];
+			const userCol = collection(users);
+
+			userCol.updateOrAdd({ _uid: doc.id, ...doc.data() }, '_uid');
+			organisations.updateItem({ ...organisation, _users: users }, '_id');
+
 			return firebase.hasFirebaseListener(`users/${doc.id}`) ? incrementCount() : firebase.addFirebaseListener(`users/${doc.id}`, onUserData);
 		})
 	});
