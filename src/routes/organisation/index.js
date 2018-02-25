@@ -4,7 +4,6 @@ import { app } from 'mobx-app';
 import { Link } from 'components/Link';
 import NetworkOrganisations from './network/organisations';
 import NetworkOverview from './network/overview';
-import OrganisationDownloads from './downloads';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
 import OrganisationReports from './reports';
@@ -64,7 +63,6 @@ class OrganisationRoutes extends Component {
 					<Route path="/:orgId" exact component={OrganisationOverview} />
 					<Route path="/:orgId/overview" exact component={OrganisationOverview} />
 					<Route path="/:orgId/reports" exact component={OrganisationReports} />
-					<Route path="/:orgId/downloads" exact component={OrganisationDownloads} />
 					<Route path="/:orgId/settings" component={OrganisationSettings} authedOnly />
 					<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
 				</Switch>
