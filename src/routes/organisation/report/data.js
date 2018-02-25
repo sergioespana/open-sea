@@ -9,6 +9,7 @@ import Helmet from 'react-helmet';
 import isEqual from 'lodash/isEqual';
 import { Link } from 'components/Link';
 import map from 'lodash/map';
+import { TextField } from 'components/Input';
 import { withRouter } from 'react-router-dom';
 
 @inject(app('OrganisationsStore', 'ReportsStore', 'VisualStore'))
@@ -54,6 +55,7 @@ class OrganisationReportData extends Component {
 		const data = report._data;
 		const model = report.model || {};
 		const metrics = model.metrics || {};
+		const shouldPreventSubmit = busy || isEqual(report.data, report._data);
 
 		return (
 			<Fragment>
@@ -73,7 +75,7 @@ class OrganisationReportData extends Component {
 						<section>
 							<Alert type="error" message={error} />
 							{ map(metrics, ({ help, name, type }, metId) => (
-								<Input
+								<TextField
 									key={metId}
 									type={type}
 									label={name}
@@ -85,8 +87,16 @@ class OrganisationReportData extends Component {
 							)) }
 						</section>
 						<footer>
-							<Button appearance="primary" type="submit" disabled={busy || isEqual(report.data, report._data)}>Save changes</Button>
-							<Link to={`/${orgId}/${repId}`}>Cancel</Link>
+							<Button
+								appearance="primary"
+								busy={busy}
+								disabled={shouldPreventSubmit}
+								type="submit"
+							>Save changes</Button>
+							<Button
+								appearance="link"
+								to={`/${orgId}/${repId}`}
+							>Cancel</Button>
 						</footer>
 					</Form>
 				</Container>

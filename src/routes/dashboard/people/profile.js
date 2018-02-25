@@ -52,12 +52,15 @@ class DashboardPeopleProfile extends Component {
 						type="email"
 						disabled={!editing}
 						defaultValue={user.email}
+						inline
 					/>
 					<TextField
 						type="text"
 						disabled={!editing}
 						defaultValue={user.name}
+						inline
 					/>
+					{ user._isCurrent ? <Button appearance="subtle" to="/account/logout">Logout</Button> : null }
 				</Container>
 			</Fragment>
 		);
