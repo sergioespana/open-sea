@@ -25,14 +25,24 @@ const TextInput = styled(({ fullWidth, inline, ...props }) => <input {...props} 
 	}
 
 	:hover {
-		background-color: ${({ disabled, inline, theme }) => disabled ? 'transparent' : inline ? theme.light : darken(0.05, theme.light)};
-		border-color: ${({ disabled, inline, theme }) => disabled ? 'transparent' : inline ? theme.light : darken(0.05, theme.light)};
-		cursor: text;
+		background-color: ${({ inline, theme }) => inline ? theme.light : darken(0.05, theme.light)};
+		border-color: ${({ inline, theme }) => inline ? theme.light : darken(0.05, theme.light)};
 	}
 
 	:focus {
 		border-color: ${({ theme }) => theme.accent};
 		background-color: #fff;
+	}
+
+	&[disabled] {
+		background-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
+		border-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
+		
+		:hover {
+			background-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
+			border-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
+			cursor: ${({ inline }) => inline ? 'text' : 'no-drop'};
+		}
 	}
 `;
 

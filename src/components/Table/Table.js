@@ -175,7 +175,7 @@ export default withRouter(styled(Table)`
 	td {
 		padding: 7px 10px;
 
-		div {
+		& > div {
 			display: flex;
 			align-items: center;
 		}
