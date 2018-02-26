@@ -12,6 +12,8 @@ const actions = (state) => {
 
 	const findById = (...args) => map(args, (id) => firebase.addFirebaseListener(`users/${id}`, onUserData));
 
+	const findByEmail = (email) => firebase.getRef('users').where('email', '==', email).get();
+
 	const onAuthStateChanged = (res) => {
 		if (res === null) {
 			setListening(true);
@@ -72,6 +74,7 @@ const actions = (state) => {
 
 	return {
 		...users,
+		findByEmail,
 		create,
 		resetPassword,
 		search,

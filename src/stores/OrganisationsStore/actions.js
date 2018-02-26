@@ -99,6 +99,8 @@ const actions = (state) => {
 
 	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`organisations/${orgId}/users/${uid}`, { role, added: new Date() }).then(() => ({})).catch((error) => error);
 
+	const removeUser = async (orgId, uid) => await firebase.getRef(`organisations/${orgId}/users/${uid}`).delete().then(() => ({})).catch((error) => error);
+
 	const findById = (orgId) => {
 		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);
 		firebase.addFirebaseListener(`organisations/${orgId}/users`, onOrganisationUsers(orgId));
@@ -143,6 +145,7 @@ const actions = (state) => {
 		addUser,
 		create,
 		findById,
+		removeUser,
 		search,
 		setLoading
 	};

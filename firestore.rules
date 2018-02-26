@@ -21,6 +21,7 @@ service cloud.firestore {
 			match /reports/{repId} {
 				allow read: if isPublic(orgId) || hasAccess(orgId);
 				allow write: if hasAccess(orgId);
+      			allow delete: if request.auth.uid == uid;
 			}
 
 			match /users/{uid} {

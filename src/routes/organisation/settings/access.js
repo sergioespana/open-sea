@@ -1,17 +1,18 @@
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { Select, TextField } from 'components/Input';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
+import Error from '@atlaskit/icon/glyph/error';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import moment from 'moment';
 import Table from 'components/Table';
-import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
 
 const isBlank = (str) => !trim(str);
 
-@inject(app('AuthStore', 'OrganisationsStore'))
+@inject(app('AuthStore', 'OrganisationsStore', 'VisualStore'))
 @observer
 class OrganisationSettingsAccess extends Component {
 	state = {
@@ -19,12 +20,52 @@ class OrganisationSettingsAccess extends Component {
 		role: ''
 	}
 
+	onSubmit = async () => {
+		const { email, role } = this.state;
+		const { AuthStore, match: { params: { orgId } }, OrganisationsStore, VisualStore } = this.props;
+
+		VisualStore.setBusy(true);
+
+		const doc = (await AuthStore.findByEmail(email)).docs[0];
+		const uid = doc.exists ? doc.id : false;
+
+		if (!uid) VisualStore.showFlag({
+			title: 'Use does not exist',
+			description: `There is no user with the e-mail address ${email}. Please invite the user to create an account first, or try a different e-mail address.`,
+			appearance: 'error',
+			icon: <Error />,
+			actions: [
+				{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+			]
+		});
+		else {
+			const { code } = await OrganisationsStore.addUser(orgId, role, uid);
+			if (code) VisualStore.showFlag({
+				title: 'Something went wrong',
+				description: `An error occurred trying to add the specified user to your organisation. Please try again.`,
+				appearance: 'error',
+				icon: <Error />,
+				actions: [
+					{ content: 'Understood', onClick: () => {} } // TODO: Hide flag from this handler.
+				]
+			});
+			this.setState({ email: '', role: '' });
+		}
+
+		VisualStore.setBusy(false);
+	}
+
+	onRemoveClick = (uid) => (event) => {
+		const { match: { params: { orgId } }, OrganisationsStore } = this.props;
+		return OrganisationsStore.removeUser(orgId, uid);
+	}
+
 	render = () => {
 		const { email, role } = this.state;
 		const { AuthStore, match: { params: { orgId } }, OrganisationsStore, state } = this.props;
 		const { busy } = state;
 		const organisation = OrganisationsStore.getItem(orgId, '_id');
-		const shouldPreventSubmit = isBlank(email) || isBlank(role) || !['auditor', 'attestor'].includes(role.toLowerCase()) || busy;
+		const shouldPreventSubmit = isBlank(email) || isBlank(role) || !['admin', 'auditor', 'attestor'].includes(role.toLowerCase()) || busy;
 
 		return (
 			<section>
@@ -64,11 +105,11 @@ class OrganisationSettingsAccess extends Component {
 							label: 'Role'
 						},
 						{
-							key: 'actions',
+							key: '_uid',
 							label: 'Actions',
 							// TODO: Only show this when use has appropriate access
 							// TODO: Make this work
-							format: () => <a>Remove</a>
+							format: (val) => <a onClick={this.onRemoveClick(val)}>Remove</a>
 						}
 					]}
 					data={organisation._users}
@@ -82,17 +123,22 @@ class OrganisationSettingsAccess extends Component {
 							disabled={busy}
 							colSpan={2}
 						/>,
-						<TextField
-							placeholder="Role"
+						<Select
+							placeholder="Choose a role"
 							value={role}
-							onChange={linkState(this, 'role')}
+							onChange={linkState(this, 'role', 'target.value')}
 							disabled={busy}
 							fullWidth
-						/>,
+						>
+							<option value="admin">Administrator</option>
+							<option value="auditor">Auditor</option>
+							<option value="attestor">Attestor</option>
+						</Select>,
 						<Button
 							appearance="primary"
 							busy={busy}
 							disabled={shouldPreventSubmit}
+							onClick={this.onSubmit}
 						>Add</Button>
 					]}
 				/>
