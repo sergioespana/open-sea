@@ -28,7 +28,7 @@ const actions = (state) => {
 
 	const onUserOrganisations = firebase.onSnapshot({
 		before: ({ size }) => incrementSnapshotSize(size),
-		onAdded: ({ doc }) => findById(doc.id),
+		onAdded: ({ doc }) => findById(doc.id, true),
 		onRemoved: action(({ doc }) => {
 			organisations.setItems(reject(state.organisations, { _id: doc.id }));
 			firebase.removeFirebaseListener(`organisations/${doc.id}`);
@@ -67,6 +67,11 @@ const actions = (state) => {
 		})
 	});
 
+	const onNetworkOrganisations = (orgId) => firebase.onSnapshot({
+		before: ({ size }) => incrementSnapshotSize(size),
+		onAdded: ({ doc }) => findById(doc.id, false)
+	});
+
 	const onOrganisationData = action((doc) => {
 		incrementCount();
 		return doc.exists && organisations.updateOrAdd({ _id: doc.id, ...doc.data() }, '_id');
@@ -101,10 +106,11 @@ const actions = (state) => {
 
 	const removeUser = (orgId, uid) => firebase.getRef(`organisations/${orgId}/users/${uid}`).delete();
 
-	const findById = (orgId) => {
+	const findById = (orgId, getOrganisations) => {
 		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);
 		firebase.addFirebaseListener(`organisations/${orgId}/users`, onOrganisationUsers(orgId));
 		firebase.addFirebaseListener(`organisations/${orgId}/reports`, onOrganisationReports(orgId));
+		if (getOrganisations) firebase.addFirebaseListener(`organisations/${orgId}/organisations`, onNetworkOrganisations(orgId));
 	};
 
 	let searchable = new Fuse(state.organisations, { keys: ['name', '_id'] });
