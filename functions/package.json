@@ -6,12 +6,19 @@
     "shell": "firebase experimental:functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+	"logs": "firebase functions:log",
+	"prepare": "babel ./*.js --retain-lines -d ./ --ignore ./node_modules/*"
   },
   "dependencies": {
     "camelcase": "^4.1.0",
     "firebase-admin": "~5.4.2",
     "firebase-functions": "^0.7.1"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1"
+  }
 }
