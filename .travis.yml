@@ -4,6 +4,9 @@ node_js:
 
 script:
   - yarn build
+  - cd functions
+  - yarn prepare
+  - cd ../
 
 deploy:
   skip_cleanup: true
