@@ -20,10 +20,6 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 			font-weight: 500;
 			font-size: 1.5rem;
 		}
-		
-		& + section {
-			padding: 20px 0 0;
-		}
 	}
 	
 	section {

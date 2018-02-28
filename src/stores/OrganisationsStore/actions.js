@@ -77,29 +77,29 @@ const actions = (state) => {
 		return doc.exists && users.updateOrAdd({ _uid: doc.id, ...doc.data() }, '_uid');
 	});
 
-	// TODO: this function could use some work.
 	const create = async (obj) => {
 		const id = obj._id;
 		const path = `organisations/${id}`;
 
-		if (await firebase.docExists(path)) return ({ code: 'already-exists' });
+		// FIXME: This throws an access denied error. Can we work around this?
+		// if (await firebase.docExists(path)) return ({ code: 'already-exists' });
 
 		const avatar = await getAvatarString(obj.avatar, `${path}/${id}-avatar.png`);
-		const organisation = { created: new Date(), ...omitKeysWith(obj, '_'), avatar };
+		const organisation = { ...omitKeysWith(obj, '_'), created: new Date(), avatar, creator: state.authed._uid };
 
-		return await firebase.setDoc(path, organisation).then(() => ({})).catch((error) => error);
+		return firebase.setDoc(path, organisation);
 	};
 
 	const getAvatarString = async (avatar, path) => {
 		const placeholder = '/assets/images/organisation-avatar-placeholder.png';
-		if (isObject(avatar)) return (await firebase.putFile(path, avatar)).downloadURL;
+		if (isObject(avatar)) return (await firebase .putFile(path, avatar)).downloadURL;
 		if (!isString(avatar)) return placeholder;
 		return avatar === '' ? placeholder : avatar;
 	};
 
-	const addUser = async (orgId, role = 'owner', uid = state.authed._uid) => await firebase.setDoc(`organisations/${orgId}/users/${uid}`, { role, added: new Date() }).then(() => ({})).catch((error) => error);
+	const addUser = (orgId, role = 'owner', uid = state.authed._uid) => firebase.setDoc(`organisations/${orgId}/users/${uid}`, { role, added: new Date() });
 
-	const removeUser = async (orgId, uid) => await firebase.getRef(`organisations/${orgId}/users/${uid}`).delete().then(() => ({})).catch((error) => error);
+	const removeUser = (orgId, uid) => firebase.getRef(`organisations/${orgId}/users/${uid}`).delete();
 
 	const findById = (orgId) => {
 		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);

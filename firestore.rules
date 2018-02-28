@@ -1,6 +1,6 @@
 service cloud.firestore {
 	match /databases/{database}/documents {
-		function hasAccess(orgId) {
+		function currentUserHasAccess(orgId) {
 			return exists(/databases/$(database)/documents/organisations/$(orgId)/users/$(request.auth.uid));
 		}
 
@@ -11,28 +11,31 @@ service cloud.firestore {
 		function isAuthed() {
 			return request.auth.uid != null;
 		}
+    
+		function isCurrentUser(uid) {
+			return request.auth.uid == uid;
+		}
 
 		match /organisations/{orgId} {
-			allow read: if isPublic(orgId) || hasAccess(orgId);
+			allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
 			allow create: if isAuthed();
 			// TODO: Allow updates only if done by owner or administrator
 			// TODO: Allow deletes only if done by owner.
 
 			match /reports/{repId} {
-				allow read: if isPublic(orgId) || hasAccess(orgId);
-				allow write: if hasAccess(orgId);
-      			allow delete: if request.auth.uid == uid;
+				allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId);
 			}
 
 			match /users/{uid} {
 				allow read;
-				allow write: if hasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId);
 			}
 		}
 
 		match /users/{uid} {
 			allow read;
-			allow write: if request.auth.uid == uid;
+			allow write: if isCurrentUser(uid);
 
 			match /organisations/{orgId} {
 				allow read;
