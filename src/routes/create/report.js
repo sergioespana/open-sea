@@ -9,6 +9,7 @@ import linkState from 'linkstate';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
 import { parse } from 'query-string';
+import reject from 'lodash/reject';
 import slug from 'slugify';
 import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
@@ -67,7 +68,8 @@ class CreateReport extends Component {
 	render = () => {
 		const { error, id, name, organisation } = this.state;
 		const { state } = this.props;
-		const { busy, organisations } = state;
+		const { busy } = state;
+		const organisations = reject(state.organisations, ['isNetwork', true]);
 		const shouldPreventSubmit = isBlank(name) || isBlank(id) || isBlank(organisation) || busy;
 
 		return (

@@ -8,7 +8,6 @@ import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
 import MdBusiness from 'react-icons/lib/md/business';
 import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
-import MdFileDownload from 'react-icons/lib/md/file-download';
 import MdHelp from 'react-icons/lib/md/help';
 import MdHome from 'react-icons/lib/md/home';
 import MdInbox from 'react-icons/lib/md/inbox';
@@ -24,7 +23,6 @@ const links = ({ _id: orgId, isNetwork, isPublic }) => isNetwork ? [
 ] : [
 	<Button to={`/${orgId}/overview`} key={`/${orgId}/overview`}><MdInbox {...iconProps} />Overview</Button>,
 	<Button to={`/${orgId}/reports`} key={`/${orgId}/reports`}><MdAssessment {...iconProps} />Reports</Button>,
-	<Button to={`/${orgId}/downloads`} key={`/${orgId}/downloads`}><MdFileDownload {...iconProps} />Downloads</Button>,
 	<Button to={`/${orgId}/settings`} key={`/${orgId}/settings`}><MdSettings {...iconProps} />Settings</Button>
 ];
 
@@ -56,7 +54,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'VisualStore'))(
 					<Content>
 						<Group loading={loading}>
 							<Button round><MdHelp {...iconProps} /></Button>
-							<Button to="/account" round><MdAccountCircle {...iconProps} /></Button>
+							<Button to={`/dashboard/people/${authed._uid}`} round><MdAccountCircle {...iconProps} /></Button>
 						</Group>
 					</Content>
 				</Inner>

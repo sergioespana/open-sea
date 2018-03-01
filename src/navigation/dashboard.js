@@ -9,18 +9,20 @@ import MdGroupWork from 'react-icons/lib/md/group-work';
 import MdHelp from 'react-icons/lib/md/help';
 import MdHome from 'react-icons/lib/md/home';
 import MdInbox from 'react-icons/lib/md/inbox';
+import MdPeople from 'react-icons/lib/md/people';
 import MdSearch from 'react-icons/lib/md/search';
 
 const iconProps = { width: 24, height: 24 };
 const links = [
 	<Button to="/dashboard/overview" key="/dashboard/overview"><MdInbox {...iconProps} />Overview</Button>,
 	<Button to="/dashboard/organisations" key="/dashboard/organisations"><MdBusiness {...iconProps} />Organisations</Button>,
-	<Button to="/dashboard/networks" key="/dashboard/networks"><MdGroupWork {...iconProps} />Networks</Button>
+	<Button to="/dashboard/networks" key="/dashboard/networks"><MdGroupWork {...iconProps} />Networks</Button>,
+	<Button to="/dashboard/people" key="/dashboard/people" exact><MdPeople {...iconProps} />People</Button>
 ];
 
 const DashboardNavigation = inject(app('VisualStore'))(observer((props) => {
 	const { state, VisualStore } = props;
-	const { expanded, loading } = state;
+	const { authed, expanded, loading } = state;
 
 	return (
 		<Fragment>
@@ -39,7 +41,7 @@ const DashboardNavigation = inject(app('VisualStore'))(observer((props) => {
 					<Content>
 						<Group loading={loading}>
 							<Button round><MdHelp {...iconProps} /></Button>
-							<Button to="/account" round><MdAccountCircle {...iconProps} /></Button>
+							<Button to={`/dashboard/people/${authed._uid}`} round><MdAccountCircle {...iconProps} /></Button>
 						</Group>
 					</Content>
 				</Inner>

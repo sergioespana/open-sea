@@ -4,6 +4,7 @@ import Button from 'components/Button';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
 import isBoolean from 'lodash/isBoolean';
+import isFunction from 'lodash/isFunction';
 import isString from 'lodash/isString';
 import { Link } from 'components/Link';
 import map from 'lodash/map';
@@ -62,7 +63,7 @@ class Table extends Component {
 	sort = (sort) => (o) => {
 		const { columns } = this.props;
 		const { value } = find(columns, ['key', sort]) || {};
-		return value ? value(o) : o[sort];
+		return isFunction(value) ? value(o) : o[sort];
 	}
 
 	getFilters = (data) => {
@@ -70,16 +71,16 @@ class Table extends Component {
 		const row = data[0];
 
 		return row ? filter(columns, ({ hidden, key, value }) => {
-			const res = value(row) || row[key];
-			return isString(res) || isBoolean(res);
+			const val = isFunction(value) ? value(row) : row[key];
+			return isString(val) || isBoolean(val);
 		}) : [];
 	}
 
 	getFilterElement = (data, { format, key, label, value }) => {
 		const row = data[0];
-		const res = value(row) || row[key];
+		const val = isFunction(value) ? value(row) : row[key];
 
-		if (isBoolean(res)) return <Button key={key}>{ label }</Button>;
+		if (isBoolean(val)) return <Button key={key}>{ label }</Button>;
 		return null;
 	}
 
@@ -110,19 +111,15 @@ class Table extends Component {
 					</thead>
 					<tbody>
 						{ map(data, (row) => (
-							<tr key={row._id}>{ map(columns, ({ format, hidden, key, value }) => {
+							<tr key={row._id || row._uid}>{ map(columns, ({ format, hidden, key, value }) => {
 								if (hidden) return null;
-								if (format) return <td key={key}>{ format(value(row), row) }</td>; //FIXME: What if value is not a function?
-								if (value) return <td key={key}>{ value(row) }</td>;
-								return <td key={key}>{ row[key] }</td>;
+								const val = isFunction(value) ? value(row) : row[key];
+								return <td key={`${row._id || row._uid}_${key}`}>{ isFunction(format) ? format(val, row) : val }</td>;
 							}) }</tr>
 						)) }
 					</tbody>
 					<tfoot>
-						<tr>{ map(footer, (item, i) => {
-							console.log(item);
-							return <td key={i} colSpan={item ? item.props.colSpan : null}>{ item }</td>;
-						}) }</tr>
+						<tr>{ map(footer, (item, i) => <td key={i} colSpan={item ? item.props.colSpan : null}>{ item }</td>) }</tr>
 					</tfoot>
 				</table>
 			</Fragment>
@@ -178,7 +175,7 @@ export default withRouter(styled(Table)`
 	td {
 		padding: 7px 10px;
 
-		div {
+		& > div {
 			display: flex;
 			align-items: center;
 		}

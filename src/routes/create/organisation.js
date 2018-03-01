@@ -9,6 +9,7 @@ import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import slug from 'slugify';
+import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
 
@@ -49,24 +50,20 @@ class CreateOrganisation extends Component {
 		this.setState({ error: null });
 		VisualStore.setBusy(true);
 		
-		const { code: code1 } = await OrganisationsStore.create(organisation);
-		if (code1) {
-			VisualStore.setBusy(false);
-			this.handleError(code1);
-			return;
+		try {
+			await OrganisationsStore.create(organisation);
+			history.push(`/${id}`);
 		}
-
-		const { code: code2 } = await OrganisationsStore.addUser(id);
-		VisualStore.setBusy(false);
-		if (code2) this.handleError(code2);
-		else history.push(`/${id}`);
+		catch (error) {
+			this.handleError(error);
+		}
+		finally {
+			VisualStore.setBusy(false);
+		}
 	}
 
-	handleError = (code) => {
-		switch (code) {
-			case 'already-exists': return this.setState({ error: `An organisation or network with ID "${this.state.id}" already exists.` });
-			default: return this.setState({ error: 'An unknown error has occurred' });
-		}
+	handleError = (error) => {
+		console.log(error);
 	}
 
 	render = () => {
@@ -85,7 +82,7 @@ class CreateOrganisation extends Component {
 					</header>
 					<section>
 						<Alert message={error} type="error" />
-						<Input
+						<TextField
 							label="Name"
 							required
 							value={name}
@@ -93,7 +90,7 @@ class CreateOrganisation extends Component {
 							onBlur={this.onBlurName}
 							disabled={busy}
 						/>
-						<Input
+						<TextField
 							label="URL"
 							help="This will be the URL for your organisation. You will not be able to change it later, so choose carefully."
 							prefix={`${window.location.hostname}/`}
@@ -103,10 +100,9 @@ class CreateOrganisation extends Component {
 							onBlur={this.onBlurId}
 							disabled={busy}
 						/>
-						<Input
+						<TextField
 							type="text"
 							label="Description"
-							long
 							value={description}
 							onChange={linkState(this, 'description')}
 							disabled={busy}
@@ -131,10 +127,14 @@ class CreateOrganisation extends Component {
 					<footer>
 						<Button
 							appearance="primary"
-							type="submit"
+							busy={busy}
 							disabled={shouldPreventSubmit}
+							type="submit"
 						>Create organisation</Button>
-						<Link to="/">Cancel</Link>
+						<Button
+							appearance="link"
+							to="/"
+						>Cancel</Button>
 					</footer>
 				</Form>
 			</Fragment>

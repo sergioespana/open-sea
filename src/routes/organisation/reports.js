@@ -8,7 +8,7 @@ import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import { Link } from 'components/Link';
-import Lozenge from '@atlaskit/lozenge';
+import Lozenge from 'components/Lozenge';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import Table from 'components/Table';

@@ -7,11 +7,12 @@ import Chart from 'components/Chart';
 import Container from 'components/Container';
 import filter from 'lodash/filter';
 import findLast from 'lodash/findLast';
+import flatten from 'lodash/flatten';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import { Link } from 'components/Link';
-import Lozenge from '@atlaskit/lozenge';
+import Lozenge from 'components/Lozenge';
 import map from 'lodash/map';
 import moment from 'moment';
 import Placeholder from 'components/Placeholder';
@@ -69,11 +70,14 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								datasets: item.value ? [{
 									title: indicators[item.value].name,
 									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, item.value))
-								}] : map((item.chart || item).data, (indId) => ({
+								}] : map(item.chart.data, (indId) => ({
 									title: indicators[indId].name,
 									values: map(reportsWithData, ({ _orgId, _repId }) => ReportsStore.compute(_orgId, _repId, indId))
 								}))
 							};
+
+							const types = flatten(map(data.datasets, (set) => map(set.values, (value) => typeof value)));
+							if (types.includes('string')) return null;
 
 							return (
 								<Chart
@@ -81,7 +85,6 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 									title={item.name}
 									type="line"
 									data={data}
-									colors={(item.chart || item).colors || []}
 									style={{ flex: `0 0 ${(item.width || 100) - 2}%` }}
 								/>
 							);
@@ -101,7 +104,8 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 								key: 'name',
 								label: 'Report',
 								value: ({ name }) => name,
-								format: (value, { _id, name }) => <Link to={ `/${_id}` }>{ name }</Link>
+								// eslint-disable-next-line react/display-name
+								format: (value, { _id, name }) => <Link to={`/${_id}`}>{ name }</Link>
 							},
 							{
 								key: 'updated',
@@ -117,6 +121,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 									if (isUndefined(model) && isUndefined(data)) return { label: 'New', value: 'new' };
 									return { label: 'In Progress', value: 'inprogress' };
 								},
+								// eslint-disable-next-line react/display-name
 								format: (value) => <Lozenge appearance={value.value}>{ value.label }</Lozenge>
 							}
 						]}

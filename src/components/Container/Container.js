@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import isNumber from 'lodash/isNumber';
 import React from 'react';
 
 const flex = css`
@@ -22,8 +23,9 @@ const flex = css`
 	}
 `;
 
-const Container = styled(({ flex, wrap, ...props }) => <div {...props} />)`
-	margin: 0 20px 20px;
+const Container = styled(({ flex, width, wrap, ...props }) => <div {...props} />)`
+	margin: ${({ width }) => isNumber(width) ? '0 auto 20px auto' : '0 20px 20px'};
+	width: ${({ width }) => isNumber(width) ? `${width}%` : 'auto'};
 
 	& > section {
 		height: 100%;
