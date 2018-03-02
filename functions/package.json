@@ -12,7 +12,8 @@
   "dependencies": {
     "camelcase": "^4.1.0",
     "firebase-admin": "^5.9.1",
-    "firebase-functions": "^0.8.1"
+    "firebase-functions": "^0.8.1",
+    "glob": "^7.1.2"
   },
   "private": true,
   "devDependencies": {
