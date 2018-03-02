@@ -17,11 +17,6 @@ pipelines:
           - npm run build
         artifacts:
           - build/**
-    - step:
-        name: Deploy to production
-        deployment: production
-        script:
-          - firebase deploy --token=$FIREBASE_TOKEN --non-interactive
   branches:
     master:
       - step:
