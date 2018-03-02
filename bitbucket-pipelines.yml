@@ -1,0 +1,45 @@
+image: node:8.1.2
+options:
+  max-time: 15
+pipelines:
+  default:
+    - step:
+        name: Install dependencies
+        script:
+          - npm i
+          - cd ./functions
+          - npm i
+          - cd ../
+    - step:
+        name: Build and test
+        script:
+          - npm test
+          - npm run build
+        artifacts:
+          - build/**
+    - step:
+        name: Deploy to production
+        deployment: production
+        script:
+          - firebase deploy --token=$FIREBASE_TOKEN --non-interactive
+  branches:
+    master:
+      - step:
+          name: Install dependencies
+          script:
+            - npm i
+            - cd ./functions
+            - npm i
+            - cd ../
+      - step:
+          name: Build and test
+          script:
+            - npm test
+            - npm run build
+          artifacts:
+            - build/**
+      - step:
+          name: Deploy to production
+          deployment: production
+          script:
+            - firebase deploy --token=$FIREBASE_TOKEN --non-interactive
