@@ -5,7 +5,7 @@ const glob = require('glob');
 
 admin.initializeApp(functions.config().firebase);
 
-const files = glob.sync('./**/*.f.js', {
+const files = glob.sync('./src/*.f.js', {
 	cwd: __dirname,
 	ignore: './node_modules/**'
 });
