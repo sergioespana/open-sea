@@ -1,0 +1,11 @@
+service firebase.storage {
+	function isAuthed() {
+		return request.auth.uid != null;
+	}
+
+	match /b/{bucket}/o {
+		match /{allPaths=**} {
+			allow read, write: if isAuthed();
+		}
+	}
+}

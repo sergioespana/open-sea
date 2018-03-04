@@ -21,6 +21,10 @@ service cloud.firestore {
 			allow create: if isAuthed();
 			// TODO: Allow updates only if done by owner or administrator
 			// TODO: Allow deletes only if done by owner.
+			
+			match /organisations/{orgOrgId} {
+				allow read;
+			}
 
 			match /reports/{repId} {
 				allow read: if isPublic(orgId) || currentUserHasAccess(orgId);

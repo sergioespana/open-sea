@@ -1,44 +1,24 @@
-image: node:7.10.1
+image: node:8.1.2
 options:
   max-time: 15
 pipelines:
   default:
     - step:
-        name: Build Cloud Functions
+        name: Build
         script:
-          - cd ./functions
-          - npm i
-    - step:
-        name: Build main application
-        script:
-          - npm i
-          - npm test
-          - npm build
+          - yarn
+          - yarn build
   branches:
     master:
       - step:
-          name: Build Cloud Functions
+          name: Build
           script:
-            - cd ./functions
-            - npm i
-            - cd ../
-          artifacts:
-            - functions/**
-      - step:
-          name: Deploy Cloud Functions
-          script:
-            - npm i -g firebase-tools
-            - firebase deploy --token $FIREBASE_TOKEN --non-interactive --only functions
-      - step:
-          name: Build main application
-          script:
-            - npm i
-            - npm test
-            - npm build
+            - yarn
+            - yarn build
           artifacts:
             - build/**
       - step:
           name: Deploy to production
           script:
             - npm i -g firebase-tools
-            - firebase deploy --token $FIREBASE_TOKEN --non-interactive --only firestore,hosting,storage
+            - firebase deploy --token $FIREBASE_TOKEN --non-interactive
