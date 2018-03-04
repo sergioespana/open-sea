@@ -1,13 +1,13 @@
 {
 	"name": "open-sea",
-	"version": "0.8.1",
+	"version": "0.8.5",
 	"description": "The first open socio-environmental auditing tool",
-	"homepage": "https://open-sea.org",
-	"bugs": "https://github.com/nielsrowinbik/open-sea/issues",
+	"homepage": "https://open-sea.firebaseapp.com",
+	"bugs": "https://open-sea.atlassian.net/projects/WEB/issues",
 	"license": "GPL-3.0",
 	"author": "Niels Bik <hey@nielsbik.nl> (https://nielsbik.nl)",
 	"main": "src/index.js",
-	"repository": "nielsrowinbik/open-sea",
+	"repository": "bitbucket:nielsrowinbik/open-sea",
 	"scripts": {
 		"prebuild": "rimraf build",
 		"build": "cross-env NODE_ENV=production webpack",
