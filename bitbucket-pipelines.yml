@@ -1,4 +1,4 @@
-image: node:8.1.2
+image: node:7.10.1
 options:
   max-time: 15
 pipelines:
