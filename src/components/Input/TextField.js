@@ -103,7 +103,12 @@ const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, isDisabled,
 		line-height: 20px;
 		color: ${({ theme }) => theme.text.primary};
 		background-color: transparent;
+		
+		&::placeholder {
+			font-style: ${({ isDisabled, isInlineEdit }) => isDisabled && isInlineEdit ? 'italic' : 'normal'};
+		}
 	}
+
 `;
 
 const TextField = styled(class TextField extends Component {
