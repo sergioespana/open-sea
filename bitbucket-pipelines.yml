@@ -2,13 +2,40 @@ image: node:7.10.1
 options:
   max-time: 15
 pipelines:
-  default:
-    - step:
-        name: Build
-        script:
-          - yarn
-          - yarn build
   branches:
+    feature/*:
+      - step:
+          name: Build
+          script:
+            - yarn
+            - yarn build
+    next:
+      - step:
+          name: Build
+          script:
+            - yarn
+            - yarn build
+          artifacts:
+            - build/**
+      - step:
+          name: Deploy to test
+          deployment: test
+            - npm i -g surge
+            - surge --project ./build --domain open-sea-test.surge.sh
+    release/*:
+      - step:
+          name: Build
+          script:
+            - yarn
+            - yarn build
+          artifacts:
+            - build/**
+      - step:
+          name: Deploy to staging
+          deployment: staging
+          script:
+            - npm i -g surge
+            - surge --project ./build --domain open-sea-staging.surge.sh
     master:
       - step:
           name: Build
@@ -19,6 +46,7 @@ pipelines:
             - build/**
       - step:
           name: Deploy to production
+          deployment: production
           script:
             - npm i -g firebase-tools
             - firebase deploy --token $FIREBASE_TOKEN --non-interactive
