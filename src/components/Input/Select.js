@@ -12,35 +12,12 @@ import trim from 'lodash/trim';
 
 const isBlank = (str) => !trim(str);
 
-const Label = styled(({ ...props }) => <label {...props} />)`
-	background: none;
-	border: none;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	width: 36px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0;
-
-	:hover {
-		cursor: pointer;
-	}
-
-	svg {
-		color: ${({ theme }) => theme.text.primary};
-	}
-
-	&[disabled] {
-		pointer-events: none;
-	}
-`;
-
-const Wrapper = styled.div`
-	position: relative;
-	max-width: 300px;
+const Expander = styled(({ ...props }) => <MdExpandMore {...props} />)`
+	width: 24px;
+	height: 24px;
+	box-sizing: content-box;
+	padding: 8px;
+	cursor: pointer;
 `;
 
 const Option = styled.div`
@@ -71,7 +48,7 @@ const OptionsWrapper = styled.div`
 	overflow: auto;
 `;
 
-class Select extends Component {
+const Select = styled(class Select extends Component {
 	state = {
 		query: '',
 		open: false,
@@ -121,22 +98,24 @@ class Select extends Component {
 
 	render = () => {
 		const { query, open, searchable } = this.state;
-		const { value, ...props } = this.props;
+		const { className, value, ...props } = this.props;
 
-		const inputProps = pick(props, 'fullWidth', 'disabled', 'placeholder', 'label', 'help');
+		const inputProps = pick(props, 'compact', 'disabled', 'help', 'label', 'placeholder', 'required');
 		const options = isBlank(query) ? this.state.options : searchable.search(query);
 
 		return (
-			// eslint-disable-next-line react/jsx-no-bind
-			<Wrapper innerRef={(el) => this.wrapper = el}>
+			<div
+				// eslint-disable-next-line react/jsx-no-bind
+				ref={(el) => this.wrapper = el}
+				className={className}
+			>
 				<TextField
 					{...inputProps}
 					value={open ? query : (find(options, { value }) || {}).label || ''}
 					onChange={linkState(this, 'query')}
 					onFocus={this.onFocus}
-					id="test"
+					suffix={<Expander />}
 				/>
-				<Label htmlFor="test" disabled={inputProps.disabled}><MdExpandMore width={24} height={24} /></Label>
 				<OptionsWrapper hidden={!open}>
 					{ options.length > 0
 						? map(options, ({ label, value }) => (
@@ -147,9 +126,13 @@ class Select extends Component {
 						: <Option onClick={this.handleOptionClick()} disabled>No options</Option>
 					}
 				</OptionsWrapper>
-			</Wrapper>
+			</div>
 		);
 	}
-}
+})`
+	position: relative;
+	width: 100%;
+	max-width: ${({ compact }) => compact ? '300px' : '100%'};
+`;
 
 export default Select;

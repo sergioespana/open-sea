@@ -1,6 +1,8 @@
+import React, { createElement } from 'react';
+import isString from 'lodash/isString';
 import styled from 'styled-components';
 
-const Label = styled.label`
+const Label = styled(({ ...props }) => createElement(props.htmlFor || !isString(props.children) ? 'label' : 'legend', { ...props }))`
 	font-size: 0.857rem;
 	color: ${({ theme }) => theme.text.secondary};
 	font-weight: 500;

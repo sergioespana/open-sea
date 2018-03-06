@@ -6,6 +6,7 @@ import Button from 'components/Button';
 import Error from '@atlaskit/icon/glyph/error';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
+import MdDelete from 'react-icons/lib/md/delete';
 import moment from 'moment';
 import Table from 'components/Table';
 import trim from 'lodash/trim';
@@ -109,7 +110,12 @@ class OrganisationSettingsAccess extends Component {
 							label: 'Actions',
 							// TODO: Only show this when use has appropriate access
 							// TODO: Make this work
-							format: (val) => <a onClick={this.onRemoveClick(val)}>Remove</a>
+							format: (val) => (
+								<Button
+									appearance="subtle"
+									onClick={this.onRemoveClick(val)}
+								><MdDelete width={20} height={20} /></Button>
+							)
 						}
 					]}
 					data={organisation._users}

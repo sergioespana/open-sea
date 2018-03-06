@@ -89,6 +89,7 @@ class CreateReport extends Component {
 							value={organisation}
 							onChange={linkState(this, 'organisation', 'target.value')}
 							disabled={busy}
+							compact
 						>{ map(organisations, ({ _id, name }) => <option value={_id}>{ name }</option>) }</Select>
 						<TextField
 							label="Name"
@@ -97,6 +98,7 @@ class CreateReport extends Component {
 							onChange={this.onChangeName}
 							onBlur={this.onBlurName}
 							disabled={busy}
+							compact
 						/>
 						<TextField
 							label="URL"
@@ -108,6 +110,7 @@ class CreateReport extends Component {
 							onBlur={this.onBlurId}
 							long={organisation.length > 10}
 							disabled={busy}
+							compact
 						/>
 					</section>
 					<footer>

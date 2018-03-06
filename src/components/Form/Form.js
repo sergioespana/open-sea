@@ -33,6 +33,10 @@ const Form = styled(({ standalone, ...props }) => <form {...props} />)`
 				margin-top: 0;
 			}
 		}
+
+		& > div:not(:last-child) {
+			margin-bottom: 12px;
+		}
 	}
 	
 	footer {

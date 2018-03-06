@@ -95,6 +95,7 @@ class CreateNetwork extends Component {
 							onChange={this.onChangeName}
 							onBlur={this.onBlurName}
 							disabled={busy}
+							compact
 						/>
 						<TextField
 							label="URL"
@@ -105,6 +106,7 @@ class CreateNetwork extends Component {
 							onChange={linkState(this, 'id')}
 							onBlur={this.onBlurId}
 							disabled={busy}
+							compact
 						/>
 						<TextField
 							type="text"
@@ -114,6 +116,7 @@ class CreateNetwork extends Component {
 							value={description}
 							onChange={linkState(this, 'description')}
 							disabled={busy}
+							compact
 						/>
 						<Checkbox
 							type="checkbox"
