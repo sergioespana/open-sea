@@ -108,6 +108,8 @@ class CreateOrganisation extends Component {
 						/>
 						<TextField
 							type="text"
+							multiLine
+							rows={4}
 							label="Description"
 							value={description}
 							onChange={linkState(this, 'description')}

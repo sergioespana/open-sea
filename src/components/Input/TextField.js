@@ -3,7 +3,7 @@ import React from 'react';
 import slugify from 'slugify';
 import styled from 'styled-components';
 
-const TextInput = styled(({ fullWidth, inline, ...props }) => <input {...props} />)`
+const TextInput = styled(({ fullWidth, inline, multiLine, ...props }) => multiLine ? <textarea {...props} /> : <input {...props} />)`
 	border: 2px solid ${({ inline, theme }) => inline ? 'transparent' : theme.light};
 	border-radius: 5px;
 	width: ${({ fullWidth }) => fullWidth ? '100%' : 'auto'};

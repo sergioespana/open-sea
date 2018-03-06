@@ -78,6 +78,8 @@ class OrganisationReportData extends Component {
 								<TextField
 									key={metId}
 									type={type}
+									multiLine={type === 'text'}
+									rows={4}
 									label={name}
 									help={help}
 									value={data[metId] || ''}
