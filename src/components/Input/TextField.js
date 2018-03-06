@@ -1,7 +1,10 @@
 import { darken } from 'polished';
+import Help from './Help';
+import Label from './Label';
 import React from 'react';
 import slugify from 'slugify';
 import styled from 'styled-components';
+import Wrapper from './Wrapper';
 
 const TextInput = styled(({ fullWidth, inline, multiLine, ...props }) => multiLine ? <textarea {...props} /> : <input {...props} />)`
 	border: 2px solid ${({ inline, theme }) => inline ? 'transparent' : theme.light};
@@ -43,43 +46,6 @@ const TextInput = styled(({ fullWidth, inline, multiLine, ...props }) => multiLi
 			border-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
 			cursor: ${({ inline }) => inline ? 'text' : 'no-drop'};
 		}
-	}
-`;
-
-const Label = styled.label`
-	font-size: 0.857rem;
-	color: ${({ theme }) => theme.text.secondary};
-	font-weight: 500;
-	margin: 0 auto 0 0;
-	padding-bottom: 3px;
-	position: relative;
-
-	&[required]:after {
-		content: '*';
-		position: absolute;
-		top: 0;
-		margin-left: 2px;
-		color: red;
-	}
-`;
-
-const Help = styled.div`
-	color: ${({ theme }) => theme.text.secondary};
-	font-size: 0.857rem;
-	padding-top: 3px;
-`;
-
-const Wrapper = styled(({ ...props }) => <div {...props} />)`
-	display: flex;
-	flex-direction: column;
-	width: ${({ fullWidth }) => fullWidth ? '100%' : 'auto'};
-
-	&:not(:last-of-type) {
-		margin-bottom: 16px;
-	}
-
-	&:first-of-type {
-		margin-top: 16px;
 	}
 `;
 

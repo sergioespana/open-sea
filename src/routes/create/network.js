@@ -1,3 +1,4 @@
+import { Checkbox, TextField } from 'components/Input';
 import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import React, { Component, Fragment } from 'react';
@@ -9,7 +10,6 @@ import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import { reaction } from 'mobx';
 import slug from 'slugify';
-import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
 
@@ -115,7 +115,7 @@ class CreateNetwork extends Component {
 							onChange={linkState(this, 'description')}
 							disabled={busy}
 						/>
-						<Input
+						<Checkbox
 							type="checkbox"
 							label="Privacy"
 							secondLabel="This is a public network"

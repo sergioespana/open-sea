@@ -1,3 +1,4 @@
+import { Checkbox, TextField } from 'components/Input';
 import Form, { Alert, Input } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import React, { Component, Fragment } from 'react';
@@ -9,7 +10,6 @@ import linkState from 'linkstate';
 import omit from 'lodash/omit';
 import { reaction } from 'mobx';
 import slug from 'slugify';
-import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
 
@@ -115,8 +115,7 @@ class CreateOrganisation extends Component {
 							onChange={linkState(this, 'description')}
 							disabled={busy}
 						/>
-						<Input
-							type="checkbox"
+						<Checkbox
 							label="Privacy"
 							secondLabel="This is a public organisation"
 							help={isPublic ? 'Public organisations can be viewed by anyone, but other rights have to explicitly be assigned.' : 'Private organisations are only visible to you and anyone who has been given direct access to the organisation.'}
