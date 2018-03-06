@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Container from 'components/Container';
+import find from 'lodash/find';
 import Helmet from 'react-helmet';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'components/Link';
@@ -56,6 +57,7 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 							key: 'name',
 							label: 'Organisation',
 							value: ({ name }) => name,
+							// eslint-disable-next-line react/display-name
 							format: (value, { _id, avatar, name }) => <div><img src={avatar} /><Link to={`/${_id}`}>{ name }</Link></div>
 						},
 						{
@@ -66,9 +68,14 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 						{
 							key: 'owner',
 							label: 'Owner',
-							value: ({ owner }) => (AuthStore.getItem(owner, '_uid') || {}).name,
-							format: (val, { owner }) => {
-								const user = AuthStore.getItem(owner, '_uid') || {};
+							value: ({ _users }) => {
+								const { _uid: ownerId } = find(_users, ({ role }) => role === 'owner');
+								const user = AuthStore.getItem(ownerId, '_uid') || {};
+								return user.name;
+							},
+							format: (val, { _users }) => {
+								const { _uid: ownerId } = find(_users, ({ role }) => role === 'owner');
+								const user = AuthStore.getItem(ownerId, '_uid') || {};
 								return <Link to={`/dashboard/people/${user._uid}`}>{ user._isCurrent ? 'You' : user.name }</Link>;
 							}
 						},
