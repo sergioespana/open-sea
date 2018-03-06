@@ -5,10 +5,11 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
 import isString from 'lodash/isString';
-import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
+import { reaction } from 'mobx';
 import slug from 'slugify';
+import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
 import { withRouter } from 'react-router-dom';
 
@@ -43,31 +44,33 @@ class CreateNetwork extends Component {
 	onSubmit = async (event) => {
 		const { id } = this.state;
 		const organisation = { ...omit(this.state, 'error', 'id'), _id: id, isNetwork: true };
-		const { history, OrganisationsStore, VisualStore } = this.props;
+		const { OrganisationsStore, VisualStore } = this.props;
 
 		event.preventDefault();
 		this.setState({ error: null });
 		VisualStore.setBusy(true);
 		
-		const { code: code1 } = await OrganisationsStore.create(organisation);
-		if (code1) {
-			VisualStore.setBusy(false);
-			this.handleError(code1);
-			return;
-		}
-
-		const { code: code2 } = await OrganisationsStore.addUser(id);
-		VisualStore.setBusy(false);
-		if (code2) this.handleError(code2);
-		else history.push(`/${id}`);
+		try { await OrganisationsStore.create(organisation); }
+		catch (error) { this.handleError(error); }
 	}
 
-	handleError = (code) => {
-		switch (code) {
-			case 'already-exists': return this.setState({ error: `An organisation or network with ID "${this.state.id}" already exists.` });
-			default: return this.setState({ error: 'An unknown error has occurred' });
-		}
+	handleError = (error) => {
+		console.log(error);
 	}
+
+	onCreated = reaction(
+		() => this.props.state.organisations.length,
+		() => {
+			const { id } = this.state;
+			const { history, state, VisualStore } = this.props;
+			const { busy } = state;
+
+			if (busy) {
+				VisualStore.setBusy(false);
+				history.push(`/${id}`);
+			}
+		}
+	);
 
 	render = () => {
 		const { state } = this.props;
@@ -85,7 +88,7 @@ class CreateNetwork extends Component {
 					</header>
 					<section>
 						<Alert message={error} type="error" />
-						<Input
+						<TextField
 							label="Name"
 							required
 							value={name}
@@ -93,7 +96,7 @@ class CreateNetwork extends Component {
 							onBlur={this.onBlurName}
 							disabled={busy}
 						/>
-						<Input
+						<TextField
 							label="URL"
 							help="This will be the URL for your network. You will not be able to change it later, so choose carefully."
 							prefix={`${window.location.hostname}/`}
@@ -103,10 +106,9 @@ class CreateNetwork extends Component {
 							onBlur={this.onBlurId}
 							disabled={busy}
 						/>
-						<Input
+						<TextField
 							type="text"
 							label="Description"
-							long
 							value={description}
 							onChange={linkState(this, 'description')}
 							disabled={busy}
@@ -134,7 +136,10 @@ class CreateNetwork extends Component {
 							type="submit"
 							disabled={shouldPreventSubmit}
 						>Create network</Button>
-						<Link to="/">Cancel</Link>
+						<Button
+							appearance="link"
+							to="/"
+						>Cancel</Button>
 					</footer>
 				</Form>
 			</Fragment>

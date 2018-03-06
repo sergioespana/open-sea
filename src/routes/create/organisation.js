@@ -5,9 +5,9 @@ import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
 import isString from 'lodash/isString';
-import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import omit from 'lodash/omit';
+import { reaction } from 'mobx';
 import slug from 'slugify';
 import { TextField } from 'components/Input';
 import trim from 'lodash/trim';
@@ -44,27 +44,33 @@ class CreateOrganisation extends Component {
 	onSubmit = async (event) => {
 		const { id } = this.state;
 		const organisation = { ...omit(this.state, 'error', 'id'), _id: id };
-		const { history, OrganisationsStore, VisualStore } = this.props;
+		const { OrganisationsStore, VisualStore } = this.props;
 
 		event.preventDefault();
 		this.setState({ error: null });
 		VisualStore.setBusy(true);
 		
-		try {
-			await OrganisationsStore.create(organisation);
-			history.push(`/${id}`);
-		}
-		catch (error) {
-			this.handleError(error);
-		}
-		finally {
-			VisualStore.setBusy(false);
-		}
+		try { await OrganisationsStore.create(organisation); }
+		catch (error) { this.handleError(error); }
 	}
 
 	handleError = (error) => {
 		console.log(error);
 	}
+
+	onCreated = reaction(
+		() => this.props.state.organisations.length,
+		() => {
+			const { id } = this.state;
+			const { history, state, VisualStore } = this.props;
+			const { busy } = state;
+
+			if (busy) {
+				VisualStore.setBusy(false);
+				history.push(`/${id}`);
+			}
+		}
+	);
 
 	render = () => {
 		const { state } = this.props;
