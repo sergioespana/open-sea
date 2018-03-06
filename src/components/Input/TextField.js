@@ -69,23 +69,28 @@ import styled from 'styled-components';
 // 	return <TextInput {...props} className={className} />;
 // })``;
 
-const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, ...props }) => <div {...props} />)`
+const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, isDisabled, isInlineEdit, ...props }) => <div disabled={isDisabled} {...props} />)`
 	position: relative;
 	width: 100%;
 	max-width: ${({ compact }) => compact ? '300px' : '100%'};
-	border: 2px solid ${({ hasFocus, inline, theme }) => hasFocus ? theme.accent : inline ? 'transparent' : theme.light};
+	border: 2px solid ${({ hasFocus, isInlineEdit, theme }) => hasFocus ? theme.accent : isInlineEdit ? 'transparent' : theme.light};
 	border-radius: 5px;
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: center;
-	background-color: ${({ hasFocus, inline, theme }) => hasFocus || inline ? '#ffffff' : theme.light};
+	background-color: ${({ hasFocus, isInlineEdit, theme }) => hasFocus || isInlineEdit ? '#ffffff' : theme.light};
 	transition: all 200ms ease-out;
 	will-change: background-color, border-color;
 
-	:hover {
+	:hover,
+	:hover input {
 		cursor: text;
-		background-color: ${({ hasFocus, inline, theme }) => hasFocus ? '#ffffff' : inline ? theme.light : darken(0.05, theme.light)};
-		border-color: ${({ hasFocus, inline, theme }) => hasFocus ? theme.accent : inline ? theme.light : darken(0.05, theme.light)};
+	}
+
+	&:not([disabled]):hover,
+	&[disabled="false"]:hover {
+		background-color: ${({ hasFocus, isInlineEdit, theme }) => hasFocus ? '#ffffff' : isInlineEdit ? theme.light : darken(0.05, theme.light)};
+		border-color: ${({ hasFocus, isInlineEdit, theme }) => hasFocus ? theme.accent : isInlineEdit ? theme.light : darken(0.05, theme.light)};
 	}
 
 	${textInputs()} {
@@ -130,7 +135,7 @@ const TextField = styled(class TextField extends Component {
 	}
 
 	render = () => {
-		const { className, compact, help, label, multiLine, prefix, suffix, ...props } = this.props;
+		const { className, compact, help, isInlineEdit, label, multiLine, prefix, suffix, ...props } = this.props;
 		const { hasFocus, id } = this.state;
 		
 		return (
@@ -141,6 +146,8 @@ const TextField = styled(class TextField extends Component {
 					hasPrefix={!isUndefined(prefix)}
 					hasSuffix={!isUndefined(suffix)}
 					hasFocus={hasFocus}
+					isDisabled={props.disabled}
+					isInlineEdit={isInlineEdit}
 					onBlur={this.onBlur}
 					onFocus={this.onFocus}
 					onClick={this.onClick}
