@@ -55,9 +55,9 @@ const TextField = styled(({ className, help, label, ...props }) => {
 
 		return (
 			<Wrapper className={className}>
-				<Label htmlFor={id} required={props.required}>{ label }</Label>
+				{ label && <Label htmlFor={id} required={props.required}>{ label }</Label> }
 				<TextInput {...props} id={id} />
-				<Help>{ help }</Help>
+				{ help && <Help>{ help }</Help> }
 			</Wrapper>
 		);
 	}

@@ -1,6 +1,7 @@
-import Form, { Alert, Input } from 'components/Form';
+import Form, { Alert } from 'components/Form';
 import { inject, observer } from 'mobx-react';
 import React, { Component, Fragment } from 'react';
+import { Select, TextField } from 'components/Input';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
@@ -81,16 +82,15 @@ class CreateReport extends Component {
 					</header>
 					<section>
 						<Alert message={error} type="error" />
-						<Input
+						<Select
 							type="select"
 							label="Organisation"
 							required
 							value={organisation}
 							onChange={linkState(this, 'organisation', 'target.value')}
-							options={map(organisations, (organisation) => ({ value: organisation._id, text: organisation.name }))}
 							disabled={busy}
-						/>
-						<Input
+						>{ map(organisations, ({ _id, name }) => <option value={_id}>{ name }</option>) }</Select>
+						<TextField
 							label="Name"
 							required
 							value={name}
@@ -98,7 +98,7 @@ class CreateReport extends Component {
 							onBlur={this.onBlurName}
 							disabled={busy}
 						/>
-						<Input
+						<TextField
 							label="URL"
 							help="This will be the URL for your report. You will not be able to change it later, so choose carefully."
 							prefix={`${organisation.length > 10 ? '...' : window.location.hostname}/${organisation ? `${organisation}/` : ''}`}

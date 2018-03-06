@@ -16,13 +16,14 @@ const Label = styled(({ ...props }) => <label {...props} />)`
 	background: none;
 	border: none;
 	position: absolute;
-	right: 6px;
+	right: 0;
+	bottom: 0;
+	width: 36px;
+	height: 40px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 0;
-	width: 36px;
-	height: 100%;
 
 	:hover {
 		cursor: pointer;
@@ -37,12 +38,9 @@ const Label = styled(({ ...props }) => <label {...props} />)`
 	}
 `;
 
-const Input = TextField.extend`
-	padding-right: 36px;
-`;
-
 const Wrapper = styled.div`
 	position: relative;
+	max-width: 300px;
 `;
 
 const Option = styled.div`
@@ -64,6 +62,7 @@ const OptionsWrapper = styled.div`
 	left: 0;
 	right: 0;
 	top: 100%;
+	z-index: 10;
 	background-color: #ffffff;
 	border-radius: 3px;
 	box-shadow: 0 4px 8px -2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
@@ -130,7 +129,7 @@ class Select extends Component {
 		return (
 			// eslint-disable-next-line react/jsx-no-bind
 			<Wrapper innerRef={(el) => this.wrapper = el}>
-				<Input
+				<TextField
 					{...inputProps}
 					value={open ? query : (find(options, { value }) || {}).label || ''}
 					onChange={linkState(this, 'query')}
