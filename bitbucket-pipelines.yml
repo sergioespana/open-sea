@@ -20,7 +20,8 @@ pipelines:
       - step:
           name: Deploy to test
           deployment: test
-            - npm i -g surge
+          script:
+            - yarn global add surge
             - surge --project ./build --domain open-sea-test.surge.sh
     release/*:
       - step:
@@ -34,7 +35,7 @@ pipelines:
           name: Deploy to staging
           deployment: staging
           script:
-            - npm i -g surge
+            - yarn global add surge
             - surge --project ./build --domain open-sea-staging.surge.sh
     master:
       - step:
@@ -48,5 +49,5 @@ pipelines:
           name: Deploy to production
           deployment: production
           script:
-            - npm i -g firebase-tools
+            - yarn global add firebase-tools
             - firebase deploy --token $FIREBASE_TOKEN --non-interactive
