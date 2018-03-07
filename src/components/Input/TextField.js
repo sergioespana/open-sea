@@ -8,66 +8,6 @@ import Label from './Label';
 import Prefix from './Prefix';
 import slugify from 'slugify';
 import styled from 'styled-components';
-// import Wrapper from './Wrapper';
-
-// const TextInput = styled(({ fullWidth, inline, multiLine, ...props }) => multiLine ? <textarea {...props} /> : <input {...props} />)`
-// 	border: 2px solid ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-// 	border-radius: 5px;
-// 	width: ${({ fullWidth }) => fullWidth ? '100%' : 'auto'};
-// 	max-width: ${({ fullWidth }) => fullWidth ? '100%' : '300px'};
-// 	padding: 8px 7px;
-// 	font-family: inherit;
-// 	font-size: inherit;
-// 	line-height: 20px;
-// 	color: ${({ theme }) => theme.text.primary};
-// 	background-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-// 	resize: vertical;
-// 	overflow-x: hidden;
-// 	position: relative;
-// 	transition: all 100ms ease-out;
-// 	will-change: border-color, background-color;
-	
-// 	&::placeholder {
-// 		color: ${({ theme }) => theme.text.secondary};
-// 	}
-
-// 	:hover {
-// 		background-color: ${({ inline, theme }) => inline ? theme.light : darken(0.05, theme.light)};
-// 		border-color: ${({ inline, theme }) => inline ? theme.light : darken(0.05, theme.light)};
-// 	}
-
-// 	:focus {
-// 		border-color: ${({ theme }) => theme.accent};
-// 		background-color: #fff;
-// 	}
-
-// 	&[disabled] {
-// 		background-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-// 		border-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-		
-// 		:hover {
-// 			background-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-// 			border-color: ${({ inline, theme }) => inline ? 'transparent' : theme.light};
-// 			cursor: ${({ inline }) => inline ? 'text' : 'no-drop'};
-// 		}
-// 	}
-// `;
-
-// const TextField = styled(({ className, help, label, ...props }) => {
-// 	if (help || label) {
-// 		const id = props.id || slugify(label);
-
-// 		return (
-// 			<Wrapper className={className}>
-// 				{ label && <Label htmlFor={id} required={props.required}>{ label }</Label> }
-// 				<TextInput {...props} id={id} />
-// 				{ help && <Help>{ help }</Help> }
-// 			</Wrapper>
-// 		);
-// 	}
-
-// 	return <TextInput {...props} className={className} />;
-// })``;
 
 const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, isDisabled, isInlineEdit, ...props }) => <div disabled={isDisabled} {...props} />)`
 	position: relative;
@@ -76,7 +16,7 @@ const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, isDisabled,
 	border: 2px solid ${({ hasFocus, isInlineEdit, theme }) => hasFocus ? theme.accent : isInlineEdit ? 'transparent' : theme.light};
 	border-radius: 5px;
 	display: flex;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
 	align-items: center;
 	background-color: ${({ hasFocus, isInlineEdit, theme }) => hasFocus || isInlineEdit ? '#ffffff' : theme.light};
 	transition: all 200ms ease-out;
@@ -95,7 +35,7 @@ const Container = styled(({ compact, hasFocus, hasPrefix, hasSuffix, isDisabled,
 
 	${textInputs()} {
 		border: none;
-		width: 100%;
+		flex: auto;
 		height: 100%;
 		padding: ${({ hasPrefix, hasSuffix }) => `8px ${hasSuffix ? 0 : 7}px 8px ${hasPrefix ? 0 : 7}px`};
 		font-family: inherit;
@@ -130,7 +70,7 @@ const TextField = styled(class TextField extends Component {
 		this.setState({ hasFocus: false });
 	}
 
-	onClick = () => this.input.focus();
+	onClick = () => this.setState({ hasFocus: true }, () => this.input.focus());
 
 	componentWillMount = () => {
 		const { id, label } = this.props;
@@ -140,7 +80,7 @@ const TextField = styled(class TextField extends Component {
 	}
 
 	render = () => {
-		const { className, compact, help, isInlineEdit, label, multiLine, prefix, suffix, ...props } = this.props;
+		const { children, className, compact, help, hideInputOnBlur, isInlineEdit, label, multiLine, prefix, suffix, ...props } = this.props;
 		const { hasFocus, id } = this.state;
 		
 		return (
@@ -157,11 +97,13 @@ const TextField = styled(class TextField extends Component {
 					onFocus={this.onFocus}
 					onClick={this.onClick}
 				>
+					{ children }
 					{ isString(prefix) ? <Prefix>{ prefix }</Prefix> : prefix }
 					{ createElement(multiLine ? 'textarea' : 'input', {
 						type: 'text',
 						ref: (element) => this.input = element,
 						...props,
+						hidden: !hasFocus && hideInputOnBlur,
 						id
 					}) }
 					{ suffix }

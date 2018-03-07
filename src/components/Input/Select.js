@@ -16,7 +16,7 @@ const Expander = styled(({ ...props }) => <MdExpandMore {...props} />)`
 	width: 24px;
 	height: 24px;
 	box-sizing: content-box;
-	padding: 8px;
+	padding: 4px 8px;
 	cursor: pointer;
 `;
 
