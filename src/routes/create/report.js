@@ -5,7 +5,6 @@ import { Select, TextField } from 'components/Input';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import Helmet from 'react-helmet';
-import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
@@ -90,7 +89,7 @@ class CreateReport extends Component {
 							onChange={linkState(this, 'organisation', 'target.value')}
 							disabled={busy}
 							compact
-						>{ map(organisations, ({ _id, name }) => <option value={_id}>{ name }</option>) }</Select>
+						>{ map(organisations, ({ _id, name }) => <option key={_id} value={_id}>{ name }</option>) }</Select>
 						<TextField
 							label="Name"
 							required
@@ -108,7 +107,6 @@ class CreateReport extends Component {
 							value={id}
 							onChange={linkState(this, 'id')}
 							onBlur={this.onBlurId}
-							long={organisation.length > 10}
 							disabled={busy}
 							compact
 						/>
@@ -119,7 +117,10 @@ class CreateReport extends Component {
 							type="submit"
 							disabled={shouldPreventSubmit}
 						>Create report</Button>
-						<Link to="/">Cancel</Link>
+						<Button
+							appearance="link"
+							to="/"
+						>Cancel</Button>
 					</footer>
 				</Form>
 			</Fragment>
