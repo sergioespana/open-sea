@@ -16,7 +16,8 @@ const ProfileHeader = styled.header`
 			padding: 24px 0;
 		}
 
-		h1 {
+		& > h1,
+		& > div {
 			padding: 16px 0;
 			margin: 0 0 0 24px;
 		}

@@ -19,6 +19,8 @@ class DashboardPeopleProfile extends Component {
 		editing: false
 	}
 
+	toggleEditing = () => this.setState({ editing: !this.state.editing });
+
 	componentDidMount = () => {
 		const { AuthStore, history, match: { params: { name, uid } } } = this.props;
 		const user = AuthStore.getItem(uid, '_uid') || {};
@@ -43,22 +45,43 @@ class DashboardPeopleProfile extends Component {
 					</section>
 					<section>
 						<img src={user.avatar} />
-						<h1>{ user.name }</h1>
+						{ editing ? (
+							<TextField
+								type="text"
+								placeholder="Your name"
+								disabled={!editing}
+								defaultValue={user.name}
+								compact
+								isInlineEdit
+							/>
+						) : <h1>{ user.name }</h1> }
 					</section>
 				</ProfileHeader>
 				<Container width={50}>
-					{ user._isCurrent ? editing ? null : <Button appearance="subtle">Edit profile</Button> : null }
+					<section hidden={!user._isCurrent} style={{ textAlign: 'right' }}>
+						<Button
+							appearance="primary"
+							onClick={this.toggleEditing}
+						>{ editing ? 'Save' : 'Edit profile' }</Button>
+						{ editing ? <Button appearance="subtle" onClick={this.toggleEditing}>Cancel</Button> : null }
+					</section>
 					<TextField
 						type="email"
+						label="Email"
+						placeholder="Your email address"
 						disabled={!editing}
 						defaultValue={user.email}
-						inline
+						compact
+						isInlineEdit
 					/>
 					<TextField
-						type="text"
+						type="email"
+						label="Based in"
+						placeholder="Your location"
 						disabled={!editing}
-						defaultValue={user.name}
-						inline
+						defaultValue={user.location}
+						compact
+						isInlineEdit
 					/>
 					{ user._isCurrent ? <Button appearance="subtle" to="/account/logout">Logout</Button> : null }
 				</Container>
