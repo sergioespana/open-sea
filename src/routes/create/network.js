@@ -119,7 +119,6 @@ class CreateNetwork extends Component {
 							compact
 						/>
 						<Checkbox
-							type="checkbox"
 							label="Privacy"
 							secondLabel="This is a public network"
 							help={isPublic ? 'Public networks can be viewed by anyone, but other rights have to explicitly be assigned.' : 'Private networks are only visible to you and anyone who has been given direct access to organisations within the network.'}
@@ -138,8 +137,9 @@ class CreateNetwork extends Component {
 					<footer>
 						<Button
 							appearance="primary"
-							type="submit"
+							busy={busy}
 							disabled={shouldPreventSubmit}
+							type="submit"
 						>Create network</Button>
 						<Button
 							appearance="link"

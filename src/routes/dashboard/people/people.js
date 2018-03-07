@@ -37,7 +37,6 @@ class DashboardPeople extends Component {
 				</Header>
 				<Container width={70}>
 					<TextField
-						fullWidth
 						placeholder="Search by full name"
 						value={query}
 						onChange={linkState(this, 'query')}

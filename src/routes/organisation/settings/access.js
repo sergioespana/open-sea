@@ -125,7 +125,6 @@ class OrganisationSettingsAccess extends Component {
 							placeholder="Find a user"
 							value={email}
 							onChange={linkState(this, 'email')}
-							fullWidth
 							disabled={busy}
 							colSpan={2}
 						/>,
@@ -134,7 +133,6 @@ class OrganisationSettingsAccess extends Component {
 							value={role}
 							onChange={linkState(this, 'role', 'target.value')}
 							disabled={busy}
-							fullWidth
 						>
 							<option value="admin">Administrator</option>
 							<option value="auditor">Auditor</option>

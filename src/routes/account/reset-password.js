@@ -71,7 +71,6 @@ class AccountResetPassword extends Component {
 								required
 								onChange={linkState(this, 'email')}
 								disabled={busy}
-								fullWidth
 							/>
 							<Button
 								appearance="primary"

@@ -77,7 +77,6 @@ class AccountSignIn extends Component {
 							required
 							onChange={linkState(this, 'email')}
 							disabled={busy}
-							fullWidth
 						/>
 						<TextField
 							type="password"
@@ -87,7 +86,6 @@ class AccountSignIn extends Component {
 							required
 							onChange={linkState(this, 'password')}
 							disabled={busy}
-							fullWidth
 						/>
 						<Button
 							appearance="primary"

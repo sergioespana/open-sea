@@ -64,7 +64,6 @@ class AccountSignUp extends Component {
 							required
 							onChange={linkState(this, 'email')}
 							disabled={busy}
-							fullWidth
 						/>
 						<TextField
 							type="text"
@@ -74,7 +73,6 @@ class AccountSignUp extends Component {
 							required
 							onChange={linkState(this, 'name')}
 							disabled={busy}
-							fullWidth
 						/>
 						<PasswordField
 							type="password"
@@ -84,7 +82,6 @@ class AccountSignUp extends Component {
 							required
 							onChange={linkState(this, 'password')}
 							disabled={busy}
-							fullWidth
 						/>
 						<p>By signing up, you agree to the <a>Terms of Use</a> and <a>Privacy Policy</a>.</p>
 						<Button
