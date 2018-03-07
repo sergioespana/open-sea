@@ -86,9 +86,6 @@ const actions = (state) => {
 		const id = obj._id;
 		const path = `organisations/${id}`;
 
-		// FIXME: This throws an access denied error. Can we work around this?
-		// if (await firebase.docExists(path)) return ({ code: 'already-exists' });
-
 		const avatar = await getAvatarString(obj.avatar, `${path}/${id}-avatar.png`);
 		const organisation = { ...omitKeysWith(obj, '_'), created: new Date(), avatar, creator: state.authed._uid };
 

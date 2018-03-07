@@ -8,6 +8,7 @@ import Container from 'components/Container';
 import Helmet from 'react-helmet';
 import OrganisationSettingsAccess from './access';
 import OrganisationSettingsDetails from './details';
+import OrganisationSettingsOrganisations from './organisations';
 import Route from 'components/Route';
 import Sidenav from 'components/Sidenav';
 
@@ -31,6 +32,7 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 					<h3>General</h3>
 					<NavLink to={`/${orgId}/settings/details`} exact>Organisation details</NavLink>
 					<NavLink to={`/${orgId}/settings/access`} exact>User and group access</NavLink>
+					{ organisation.isNetwork && <NavLink to={`/${orgId}/settings/organisations`} exact>Manage organisations</NavLink> }
 					<h3>Advanced</h3>
 					<NavLink to={`/${orgId}/settings/export`} exact>Export data</NavLink>
 					<NavLink to={`/${orgId}/settings/delete`} exact>Delete organisation</NavLink>
@@ -40,6 +42,7 @@ const OrganisationSettings = inject(app('OrganisationsStore'))(observer((props) 
 						<Redirect from={`/${orgId}/settings`} exact to={`/${orgId}/settings/details`} replace />
 						<Route path="/:orgId/settings/details" component={OrganisationSettingsDetails} />
 						<Route path="/:orgId/settings/access" component={OrganisationSettingsAccess} />
+						{ organisation.isNetwork && <Route path="/:orgId/settings/organisations" component={OrganisationSettingsOrganisations} /> }
 						<Route path="/:orgId/settings/export" />
 						<Route path="/:orgId/settings/delete" />
 					</Switch>
