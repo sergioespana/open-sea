@@ -58,6 +58,7 @@ const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(ob
 							key: 'name',
 							label: 'Report',
 							value: ({ name }) => name,
+							// eslint-disable-next-line react/display-name
 							format: (value, { _id, name }) => <Link to={`/${_id}`}>{ name }</Link>
 						},
 						{
@@ -73,6 +74,7 @@ const OrganisationReports = inject(app('OrganisationsStore', 'ReportsStore'))(ob
 								if (isUndefined(model) && isUndefined(data)) return { label: 'New', value: 'new' };
 								return { label: 'In Progress', value: 'inprogress' };
 							},
+							// eslint-disable-next-line react/display-name
 							format: (value) => <Lozenge appearance={value.value}>{ value.label }</Lozenge>
 						}
 					]}
