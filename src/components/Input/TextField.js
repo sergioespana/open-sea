@@ -70,7 +70,7 @@ const TextField = styled(class TextField extends Component {
 		this.setState({ hasFocus: false });
 	}
 
-	onClick = () => this.setState({ hasFocus: true }, () => this.input.focus());
+	onClick = () => !this.props.disabled && this.setState({ hasFocus: true }, () => this.input.focus());
 
 	componentWillMount = () => {
 		const { id, label } = this.props;

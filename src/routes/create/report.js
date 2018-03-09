@@ -65,6 +65,8 @@ class CreateReport extends Component {
 		this.setState({ organisation });
 	}
 
+	componentWillUnmount = () => this.props.VisualStore.setBusy(false);
+
 	render = () => {
 		const { error, id, name, organisation } = this.state;
 		const { state } = this.props;

@@ -72,6 +72,8 @@ class CreateOrganisation extends Component {
 		}
 	);
 
+	componentWillUnmount = () => this.props.VisualStore.setBusy(false);
+
 	render = () => {
 		const { state } = this.props;
 		const { busy } = state;
