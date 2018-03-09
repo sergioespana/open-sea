@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { app } from 'mobx-app';
 import Button from 'components/Button';
 import filter from 'lodash/filter';
+import find from 'lodash/find';
+import isUndefined from 'lodash/isUndefined';
 import { Link } from 'components/Link';
 import linkState from 'linkstate';
 import map from 'lodash/map';
@@ -21,12 +23,27 @@ class OrganisationSettingsOrganisations extends Component {
 		org: ''
 	}
 
-	onSubmit = () => {
-		
+	onSubmit = async (event) => {
+		const { org: orgId } = this.state;
+		const { match: { params: { orgId: netId } }, OrganisationsStore, VisualStore } = this.props;
+
+		event.preventDefault();
+		VisualStore.setBusy(true);
+
+		try { await OrganisationsStore.addOrganisation(netId, orgId); }
+		catch (error) { this.handleError(error); }
+		finally {
+			this.setState({ org: '' });
+			VisualStore.setBusy(false);
+		}
 	}
 
 	onRemoveClick = (orgId) => (event) => {
 
+	}
+
+	handleError = (error) => {
+		console.log(error);
 	}
 
 	render = () => {
@@ -61,7 +78,7 @@ class OrganisationSettingsOrganisations extends Component {
 							value: ({ _id }) => (OrganisationsStore.getItem(_id, '_id') || {}).name,
 							format: (val, { _id }) => {
 								const organisation = OrganisationsStore.getItem(_id, '_id') || {};
-								return <Link to={`/dashboard/people/${organisation._id}`}>{ organisation.name }</Link>;
+								return <div><img src={organisation.avatar} /><Link to={`/dashboard/people/${organisation._id}`}>{ organisation.name }</Link></div>;
 							}
 						},
 						{
@@ -93,7 +110,7 @@ class OrganisationSettingsOrganisations extends Component {
 							colSpan={2}
 						>{ map(
 								// TODO: Extend filter to also exclude organisations already added
-								filter(state.organisations, ({ isNetwork }) => !isNetwork),
+								filter(state.organisations, ({ _id, isNetwork }) => !isNetwork && isUndefined(find(network._organisations, { _id }))),
 								({ _id, name }) => <option key={_id} value={_id}>{ name }</option>
 							) }</Select>,
 						<Button

@@ -93,7 +93,7 @@ class OrganisationSettingsAccess extends Component {
 							value: ({ _uid }) => (AuthStore.getItem(_uid, '_uid') || {}).name,
 							format: (val, { _uid }) => {
 								const user = AuthStore.getItem(_uid, '_uid') || {};
-								return <Link to={`/dashboard/people/${user._uid}`}>{ user._isCurrent ? 'You' : user.name }</Link>;
+								return <div><img src={user.avatar} /> <Link to={`/dashboard/people/${user._uid}`}>{ user._isCurrent ? 'You' : user.name }</Link></div>;
 							}
 						},
 						{

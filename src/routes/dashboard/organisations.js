@@ -20,8 +20,8 @@ const Head = () => (
 	</Helmet>
 );
 
-const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer((props) => {
-	const { AuthStore, ReportsStore, state } = props;
+const DashboardOrganisations = inject(app('AuthStore', 'OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { AuthStore, OrganisationsStore, ReportsStore, state } = props;
 	const organisations = reject(state.organisations, ['isNetwork', true]);
 
 	if (isEmpty(organisations)) return (
@@ -63,7 +63,11 @@ const DashboardOrganisations = inject(app('AuthStore', 'ReportsStore'))(observer
 						{
 							key: 'network',
 							label: 'Network',
-							value: ({ network }) => network
+							value: ({ network }) => (OrganisationsStore.getItem(network, '_id') || {}).name,
+							format: (value, { network: netId }) => {
+								const network = OrganisationsStore.getItem(netId, '_id') || {};
+								return <Link to={`/${netId}`}>{ network.name }</Link>;
+							}
 						},
 						{
 							key: 'owner',

@@ -81,6 +81,11 @@ const DashboardNetworks = inject(app('AuthStore', 'ReportsStore'))(observer((pro
 							format: (value) => moment().diff(value) > 86400000 ? moment(value).format('DD-MM-YYYY') : moment(value).fromNow()
 						},
 						{
+							key: '_organisations',
+							label: 'Organisations',
+							value: ({ _organisations }) => (_organisations || []).length
+						},
+						{
 							key: 'isPublic',
 							label: 'Public',
 							labelHidden: true,

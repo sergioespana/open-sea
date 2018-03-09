@@ -38,7 +38,7 @@ const actions = (state) => {
 	const onOrganisationUsers = (orgId) => firebase.onSnapshot({
 		before: ({ size }) => incrementSnapshotSize(size),
 		onAdded: action(({ doc }) => {
-			const organisation = organisations.getItem(orgId, '_id');
+			const organisation = organisations.getItem(orgId, '_id') || {};
 			const users = [...(organisation._users || [])];
 			const userCol = collection(users);
 
@@ -67,9 +67,17 @@ const actions = (state) => {
 		})
 	});
 
-	const onNetworkOrganisations = (orgId) => firebase.onSnapshot({
-		before: ({ size }) => incrementSnapshotSize(size),
-		onAdded: ({ doc }) => findById(doc.id, false)
+	const onNetworkOrganisations = (netId) => firebase.onSnapshot({
+		onAdded: ({ doc }) => {
+			const network = organisations.getItem(netId, '_id');
+			const networkOrganisations = [...(network._organisations || [])];
+			const orgCol = collection(networkOrganisations);
+
+			orgCol.updateOrAdd({ _id: doc.id, ...doc.data() }, '_id');
+			organisations.updateItem({ ...network, _organisations: networkOrganisations }, '_id');
+
+			findById(doc.id, false);
+		}
 	});
 
 	const onOrganisationData = action((doc) => {
@@ -102,6 +110,10 @@ const actions = (state) => {
 	const addUser = (orgId, role = 'owner', uid = state.authed._uid) => firebase.setDoc(`organisations/${orgId}/users/${uid}`, { role, added: new Date() });
 
 	const removeUser = (orgId, uid) => firebase.getRef(`organisations/${orgId}/users/${uid}`).delete();
+
+	const addOrganisation = (netId, orgId) => firebase.setDoc(`organisations/${netId}/organisations/${orgId}`, { added: new Date() });
+
+	const removeOrganisation = (netId, orgId) => firebase.getRef(`organisations/${netId}/organisations/${orgId}`).delete();
 
 	const findById = (orgId, getOrganisations) => {
 		firebase.addFirebaseListener(`organisations/${orgId}`, onOrganisationData);
@@ -145,9 +157,11 @@ const actions = (state) => {
 
 	return {
 		...organisations,
+		addOrganisation,
 		addUser,
 		create,
 		findById,
+		removeOrganisation,
 		removeUser,
 		search,
 		setLoading
