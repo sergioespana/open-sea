@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
 import MdLock from 'react-icons/lib/md/lock';
-import { Button } from '../../components/Button';
+import { LinkButton } from '../../components/Button';
 import { Container } from '../../components/Container';
 import { EmptyState } from '../../components/EmptyState';
 import { Header } from '../../components/Header';
@@ -29,7 +29,7 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 							define for your organisation. To get started, simply click below to
 							claim your organisation's name.
 						</p>
-						<p><Button to="/create/organisation">Create an organisation</Button></p>
+						<p><LinkButton appearance="default" to="/create/organisation">Create an organisation</LinkButton></p>
 					</EmptyState>
 				</Section>
 			</Container>

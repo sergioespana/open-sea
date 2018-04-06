@@ -2,6 +2,8 @@ import { desaturate, lighten, mix, readableColor, transparentize } from 'polishe
 
 const primary = '#00695C';
 
+export interface ThemeInterface { [key: string]: string; }
+
 export default {
 	theme: {
 		primary,

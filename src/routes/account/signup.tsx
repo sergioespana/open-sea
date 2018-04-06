@@ -3,10 +3,10 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { AuthButton, AuthForm, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm/index';
-import { Button } from '../../components/Button/index';
-import { PasswordField, TextField } from '../../components/Input/index';
-import { Link } from '../../components/Link/index';
+import { AuthButton, AuthForm, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
+import { Button } from '../../components/Button';
+import { PasswordField, TextField } from '../../components/Input';
+import { Link } from '../../components/Link';
 import { setAppState } from '../../stores/helpers';
 
 const initialState = {
@@ -61,6 +61,7 @@ export default class AccountSignout extends Component<any, State> {
 						By signing up, you agree to the <a>Terms of Use</a> and <a>Privacy Policy</a>.
 					</p>
 					<Button
+						appearance="default"
 						disabled={!trim(email) || !trim(name) || !trim(pass) || isBusy}
 						type="submit"
 					>

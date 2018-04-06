@@ -4,11 +4,9 @@ import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import MdArrowBack from 'react-icons/lib/md/arrow-back';
 import slugify from 'slugify';
-import { Button } from '../../../components/Button';
-import { Container } from '../../../components/Container';
+import { Button, LinkButton } from '../../../components/Button';
 import { TextField } from '../../../components/Input';
 import { Redirect } from '../../../components/Redirect';
-import { Section } from '../../../components/Section';
 import { UserProfileBack, UserProfileContainer, UserProfileHeader } from '../../../components/UserProfile';
 
 @inject(app('AuthStore'))
@@ -49,13 +47,13 @@ export default class DashboardPeopleProfile extends Component<any> {
 					<UserProfileContainer flexRight>
 						{editing ? (
 							<React.Fragment>
-								<Button onClick={this.toggleEditing}>Save</Button>
+								<Button appearance="default" onClick={this.toggleEditing}>Save</Button>
 								<Button appearance="subtle" onClick={this.toggleEditing}>Cancel</Button>
 							</React.Fragment>
 						) : (
 							<React.Fragment>
-								<Button onClick={this.toggleEditing}>Edit profile</Button>
-								<Button appearance="subtle" to="/account/signout">Sign out</Button>
+								<Button appearance="default" onClick={this.toggleEditing}>Edit profile</Button>
+								<LinkButton appearance="subtle" to="/account/signout">Sign out</LinkButton>
 							</React.Fragment>
 						)}
 					</UserProfileContainer>

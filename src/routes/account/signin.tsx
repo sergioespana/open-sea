@@ -3,10 +3,10 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { AuthButton, AuthForm, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm/index';
-import { Button } from '../../components/Button/index';
-import { TextField } from '../../components/Input/index';
-import { Link } from '../../components/Link/index';
+import { AuthButton, AuthForm, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
+import { Button } from '../../components/Button';
+import { TextField } from '../../components/Input';
+import { Link } from '../../components/Link';
 import { setAppState } from '../../stores/helpers';
 
 const initialState = {
@@ -55,6 +55,7 @@ export default class AccountSignin extends Component<any, State> {
 						value={pass}
 					/>
 					<Button
+						appearance="default"
 						disabled={!trim(email) || !trim(pass) || isBusy}
 						type="submit"
 					>

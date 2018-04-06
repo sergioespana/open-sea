@@ -3,10 +3,10 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { AuthForm, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm/index';
-import { Button } from '../../components/Button/index';
-import { TextField } from '../../components/Input/index';
-import { Link } from '../../components/Link/index';
+import { AuthForm, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
+import { Button } from '../../components/Button';
+import { TextField } from '../../components/Input';
+import { Link } from '../../components/Link';
 
 const initialState = {
 	email: ''
@@ -39,6 +39,7 @@ export default class AccountResetPassword extends Component<any, State> {
 						value={email}
 					/>
 					<Button
+						appearance="default"
 						disabled={!trim(email) || isBusy}
 						type="submit"
 					>

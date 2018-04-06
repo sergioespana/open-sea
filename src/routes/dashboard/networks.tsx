@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
 import MdLock from 'react-icons/lib/md/lock';
-import { Button } from '../../components/Button';
+import { LinkButton } from '../../components/Button';
 import { Container } from '../../components/Container';
 import { EmptyState } from '../../components/EmptyState';
 import { Header } from '../../components/Header';
@@ -28,7 +28,7 @@ const DashboardNetworks = inject(app('state'))(observer((props) => {
 							Link your organisations by adding them to a network, allowing you
 							to easily compare results.
 						</p>
-						<p><Button to="/create/network">Create a network</Button> <a>Learn more</a></p>
+						<p><LinkButton appearance="default" to="/create/network">Create a network</LinkButton> <a>Learn more</a></p>
 					</EmptyState>
 				</Section>
 			</Container>

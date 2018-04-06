@@ -1,15 +1,9 @@
 import { darken, lighten, transparentize } from 'polished';
-import { createElement, HTMLProps } from 'react';
-import styled from 'styled-components';
-import { Link } from '../Link';
+import React, { HTMLProps } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
+import styled, { css } from '../util/styled-components';
 
-interface ButtonProps extends HTMLProps<HTMLButtonElement> {
-	appearance?: 'default' | 'error' | 'light' | 'link' | 'subtle' | 'subtle-link' | 'warning';
-	theme?: any;
-	to: any;
-}
-
-const getBG = (state?: 'hover' | 'active') => (props: ButtonProps) => {
+const getBackgroundColor = (state?: 'hover' | 'active') => (props) => {
 	const { appearance, selected, theme } = props;
 	const hover = state === 'hover';
 	const active = state === 'active';
@@ -32,7 +26,7 @@ const getBG = (state?: 'hover' | 'active') => (props: ButtonProps) => {
 	}
 };
 
-const getC = (state?: 'hover' | 'active') => (props: ButtonProps) => {
+const getColor = (state?: 'hover' | 'active') => (props) => {
 	const { appearance, selected, theme } = props;
 	const hover = state === 'hover';
 	const active = state === 'active';
@@ -55,11 +49,11 @@ const getC = (state?: 'hover' | 'active') => (props: ButtonProps) => {
 	}
 };
 
-export default styled<ButtonProps, any>((props) => createElement(props.to ? Link : 'button', props))`
+export const buttonStyles = css`
 	align-items: center;
-	background-color: ${getBG()};
+	background-color: ${getBackgroundColor()};
 	border-radius: 3px;
-	color: ${getC()};
+	color: ${getColor()};
 	display: inline-flex;
 	font-family: inherit;
 	font-size: inherit;
@@ -70,15 +64,15 @@ export default styled<ButtonProps, any>((props) => createElement(props.to ? Link
 	text-align: center;
 
 	:hover {
-		background-color: ${getBG('hover')};
-		color: ${getC('hover')};
+		background-color: ${getBackgroundColor('hover')};
+		color: ${getColor('hover')};
 		cursor: pointer;
 		text-decoration: ${({ appearance }) => ['link', 'subtle-link'].includes(appearance) ? 'underline' : 'none'};
 	}
 
 	:active {
-		background-color: ${getBG('active')};
-		color: ${getC('active')};
+		background-color: ${getBackgroundColor('active')};
+		color: ${getColor('active')};
 	}
 
 	&[disabled]:hover,
@@ -86,3 +80,16 @@ export default styled<ButtonProps, any>((props) => createElement(props.to ? Link
 		cursor: not-allowed;
 	}
 `;
+
+export interface Props {
+	appearance: 'default' | 'error' | 'light' | 'link' | 'subtle' | 'subtle-link' | 'warning';
+}
+export interface ButtonProps extends Props, HTMLProps<HTMLButtonElement> {}
+export interface LinkButtonProps extends Props, LinkProps {}
+
+export const UnstyledButton: React.SFC<ButtonProps> = (props) => <button {...props} />;
+export const UnstyledLinkButton: React.SFC<LinkButtonProps> = (props) => <Link {...props} />;
+
+export const Button = styled(UnstyledButton)`${buttonStyles}`;
+export const LinkButton = styled(UnstyledLinkButton)`${buttonStyles}`;
+export default Button;

@@ -37,7 +37,7 @@ const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((
 						multiple
 					/>
 					<FormActions>
-						<Button type="submit">Save details</Button>
+						<Button appearance="default" type="submit">Save details</Button>
 						<Button appearance="link" type="reset">Cancel</Button>
 					</FormActions>
 				</Form>
