@@ -1,6 +1,6 @@
 import { find, isUndefined, map, reject, sortBy, uniq } from 'lodash';
 import { parse, stringify } from 'query-string';
-import React, { Component } from 'react';
+import React from 'react';
 import MdArrowDown from 'react-icons/lib/md/arrow-drop-down';
 import MdArrowUp from 'react-icons/lib/md/arrow-drop-up';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -35,7 +35,7 @@ interface TableProps extends RouteComponentProps<any> {
 }
 
 const Table: React.StatelessComponent<TableProps> = (props) => {
-	const { columns, data: propsData, defaultSort, filters = [], limit, location, sortingDisabled } = this.props;
+	const { columns, data: propsData, defaultSort, filters = [], limit, location, sortingDisabled } = props;
 	const filteredData = propsData; // TODO: Filter data.
 	const sort = parse(location.search).sort || defaultSort;
 	const sortedData = sort ? sortCollectionByKey(filteredData, columns, sort) : filteredData;
