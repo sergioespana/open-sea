@@ -1,5 +1,5 @@
 import { lighten } from 'polished';
-import styled from 'styled-components';
+import styled from '../../util/styled-components';
 
 export default styled.button`
 	align-items: center;

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '../../util/styled-components';
 
 export default styled.form`
 	background-color: #ffffff;

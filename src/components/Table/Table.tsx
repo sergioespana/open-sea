@@ -3,9 +3,9 @@ import { parse, stringify } from 'query-string';
 import React, { Component } from 'react';
 import MdArrowDown from 'react-icons/lib/md/arrow-drop-down';
 import MdArrowUp from 'react-icons/lib/md/arrow-drop-up';
-import { withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import slugify from 'slugify';
-import { Button } from '../Button';
+import { LinkButton } from '../Button';
 import { FilterSelect } from '../Input';
 import { Link } from '../Link';
 import TableBody from './TableBody';
@@ -25,7 +25,7 @@ interface Column {
 	value?: Function;
 }
 
-interface TableProps {
+interface TableProps extends RouteComponentProps<any> {
 	columns: Column[];
 	data: any[];
 	defaultSort?: string;
@@ -34,34 +34,32 @@ interface TableProps {
 	sortingDisabled?: boolean;
 }
 
-class Table extends Component<TableProps> {
-	render () {
-		const { columns, data: propsData, defaultSort, filters = [], limit, location, sortingDisabled } = this.props;
-		const filteredData = propsData; // TODO: Filter data.
-		const sort = parse(location.search).sort || defaultSort;
-		const sortedData = sort ? sortCollectionByKey(filteredData, columns, sort) : filteredData;
-		const data = limit ? sortedData.slice(0, limit) : sortedData;
+const Table: React.StatelessComponent<TableProps> = (props) => {
+	const { columns, data: propsData, defaultSort, filters = [], limit, location, sortingDisabled } = this.props;
+	const filteredData = propsData; // TODO: Filter data.
+	const sort = parse(location.search).sort || defaultSort;
+	const sortedData = sort ? sortCollectionByKey(filteredData, columns, sort) : filteredData;
+	const data = limit ? sortedData.slice(0, limit) : sortedData;
 
-		return (
-			<TableWrapper>
-				{filters.length > 0 && (
-					<TableFilterWrapper>
-						<h3>Filter by:</h3>
-						{map(filters, renderFilter(columns, data, location))}
-					</TableFilterWrapper>
-				)}
-				<TableComponent>
-					<TableHead>
-						<tr>{map(columns, renderColumnHead(sortingDisabled, location))}</tr>
-					</TableHead>
-					<TableBody>
-						{map(data, renderRow(columns))}
-					</TableBody>
-				</TableComponent>
-			</TableWrapper>
-		);
-	}
-}
+	return (
+		<TableWrapper>
+			{filters.length > 0 && (
+				<TableFilterWrapper>
+					<h3>Filter by:</h3>
+					{map(filters, renderFilter(columns, data, location))}
+				</TableFilterWrapper>
+			)}
+			<TableComponent>
+				<TableHead>
+					<tr>{map(columns, renderColumnHead(sortingDisabled, location))}</tr>
+				</TableHead>
+				<TableBody>
+					{map(data, renderRow(columns))}
+				</TableBody>
+			</TableComponent>
+		</TableWrapper>
+	);
+};
 
 export default withRouter(Table);
 
@@ -94,13 +92,13 @@ export const renderFilter = (columns: TableProps['columns'], data: TableProps['d
 		/>
 	);
 	case 'toggle': return (
-		<Button
+		<LinkButton
 			appearance="subtle"
 			selected={parse(location.search)[filter] === 'true'}
 			to={getFilterLocation(location, filter)}
 		>
 			{column.label}
-		</Button>);
+		</LinkButton>);
 	}
 };
 

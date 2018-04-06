@@ -2,9 +2,9 @@ import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import { Button } from '../../../components/Button';
-import { Container } from '../../../components/Container';
-import { Form, FormActions } from '../../../components/Form';
-import { Header } from '../../../components/Header';
+import Container from '../../../components/Container';
+import Form, { FormActions } from '../../../components/Form';
+import Header from '../../../components/Header';
 import { TextField } from '../../../components/Input';
 import { Link } from '../../../components/Link';
 

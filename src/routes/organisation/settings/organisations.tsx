@@ -2,8 +2,8 @@ import { get } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { Container } from '../../../components/Container';
-import { Header } from '../../../components/Header';
+import Container from '../../../components/Container';
+import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Table, TableCellWrapper } from '../../../components/Table';
 

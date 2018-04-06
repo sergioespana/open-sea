@@ -3,10 +3,10 @@ import { app, collection } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
-import { Button } from '../../../components/Button';
-import { Container } from '../../../components/Container';
-import { EmptyState } from '../../../components/EmptyState';
-import { Header } from '../../../components/Header';
+import { Button, LinkButton } from '../../../components/Button';
+import Container from '../../../components/Container';
+import EmptyState from '../../../components/EmptyState';
+import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Menu, MenuOption } from '../../../components/Menu';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
@@ -29,7 +29,7 @@ const OrganisationReportOverview = inject(app('OrganisationsStore'))(observer((p
 				<Link key={`/${orgId}/reports`} to={`/${orgId}/reports`}>Reports</Link>
 			]}
 		>
-			{!isEmpty(data) && <Button appearance="light" to={`/${orgId}/${repId}/data`}>Edit data</Button>}
+			{!isEmpty(data) && <LinkButton appearance="light" to={`/${orgId}/${repId}/data`}>Edit data</LinkButton>}
 			{!isEmpty(data) && <Button appearance="light">Export</Button>}
 			<Menu
 				trigger={<Button appearance="light"><MdMoreHoriz height={24} width={24} /></Button>}
@@ -68,7 +68,7 @@ const OrganisationReportOverview = inject(app('OrganisationsStore'))(observer((p
 						To generate a report, some data is required.
 					</p>
 					<p>
-						<Button to={`/${orgId}/${repId}/data`}>Add data</Button>
+						<LinkButton appearance="default" to={`/${orgId}/${repId}/data`}>Add data</LinkButton>
 					</p>
 				</EmptyState>
 			</Container>

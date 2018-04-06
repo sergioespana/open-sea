@@ -3,7 +3,7 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { AuthButton, AuthForm, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
+import AuthForm, { AuthButton, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
 import { TextField } from '../../components/Input';
 import { Link } from '../../components/Link';
