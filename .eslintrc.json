@@ -1,0 +1,12 @@
+{
+	"extends": "eslint-config-synacor",
+	"rules": {
+		"sort-imports": [
+			"warn",
+			{
+				"ignoreCase": true,
+				"ignoreMemberSort": true
+			}
+		]
+	}
+}

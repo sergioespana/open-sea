@@ -1,0 +1,16 @@
+{
+	"extends": [
+		"tslint-config-standard",
+		"tslint-react"
+	],
+	"rules": {
+		"ter-indent": [true, "tab"],
+		"no-unused-variable": [true, {"ignore-pattern": "^_"}],
+		"jsx-no-multiline-js": false,
+		"jsx-boolean-value": false,
+		"quotemark": [true, "single", "jsx-double"],
+		"semicolon": [true, "always"],
+		"ordered-imports": { "severity": "warning" },
+		"curly": [true, "as-needed"]
+	}
+}

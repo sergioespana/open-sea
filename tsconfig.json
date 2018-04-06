@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "./",
+		"experimentalDecorators": true,
+		"rootDir": "./",
+		"jsx": "react",
+		"module": "commonjs",
+		"target": "esnext",
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"pretty": true,
+		"skipLibCheck": true,
+		"sourceMap": true
+	},
+	"exclude": ["node_modules", "**/node_modules/*"]
+}
