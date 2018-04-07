@@ -1,6 +1,8 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackBar = require('webpackbar');
+const WebpackWorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = (env, argv) => ({
 	entry: path.resolve(__dirname, 'src/index.tsx'),
@@ -75,8 +77,18 @@ module.exports = (env, argv) => ({
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, 'src/index.html'),
 			minify: { collapseWhitespace: true }
+		}),
+		new WebpackBar({
+			name: 'build'
 		})
-	],
+	].concat(argv.mode === 'production' ? [
+		new WebpackWorkboxPlugin.InjectManifest({
+			globDirectory: path.resolve(__dirname, 'dist'),
+			globPatterns: ['**/*.{html,css,js}'],
+			swSrc: path.resolve(__dirname, 'src/sw.js'),
+			swDest: path.resolve(__dirname, 'dist/sw.js')
+		})
+	] : []),
 
 	devServer: {
 		contentBase: path.join(__dirname, 'src'),
