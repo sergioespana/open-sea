@@ -1,19 +1,21 @@
-import { filter, isUndefined } from 'lodash';
+import { filter, get, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
 import { LinkButton } from '../../components/Button';
+import Chart from '../../components/Chart';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
 import { Lozenge } from '../../components/Lozenge';
+import { ReportGrid, ReportGridItem } from '../../components/ReportGrid';
 import { Section } from '../../components/Section';
 import { Table } from '../../components/Table';
 
-const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId } }, OrganisationsStore } = props;
+const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id') || {};
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
@@ -104,11 +106,41 @@ const OrganisationOverview = inject(app('OrganisationsStore'))(observer((props) 
 		</React.Fragment>
 	);
 
+	const model = get(last(withData), 'model');
+	const items = get(last(withData), 'model.reportItems');
+
 	return (
 		<React.Fragment>
 			{PageHead}
 			<Container>
-				<Section />
+				<Section>
+					<ReportGrid>
+						{map(items, (item) => {
+							const chart = {
+								type: 'line',
+								data: {
+									labels: map(withData, ({ name }) => name),
+									datasets: item.chart
+										? map(item.chart.data, (indId) => ({
+											title: model.indicators[indId].name,
+											values: map(withData, ({ data }) => ReportsStore.compute(model.indicators[indId].value, data))
+										}))
+										: item.value ? [{
+											title: model.indicators[item.value].name,
+											values: map(withData, ({ data }) => ReportsStore.compute(model.indicators[item.value].value, data))
+										}] : []
+								}
+							};
+
+							return (
+								<ReportGridItem>
+									<h2>{item.name}</h2>
+									<Chart {...chart} />
+								</ReportGridItem>
+							);
+						})}
+					</ReportGrid>
+				</Section>
 				{RecentReports}
 			</Container>
 		</React.Fragment>

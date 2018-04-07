@@ -64,6 +64,12 @@ export default css`
 		margin: 0;
 	}
 
+	h2 {
+		font-weight: 500;
+		font-size: 1.125rem;
+		margin: 0;
+	}
+
 	h3 {
 		color: ${theme.text.secondary};
 		font-size: 0.875rem;

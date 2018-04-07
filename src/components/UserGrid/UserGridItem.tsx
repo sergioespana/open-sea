@@ -1,7 +1,6 @@
-import styled from 'styled-components';
-import { Button } from '../Button';
+import { LinkButton } from '../Button';
 
-export default styled(Button)`
+export default LinkButton.extend`
 	display: flex;
 	flex-direction: column;
 	height: 160px;

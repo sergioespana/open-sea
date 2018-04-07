@@ -982,6 +982,12 @@
   version "4.14.106"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.106.tgz#6093e9a02aa567ddecfe9afadca89e53e5dce4dd"
 
+"@types/mathjs@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/mathjs/-/mathjs-0.0.39.tgz#d0cb3ec66fc5726119d76a42a83dd9e4d5b2bc54"
+  dependencies:
+    decimal.js "^10.0.0"
+
 "@types/node@*":
   version "9.6.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.2.tgz#e49ac1adb458835e95ca6487bc20f916b37aff23"
@@ -2910,6 +2916,10 @@ decimal.js@9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-9.0.1.tgz#1cc8b228177da7ab6498c1cc06eb130a290e6e1e"
 
+decimal.js@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.0.0.tgz#f24855f7ee301d0dfaa458df0fdf4d5aaa182fdc"
+
 decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
@@ -3868,11 +3878,9 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-frappe-charts@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-1.0.0.tgz#3b5c368ceae1a2724f8b047347753226a3aa4073"
-  dependencies:
-    eslint "^4.18.2"
+frappe-charts@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-0.0.8.tgz#1122813bfbce14f9832833add4eb05824a617b77"
 
 fresh@0.5.2:
   version "0.5.2"

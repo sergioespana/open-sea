@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import React from 'react';
 import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
 import { Button, LinkButton } from '../../../components/Button';
+import Chart from '../../../components/Chart';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
@@ -12,8 +13,8 @@ import { Menu, MenuOption } from '../../../components/Menu';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
 import { Section } from '../../../components/Section';
 
-const OrganisationReportOverview = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId, repId } }, OrganisationsStore } = props;
+const OrganisationReportOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
 	const report = collection(organisation._reports).getItem(`${orgId}/${repId}`, '_id');
 	const model = get(report, 'model');
@@ -99,25 +100,33 @@ const OrganisationReportOverview = inject(app('OrganisationsStore'))(observer((p
 				<Section>
 					<ReportGrid>
 						{map(items, (item) => {
-							const { chart, name, value } = item;
 							// Show chart if the chart object is set. Prefer chart
 							// over 'value' key.
-							if (chart) {
-								const { data, type } = chart;
-								const values = filter(model.indicators, (...args) => data.includes(args[1]));
+							if (item.chart) {
+								// We overwrite the user's chart type setting because pie charts
+								// are currently broken.
+								const chart = {
+									type: item.chart.type === 'pie' ? 'percentage' : item.chart.type,
+									data: {
+										labels: map(item.chart.data, (indId) => model.indicators[indId].name),
+										datasets: [{
+											values: map(item.chart.data, (indId) => ReportsStore.compute(model.indicators[indId].value, data))
+										}]
+									}
+								};
+
 								return (
 									<ReportGridItem>
-										<h3>{name}</h3>
-										<p>{JSON.stringify(chart)}</p>
-										<p>{JSON.stringify({ data: values, type })}</p>
+										<h2>{item.name}</h2>
+										<Chart {...chart} />
 									</ReportGridItem>
 								);
 							}
 							// Only show a single value.
-							if (value) return (
+							if (item.value) return (
 								<ReportGridItem>
-									<h3>{name}</h3>
-									<p>{value}</p>
+									<h3>{item.name}</h3>
+									<p>{ReportsStore.compute(model.indicators[item.value].value, data)}</p>
 								</ReportGridItem>
 							);
 							// No value or chart specified, don't show the item.

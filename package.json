@@ -33,6 +33,7 @@
 		"@babel/runtime": "^7.0.0-beta.42",
 		"@types/jest": "^21.1.8",
 		"@types/lodash": "^4.14.105",
+		"@types/mathjs": "^0.0.39",
 		"@types/react": "^16.0.40",
 		"@types/react-dom": "^16.0.4",
 		"@types/react-hot-loader": "^3.0.6",
@@ -65,7 +66,7 @@
 	},
 	"dependencies": {
 		"firebase": "^4.11.0",
-		"frappe-charts": "^1.0.0",
+		"frappe-charts": "0.0.8",
 		"fuse.js": "^3.2.0",
 		"linkstate": "^1.1.1",
 		"lodash": "^4.17.5",

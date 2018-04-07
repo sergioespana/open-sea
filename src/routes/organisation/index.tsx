@@ -4,6 +4,8 @@ import React from 'react';
 import { Switch } from 'react-router-dom';
 import { Redirect } from '../../components/Redirect';
 import { Route } from '../../components/Route';
+import NetworkOverview from '../network/overview';
+import NetworkSettingsRoutes from '../network/settings';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
 import OrganisationReports from './reports';
@@ -14,6 +16,15 @@ const OrganisationRoutes = inject(app('OrganisationsStore'))(observer((props) =>
 	const organisation = OrganisationsStore.getItem(orgId, '_id');
 
 	if (!organisation) return <Redirect to="/dashboard/organisations" />;
+
+	if (organisation.isNetwork) return (
+		<Switch>
+			<Route path="/:netId" exact component={NetworkOverview} />
+			<Route path="/:nedId/compare" exact />
+			<Route path="/:netId/overview" exact component={NetworkOverview} />
+			<Route path="/:netId/settings" component={NetworkSettingsRoutes} />
+		</Switch>
+	);
 
 	return (
 		<Switch>

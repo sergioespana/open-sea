@@ -9,19 +9,19 @@ import { SingleSelect } from '../../../components/Input';
 import { Link } from '../../../components/Link';
 import { Table, TableCellWrapper } from '../../../components/Table';
 
-const OrganisationSettingsPeople = inject(app('AuthStore', 'OrganisationsStore'))(observer((props) => {
-	const { AuthStore, match: { params: { orgId } }, OrganisationsStore } = props;
-	const organisation = OrganisationsStore.getItem(orgId, '_id');
-	const users = organisation._users;
+const NetworkSettingsPeople = inject(app('AuthStore', 'OrganisationsStore'))(observer((props) => {
+	const { AuthStore, match: { params: { netId } }, OrganisationsStore } = props;
+	const network = OrganisationsStore.getItem(netId, '_id');
+	const users = network._users;
 
 	return (
 		<React.Fragment>
 			<Header
 				title="People"
-				headTitle={`People - ${organisation.name} / Settings`}
+				headTitle={`People - ${network.name} / Settings`}
 				breadcrumbs={[
-					<Link key={`/${orgId}`} to={`/${orgId}`}>{organisation.name}</Link>,
-					<Link key={`/${orgId}/settings`} to={`/${orgId}/settings`}>Settings</Link>
+					<Link key={`/${netId}`} to={`/${netId}`}>{network.name}</Link>,
+					<Link key={`/${netId}/settings`} to={`/${netId}/settings`}>Settings</Link>
 				]}
 			>
 				<Button appearance="link">Add user</Button>
@@ -73,4 +73,4 @@ const OrganisationSettingsPeople = inject(app('AuthStore', 'OrganisationsStore')
 	);
 }));
 
-export default OrganisationSettingsPeople;
+export default NetworkSettingsPeople;

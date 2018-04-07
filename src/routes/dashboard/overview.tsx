@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React from 'react';
 import MdLock from 'react-icons/lib/md/lock';
+import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
@@ -15,9 +16,30 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 	const { state } = props;
 	const organisations = reject(state.organisations, { isNetwork: true });
 
+	const PageHead = <Header title="Dashboard" headTitle="dashboard / home" />;
+
+	if (organisations.length === 0) return (
+		<React.Fragment>
+			{PageHead}
+			<Container>
+				<EmptyState>
+					<img src="/assets/images/empty-state-welcome.svg" />
+					<h1>Welcome to openSEA!</h1>
+					<p>
+						To get started, create an organisation or network below.
+					</p>
+					<p>
+						<LinkButton appearance="default" to="/create/organisation">Create an organisation</LinkButton>
+						<LinkButton appearance="link" to="/create/network">Create network instead</LinkButton>
+					</p>
+				</EmptyState>
+			</Container>
+		</React.Fragment>
+	);
+
 	return (
 		<React.Fragment>
-			<Header title="Dashboard" headTitle="dashboard / home" />
+			{PageHead}
 			<Container>
 				<Section>
 					<EmptyState>

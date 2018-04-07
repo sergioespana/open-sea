@@ -15,6 +15,7 @@ const Aside = styled.aside`
 	position: fixed;
 	top: 0;
 	width: auto;
+	z-index: 5;
 `;
 
 const Placeholder = styled.div`

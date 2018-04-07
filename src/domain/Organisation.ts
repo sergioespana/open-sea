@@ -1,8 +1,18 @@
+export interface Indicator {
+	value: string;
+}
+
+export interface Metric {}
+
+export interface Model {}
+
 export interface Report {
 	_id: string;
 	_orgId: string;
 	_repId: string;
 	created: Date;
+	data: object;
+	model: Model;
 	name: string;
 }
 
@@ -16,5 +26,3 @@ export interface Organisation {
 	isNetwork?: boolean;
 	name: string;
 }
-
-export type OrganisationCollection = Organisation[];

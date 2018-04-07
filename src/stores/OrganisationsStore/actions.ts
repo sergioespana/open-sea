@@ -61,7 +61,7 @@ export const actions = (state) => {
 	const onUser = (user: User) => {
 		const users = collection(state.users);
 		users.updateOrAdd(user, '_id');
-	}
+	};
 
 	return {
 		...organisations
