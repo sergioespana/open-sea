@@ -11,7 +11,7 @@ export const FormActions = styled.div`
 
 export default styled.form`
 	margin: 0 auto;
-	max-width: 800px;
+	max-width: 640px;
 	width: 100%;
 
 	& > * {

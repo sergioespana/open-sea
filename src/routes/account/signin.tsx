@@ -3,10 +3,10 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import AuthForm, { AuthButton, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
-import { TextField } from '../../components/Input';
-import { Link } from '../../components/Link';
+import { Input } from '../../components/NewInput';
 import { setAppState } from '../../stores/helpers';
 
 const initialState = {
@@ -37,7 +37,8 @@ export default class AccountSignin extends Component<any, State> {
 					<AuthButton type="button"><img src="/assets/images/google.svg" /><span>Log in with Google</span></AuthButton>
 					<p style={{ textAlign: 'center' }}>OR</p>
 					{error && <AuthFormAlert>{error.message}</AuthFormAlert>}
-					<TextField
+					<Input
+						appearance="default"
 						autoFocus
 						disabled={isBusy}
 						onChange={linkstate(this, 'email')}
@@ -46,7 +47,8 @@ export default class AccountSignin extends Component<any, State> {
 						type="email"
 						value={email}
 					/>
-					<TextField
+					<Input
+						appearance="default"
 						disabled={isBusy}
 						onChange={linkstate(this, 'pass')}
 						placeholder="Enter password"

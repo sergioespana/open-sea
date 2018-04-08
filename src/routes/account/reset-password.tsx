@@ -5,8 +5,8 @@ import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import AuthForm, { AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
-import { TextField } from '../../components/Input';
 import { Link } from '../../components/Link';
+import { Input } from '../../components/NewInput';
 
 interface State {
 	email: string;
@@ -31,7 +31,8 @@ export default class AccountResetPassword extends Component<any, State> {
 					<h2>Unable to login?</h2>
 				</AuthFormHeader>
 				<AuthForm onSubmit={this.onSubmit}>
-					<TextField
+					<Input
+						appearance="default"
 						autoFocus
 						onChange={linkstate(this, 'email')}
 						placeholder="Enter email"

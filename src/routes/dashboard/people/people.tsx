@@ -8,7 +8,7 @@ import MdSearch from 'react-icons/lib/md/search';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
-import { TextField } from '../../../components/Input';
+import { Input } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 import { UserGrid, UserGridItem } from '../../../components/UserGrid';
 import { User } from '../../../domain/User';
@@ -50,10 +50,10 @@ export default class DashboardPeopleOverview extends Component<any, State> {
 				<Header title="People" headTitle="dashboard / people" />
 				<Container style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1024, padding: '0 20px' }}>
 					<Section>
-						<TextField
+						<Input
+							appearance="default"
 							onChange={linkState(this, 'query')}
 							placeholder="Search by full name or email address"
-							prefixElement={<MdSearch />}
 							value={query}
 						/>
 						{users.length > 0 ? (

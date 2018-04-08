@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import MdArrowBack from 'react-icons/lib/md/arrow-back';
 import slugify from 'slugify';
 import { Button, LinkButton } from '../../../components/Button';
-import { TextField } from '../../../components/Input';
+import { Input } from '../../../components/NewInput';
 import { Redirect } from '../../../components/Redirect';
 import { UserProfileBack, UserProfileContainer, UserProfileHeader } from '../../../components/UserProfile';
 
@@ -33,11 +33,11 @@ export default class DashboardPeopleProfile extends Component<any> {
 					<section>
 						<img src={user.avatar} />
 						{editing ? (
-							<TextField
+							<Input
 								appearance="inline"
-								compact
 								defaultValue={user.name}
 								disabled={!editing}
+								isCompact
 								placeholder="Your full name"
 							/>
 						) : <h1>{user.name}</h1>}
@@ -59,28 +59,28 @@ export default class DashboardPeopleProfile extends Component<any> {
 					</UserProfileContainer>
 				)}
 				<UserProfileContainer style={{ display: 'grid', gridColumnGap: '20px', gridTemplateColumns: 'repeat(2, 1fr)' }}>
-					<TextField
+					<Input
 						appearance="inline"
 						defaultValue={user.email}
 						disabled={!editing}
 						label="Email"
 						placeholder="Your email address"
 					/>
-					<TextField
+					<Input
 						appearance="inline"
 						defaultValue={user.nickname}
 						disabled={!editing}
 						label="Nickname"
 						placeholder="Your nickname"
 					/>
-					<TextField
+					<Input
 						appearance="inline"
 						defaultValue={user.location}
 						disabled={!editing}
 						label="Based in"
 						placeholder="Your location"
 					/>
-					<TextField
+					<Input
 						appearance="inline"
 						defaultValue={user.timezone}
 						disabled={!editing}

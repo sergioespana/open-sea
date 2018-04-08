@@ -5,8 +5,9 @@ import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import AuthForm, { AuthButton, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
-import { PasswordField, TextField } from '../../components/Input';
+import { PasswordField } from '../../components/Input';
 import { Link } from '../../components/Link';
+import { Input } from '../../components/NewInput';
 import { setAppState } from '../../stores/helpers';
 
 const initialState = {
@@ -38,20 +39,23 @@ export default class AccountSignout extends Component<any, State> {
 					<AuthButton type="button"><img src="/assets/images/google.svg" /><span>Sign up with Google</span></AuthButton>
 					<p style={{ textAlign: 'center' }}>OR</p>
 					{error && <AuthFormAlert>{error.message}</AuthFormAlert>}
-					<TextField
+					<Input
+						appearance="default"
 						autoFocus
 						onChange={linkstate(this, 'name')}
 						placeholder="Enter full name"
 						type="text"
 						value={name}
 					/>
-					<TextField
+					<Input
+						appearance="default"
 						onChange={linkstate(this, 'email')}
 						placeholder="Enter email"
 						type="email"
 						value={email}
 					/>
 					<PasswordField
+						appearance="default"
 						onChange={linkstate(this, 'pass')}
 						placeholder="Create password"
 						type="password"

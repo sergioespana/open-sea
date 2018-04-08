@@ -2,28 +2,19 @@ import { pick } from 'lodash';
 import { darken } from 'polished';
 import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
-import styled, { css } from 'styled-components';
+import styled from '../../util/styled-components';
 
-interface Props extends HTMLProps<any> {
-	appearance?: 'default' | 'error' | 'inline' | 'warning';
-	childrenAfterInput?: boolean;
-	compact?: boolean;
-	label?: string;
-	prefixElement?: JSX.Element;
-	suffixElement?: JSX.Element;
+interface WrapperProps {
+	compact?: Props['compact'];
 }
-
-interface State {
-	focused: boolean;
-}
-
-interface WrapperProps extends Partial<Props> {}
-const Wrapper = styled<WrapperProps, 'div'>('div')`
+const UnstyledWrapper: React.StatelessComponent<WrapperProps> = (props) => <div {...props} />;
+const Wrapper = styled(UnstyledWrapper)`
 	${({ compact }) => compact && 'max-width: 300px;'}
 	width: 100%;
 `;
 
-const Label = styled<HTMLProps<HTMLLabelElement>, 'label'>('label')`
+const UnstyledLabel: React.StatelessComponent<HTMLProps<HTMLLabelElement>> = (props) => <label {...props} />;
+const Label = styled(UnstyledLabel)`
 	color: ${({ theme }) => theme.text.secondary};
 	font-size: 0.857rem;
 	font-weight: 500;
@@ -31,14 +22,14 @@ const Label = styled<HTMLProps<HTMLLabelElement>, 'label'>('label')`
 	padding: 0 0 3px 7px;
 	position: relative;
 
-	${({ required, theme }) => required && `
-	:after {
-		color: ${theme.red};
-		content: '*';
-		left: 103%;
-		position: absolute;
+	&[required]:not([required="false"]) {
+		:after {
+			color: ${({ theme }) => theme.red};
+			content: '*';
+			left: 103%;
+			position: absolute;
+		}
 	}
-	`}
 `;
 
 const Help = styled.p`
@@ -47,8 +38,12 @@ const Help = styled.p`
 	margin: 3px 0 0;
 `;
 
-interface ContainerProps extends Partial<Props>, State {}
-const InputContainer = styled<ContainerProps, 'div'>('div')`
+interface ContainerProps extends State {
+	appearance: Props['appearance'];
+	disabled?: Props['disabled'];
+}
+const UnstyledInputContainer: React.StatelessComponent<ContainerProps> = (props) => <div {...props} />;
+const InputContainer = styled(UnstyledInputContainer)`
 	align-items: center;
 	background-color: ${({ appearance, focused, theme }) => appearance === 'inline' || focused ? '#ffffff' : theme.light};
 	border-color: ${({ focused, theme }) => focused ? theme.accent : 'transparent'};
@@ -82,8 +77,13 @@ const InputContainer = styled<ContainerProps, 'div'>('div')`
 	}
 `;
 
-interface InputProps extends Partial<Props> {}
-const inputStyles = css`
+interface InputProps extends HTMLProps<HTMLInputElement> {
+	appearance: Props['appearance'];
+	disabled?: Props['disabled'];
+}
+
+const UnstyledInput: React.StatelessComponent<InputProps> = (props) => <input {...props} />;
+const Input = styled(UnstyledInput) `
 	background-color: transparent;
 	border: none;
 	color: ${({ theme }) => theme.text.primary};
@@ -107,15 +107,52 @@ const inputStyles = css`
 		opacity: 1;
 	}
 `;
-const Input = styled<InputProps, 'input'>('input') `${inputStyles}`;
-const TextArea = styled<InputProps, 'textarea'>('textarea')`${inputStyles}`;
+
+interface TextAreaProps extends HTMLProps<HTMLTextAreaElement> {
+	appearance: Props['appearance'];
+	disabled?: Props['disabled'];
+}
+const UnstyledTextArea: React.StatelessComponent<TextAreaProps> = (props) => <textarea {...props} />;
+const TextArea = styled(UnstyledTextArea)`
+	background-color: transparent;
+	border: none;
+	color: ${({ theme }) => theme.text.primary};
+	font-family: inherit;
+	font-size: inherit;
+	padding: 8px 7px;
+	resize: none;
+	width: 100%;
+
+	:hover {
+		cursor: text;
+	}
+
+	:focus {
+		outline: none;
+	}
+
+	&::placeholder {
+		color: ${({ theme }) => theme.text.secondary};
+		${({ appearance, disabled }) => (appearance === 'inline' && disabled) && 'font-style: italic;'}
+		opacity: 1;
+	}
+`;
+
+interface Props extends HTMLProps<any> {
+	appearance: 'default' | 'error' | 'inline' | 'warning';
+	childrenAfterInput?: boolean;
+	compact?: boolean;
+	help?: string;
+	label?: string;
+	prefixElement?: JSX.Element;
+	suffixElement?: JSX.Element;
+}
+
+interface State {
+	focused: boolean;
+}
 
 export default class TextField extends Component<Props, State> {
-	static defaultProps: Partial<Props> = {
-		appearance: 'default',
-		childrenAfterInput: false
-	};
-
 	readonly state: State = {
 		focused: false
 	};

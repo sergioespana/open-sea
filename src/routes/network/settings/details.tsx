@@ -5,8 +5,8 @@ import { Button } from '../../../components/Button';
 import Container from '../../../components/Container';
 import Form, { FormActions } from '../../../components/Form';
 import Header from '../../../components/Header';
-import { TextField } from '../../../components/Input';
 import { Link } from '../../../components/Link';
+import { Input } from '../../../components/NewInput';
 
 const NetworkSettingsDetails = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { netId } }, OrganisationsStore } = props;
@@ -24,15 +24,17 @@ const NetworkSettingsDetails = inject(app('OrganisationsStore'))(observer((props
 			/>
 			<Container>
 				<Form>
-					<TextField
-						compact
+					<Input
+						appearance="default"
 						defaultValue={network.name}
+						isCompact
 						label="Name"
 						required
 					/>
-					<TextField
-						compact
+					<Input
+						appearance="default"
 						defaultValue={network.description}
+						isCompact
 						label="Description"
 						multiple
 					/>

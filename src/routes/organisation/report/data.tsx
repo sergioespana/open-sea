@@ -7,8 +7,8 @@ import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Form, { FormActions } from '../../../components/Form';
 import Header from '../../../components/Header';
-import { TextField } from '../../../components/Input';
 import { Link } from '../../../components/Link';
+import { Input } from '../../../components/NewInput';
 import { Redirect } from '../../../components/Redirect';
 
 const OrganisationReportData = inject(app('OrganisationsStore'))(observer((props) => {
@@ -74,8 +74,8 @@ const OrganisationReportData = inject(app('OrganisationsStore'))(observer((props
 }));
 
 const renderFields = (items, data) => map(items, ({ name, ...rest }, key) => (
-	<TextField
-		compact
+	<Input
+		isCompact
 		label={name}
 		multiple={rest.type === 'text'}
 		value={get(data, key)}

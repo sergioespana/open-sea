@@ -133,7 +133,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 							};
 
 							return (
-								<ReportGridItem>
+								<ReportGridItem key={item.name}>
 									<h2>{item.name}</h2>
 									<Chart {...chart} />
 								</ReportGridItem>
