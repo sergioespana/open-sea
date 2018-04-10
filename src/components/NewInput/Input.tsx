@@ -3,8 +3,9 @@ import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
 import Container from './Container';
 import Field from './Field';
-import FieldLabel from './FieldLabel';
+import FieldLabel, { FieldLegend } from './FieldLabel';
 import Help from './Help';
+import Prefix from './Prefix';
 import Wrapper from './Wrapper';
 
 export interface InputProps {
@@ -12,8 +13,8 @@ export interface InputProps {
 	help?: string;
 	isCompact?: boolean;
 	label?: string;
-	prefix?: React.ReactNode;
-	suffix?: React.ReactNode;
+	prefix?: any;
+	suffix?: any;
 }
 
 export interface InputState {
@@ -35,9 +36,10 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 		case 'checkbox':
 			return (
 				<Wrapper {...wrapper}>
+					{label && <FieldLegend required={props.required}>{label}</FieldLegend>}
 					<label>
 						<input {...props} />
-						<span>{label}</span>
+						<span>{props.placeholder}</span>
 					</label>
 					{help && <Help>{help}</Help>}
 				</Wrapper>
@@ -53,7 +55,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 				<Wrapper {...wrapper}>
 					{label && <FieldLabel htmlFor={id} required={props.required}>{label}</FieldLabel>}
 					<Container {...container}>
-						{prefix}
+						<Prefix>{prefix}</Prefix>
 						<Field
 							{...props}
 							id={id}
