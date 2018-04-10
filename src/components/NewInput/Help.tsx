@@ -5,7 +5,7 @@ const UnstyledHelp: React.StatelessComponent<HTMLProps<HTMLParagraphElement>> = 
 const Help = styled(UnstyledHelp) `
 	color: ${({ theme }) => theme.text.secondary};
 	font-size: 0.875rem;
-	margin: 3px 0 0 7px;
+	margin: 3px 0 0 0;
 `;
 
 export { Help };

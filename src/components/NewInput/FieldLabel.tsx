@@ -7,7 +7,7 @@ const FieldLabel = styled(UnstyledFieldLabel)`
 	font-size: 0.857rem;
 	font-weight: 500;
 	margin: 0px auto 0px 0px;
-	padding: 0 0 3px 7px;
+	padding: 0 0 3px 0;
 	position: relative;
 
 	&[required]:not([required="false"]) {

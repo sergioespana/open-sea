@@ -19,6 +19,7 @@ const Container = styled(UnstyledContainer)`
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
+	min-height: 38.6px;
 	position: relative;
 	transition: all 200ms ease;
 	width: 100%;
