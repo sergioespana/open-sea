@@ -1,5 +1,5 @@
 import { darken, lighten, transparentize } from 'polished';
-import React, { HTMLProps } from 'react';
+import React, { HTMLProps, SFC } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import styled, { css } from '../util/styled-components';
 
@@ -75,21 +75,29 @@ export const buttonStyles = css`
 		color: ${getColor('active')};
 	}
 
-	&[disabled]:hover,
-	&[disabled="true"]:hover {
+	&[disabled],
+	&[disabled="true"] {
+		background-color: ${({ theme }) => theme.light};
 		cursor: not-allowed;
+		color: ${({ theme }) => theme.text.secondary};
 	}
 `;
 
 export interface Props {
 	appearance: 'default' | 'error' | 'light' | 'link' | 'subtle' | 'subtle-link' | 'warning';
 }
-export interface ButtonProps extends Props, HTMLProps<HTMLButtonElement> {}
-export interface LinkButtonProps extends Props, LinkProps {}
 
-export const UnstyledButton: React.SFC<ButtonProps> = (props) => <button {...props} />;
-export const UnstyledLinkButton: React.SFC<LinkButtonProps> = (props) => <Link {...props} />;
+export const UnstyledButton: SFC<Props & HTMLProps<HTMLButtonElement>> = (props) => <button {...props} />;
+export const UnstyledLinkButton: SFC<Props & LinkProps> = (props) => <Link {...props} />;
 
 export const Button = styled(UnstyledButton)`${buttonStyles}`;
 export const LinkButton = styled(UnstyledLinkButton)`${buttonStyles}`;
 export default Button;
+
+export const ButtonGroup = styled.div`
+	display: flex;
+
+	& > *:not(:last-child) {
+		margin-right: 6px;
+	}
+`;
