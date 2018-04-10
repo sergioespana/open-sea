@@ -45,7 +45,8 @@ const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((
 							defaultChecked={organisation.isPublic}
 							help="Public organisations and their reports are visible to anyone. Explicitly granted access is still required for certain operations."
 							isCompact
-							label="This is a public organisation"
+							label="Public"
+							placeholder="This is a public organisation"
 							type="checkbox"
 						/>
 						<FormActions>

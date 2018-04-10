@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { find, get, map } from 'lodash';
+import { debounce, find, get, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -101,7 +101,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						</ModalHeader>
 						<ModalSection>
 							<p>
-								Please note that searching for a user currently is not supported.<br />Typing in the box below will always yield
+								Please note that searching for a user currently is not supported. Typing in the box below will always yield
 								"no results".
 							</p>
 							<AsyncSelect
@@ -109,6 +109,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 								components={{ DropdownIndicator: () => null }}
 								defaultOptions={this.toOptions(state.users, organisation._users)}
 								isSearchable
+								loadOptions={debounce(console.log, 400)}
 								onChange={linkState(this, 'userId', 'value')}
 								placeholder="Type a name or email address"
 							/>

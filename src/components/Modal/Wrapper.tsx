@@ -1,7 +1,11 @@
 import React, { SFC } from 'react';
 import styled from '../../util/styled-components';
 
-const UnstyledWrapper: SFC = ({ children, ...props }) => <div {...props}><article role="dialog">{children}</article></div>;
+interface WrapperProps {
+	width: number;
+}
+
+const UnstyledWrapper: SFC<WrapperProps> = ({ children, ...props }) => <div {...props}><article role="dialog">{children}</article></div>;
 
 export default styled(UnstyledWrapper)`
 	align-items: center;
@@ -21,6 +25,7 @@ export default styled(UnstyledWrapper)`
 		border-radius: 3px;
 		margin: 60px;
 		min-width: 400px;
+		max-width: ${({ width }) => width || 400}px;
 		pointer-events: all;
 	}
 `;

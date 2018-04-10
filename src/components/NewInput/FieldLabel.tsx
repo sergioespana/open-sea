@@ -1,8 +1,7 @@
-import React, { HTMLProps } from 'react';
-import styled from '../../util/styled-components';
+import React, { HTMLProps, SFC } from 'react';
+import styled, { css } from '../../util/styled-components';
 
-const UnstyledFieldLabel: React.StatelessComponent<HTMLProps<HTMLLabelElement>> = (props) => <label {...props} />;
-const FieldLabel = styled(UnstyledFieldLabel)`
+const styles = css`
 	color: ${({ theme }) => theme.text.secondary};
 	font-size: 0.857rem;
 	font-weight: 500;
@@ -14,11 +13,17 @@ const FieldLabel = styled(UnstyledFieldLabel)`
 		:after {
 			color: ${({ theme }) => theme.red};
 			content: '*';
-			left: 103%;
+			margin-left: 2px;
 			position: absolute;
 		}
 	}
 `;
 
-export { FieldLabel };
+const UnstyledFieldLabel: SFC<HTMLProps<HTMLLabelElement>> = (props) => <label {...props} />;
+const FieldLabel = styled(UnstyledFieldLabel)`${styles}`;
+
+const UnstyledFieldLegend: SFC<HTMLProps<HTMLLegendElement>> = (props) => <legend {...props} />;
+const FieldLegend = styled(UnstyledFieldLegend)`${styles}`;
+
+export { FieldLabel, FieldLegend };
 export default FieldLabel;

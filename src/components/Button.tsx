@@ -41,7 +41,7 @@ const getColor = (state?: 'hover' | 'active') => (props) => {
 	case 'subtle':
 		return selected ? '#ffffff' : active ? theme.primary : theme.text.primary;
 	case 'subtle-link':
-		return theme.text.secondary;
+		return hover ? lighten(0.10, theme.text.secondary) : theme.text.secondary;
 	case 'warning':
 		return '#ffffff';
 	default:

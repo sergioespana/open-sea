@@ -81,11 +81,9 @@ const DefaultNavigation = inject(app('state'))(observer((props) => {
 	return (
 		<Navigation
 			appearance="light"
-			createIcon={<MdAdd />}
 			loading={isLoading}
 			mainIcon={<MdHome />}
 			mainIconHref="/"
-			searchIcon={<MdSearch />}
 		/>
 	);
 }));

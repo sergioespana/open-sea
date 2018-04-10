@@ -2,6 +2,7 @@ import { find } from 'lodash';
 import React, { HTMLProps, SFC } from 'react';
 import MdExpandMore from 'react-icons/lib/md/expand-more';
 import ReactSelect, { SelectProps } from 'react-select';
+import slugify from 'slugify';
 import styled from '../../util/styled-components';
 import FieldLabel from '../NewInput/FieldLabel';
 import Wrapper from '../NewInput/Wrapper';
@@ -27,7 +28,8 @@ export interface SelectProps {
 }
 
 export const Select: SFC<SelectProps & HTMLProps<HTMLSelectElement>> = (props) => {
-	const { components: propComponents, label, value } = props;
+	const { components: propComponents, isCompact, label, value } = props;
+	const id = props.id || slugify(`field-${props.name || label || props.placeholder}`, { lower: true });
 
 	const components = {
 		Control: (props) => {
@@ -42,14 +44,17 @@ export const Select: SFC<SelectProps & HTMLProps<HTMLSelectElement>> = (props) =
 	};
 
 	return (
-		<Wrapper>
-			{label && <FieldLabel>{label}</FieldLabel>}
+		<Wrapper isCompact={isCompact}>
+			{label && <FieldLabel htmlFor={id} required={props.required}>{label}</FieldLabel>}
 			<ReactSelect
 				isClearable={false}
 				isSearchable={false}
 				tabSelectsValue
+				placeholder={null}
 				{...props}
 				components={{ ...components, ...propComponents }}
+				id={id}
+				inputId={id}
 				value={find(props.options, { value })}
 			/>
 		</Wrapper>
