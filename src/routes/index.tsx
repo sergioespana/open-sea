@@ -14,6 +14,7 @@ import MdPeople from 'react-icons/lib/md/people';
 import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
 import { Switch } from 'react-router-dom';
+import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
 import { Menu, MenuOption } from '../components/Menu';
 import { Button as NavButton, Navigation } from '../components/Navigation';
 import { Redirect } from '../components/Redirect';
@@ -25,15 +26,15 @@ import DashboardRoutes from './dashboard';
 import DashboardOverview from './dashboard/overview';
 import OrganisationRoutes from './organisation';
 
-const Routes = inject(app('state'))(observer((props) => {
-	const { state } = props;
-	const { isAuthed, isLoading, isReady } = state;
+const Routes = inject(app('UIStore'))(observer((props) => {
+	const { state, UIStore } = props;
+	const { isAuthed, isCreateDrawerOpen, isLoading, isReady, isSearchDrawerOpen } = state;
 
 	// We render different navigation components on different routes.
 	// Too many variables change for us to do this within a single
 	// component. Performance is still very much acceptable doing it
 	// this way, so this is fine for now.
-	const Navigation = (
+	const MainNavigation = (
 		<Switch>
 			<Route path="/" exact component={DashboardNavigation} />
 			<Route path="/dashboard" component={DashboardNavigation} />
@@ -44,19 +45,50 @@ const Routes = inject(app('state'))(observer((props) => {
 		</Switch>
 	);
 
+	const SearchDrawer = (
+		<Drawer
+			closeIconPosition="top"
+			isOpen={isSearchDrawerOpen}
+			mainIcon={<MdHome />}
+			onClose={UIStore.toggleSearchDrawerOpen}
+			width={550}
+		>
+			<form style={{ width: '100%' }}>
+				<SearchInput
+					autoFocus
+					placeholder="Search for organisations, reports, and more..."
+				/>
+			</form>
+		</Drawer>
+	);
+
+	const CreateDrawer = (
+		<Drawer
+			closeIconPosition="bottom"
+			isOpen={isCreateDrawerOpen}
+			mainIcon={<MdHome />}
+			onClose={UIStore.toggleCreateDrawerOpen}
+			width={356}
+		>
+			<DrawerButton to="/create/report"><MdAssessment />Report</DrawerButton>
+			<DrawerButton to="/create/organisation"><MdBusiness />Organisation</DrawerButton>
+			<DrawerButton to="/create/network"><MdGroupWork />Network</DrawerButton>
+		</Drawer>
+	);
+
 	// Show an empty screen if we don't know whether the user is
 	// authenticated or not.
 	if (!isReady) return null;
 
 	// When loading, show only the main navigation (but in loading state).
-	if (isLoading) return <div id="app">{Navigation}</div>;
+	if (isLoading) return <div id="app">{MainNavigation}</div>;
 
 	// Otherwise, full application is made available to user. Props "authedOnly" and
 	// "unauthedOnly" will redirect the user if he's trying to visit a page
 	// he's not allowed to see given his current auth status.
 	return (
 		<div id="app">
-			{Navigation}
+			{MainNavigation}
 			<main>
 				<Switch>
 					{!isAuthed && <Redirect from="/" to="/product" exact />}
@@ -67,6 +99,8 @@ const Routes = inject(app('state'))(observer((props) => {
 					<Route path="/:orgId" component={OrganisationRoutes} />
 				</Switch>
 			</main>
+			{CreateDrawer}
+			{SearchDrawer}
 		</div>
 	);
 }));
@@ -97,6 +131,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 		<Navigation
 			appearance="default"
 			createIcon={<MdAdd />}
+			createIconAction={UIStore.toggleCreateDrawerOpen}
 			expandable
 			expanded={isNavExpanded}
 			expandedAppearance="default"
@@ -162,6 +197,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 				}
 			]}
 			searchIcon={<MdSearch />}
+			searchIconAction={UIStore.toggleSearchDrawerOpen}
 			toggleExpanded={UIStore.toggleNavExpanded}
 		/>
 	);
@@ -256,6 +292,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 		<Navigation
 			appearance="default"
 			createIcon={<MdAdd />}
+			createIconAction={UIStore.toggleCreateDrawerOpen}
 			expandable
 			expanded={isNavExpanded}
 			expandedAppearance="light"
@@ -310,6 +347,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			mainIconHref="/"
 			navigationItems={organisation.isNetwork ? networkItems : organisationItems}
 			searchIcon={<MdSearch />}
+			searchIconAction={UIStore.toggleSearchDrawerOpen}
 			toggleExpanded={UIStore.toggleNavExpanded}
 		/>
 	);

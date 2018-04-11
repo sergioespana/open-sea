@@ -29,7 +29,6 @@ const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((
 						<Input
 							appearance="default"
 							defaultValue={organisation.name}
-							help="Updating an organisation's name has no effect on the organisation's ID."
 							isCompact
 							label="Name"
 							required

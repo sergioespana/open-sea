@@ -5,7 +5,13 @@ import { LinkProps, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { BackButton, Button } from './Button';
 import { Expander, ExpanderButton } from './Expander';
-import { ContentFooter, ContentHeader, ContentSection, Main, Section } from './Section';
+import {
+	NavigationContentFooter as ContentFooter,
+	NavigationContentHeader as ContentHeader,
+	NavigationContentSection as ContentSection,
+	NavigationMainSection as Main,
+	NavigationSection as Section
+} from './Section';
 
 const Aside = styled.aside`
 	bottom: 0;
@@ -23,7 +29,7 @@ const Placeholder = styled.div`
 	flex-shrink: 0;
 `;
 
-interface NavigationItem extends HTMLProps<HTMLButtonElement> {
+export interface NavigationItem extends HTMLProps<HTMLButtonElement> {
 	element?: React.ReactNode;
 	icon?: React.ReactNode;
 	isHeader?: boolean;

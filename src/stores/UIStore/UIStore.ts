@@ -13,7 +13,9 @@ export const UIStore = (state) => {
 		},
 		get isNavExpanded (): boolean {
 			return localStorage.getItem('navExpanded') === 'true';
-		}
+		},
+		isCreateDrawerOpen: false as boolean,
+		isSearchDrawerOpen: false as boolean
 	});
 
 	return actions(state);

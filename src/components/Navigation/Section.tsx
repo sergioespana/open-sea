@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from '../../util/styled-components';
 
 const loading = (opacity = 0.3) => css`
 	pointer-events: none;
@@ -42,7 +42,7 @@ interface SectionProps {
 	appearance?: 'default' | 'light';
 	loading?: boolean;
 }
-export const Main = styled<SectionProps, 'section'>('section') `
+export const NavigationMainSection = styled<SectionProps, 'section'>('section') `
 	background-color: ${({ appearance, theme }) => appearance === 'light' ? theme.light : theme.primary};
 	color: ${({ appearance, theme }) => appearance === 'light' ? theme.text.primary : '#ffffff'};
 	display: flex;
@@ -52,7 +52,7 @@ export const Main = styled<SectionProps, 'section'>('section') `
 	width: 64px;
 `;
 
-export const Section = styled<SectionProps, 'section'>('section') `
+export const NavigationSection = styled<SectionProps, 'section'>('section') `
 	background-color: ${({ appearance, theme }) => appearance === 'light' ? theme.light : theme.primary};
 	color: ${({ appearance, theme }) => appearance === 'light' ? theme.text.primary : '#ffffff'};
 	display: flex;
@@ -66,7 +66,7 @@ export const Section = styled<SectionProps, 'section'>('section') `
 	}
 `;
 
-export const ContentHeader = styled.header`
+export const NavigationContentHeader = styled.header`
 	display: flex;
 	flex-direction: column;
 	height: 64px;
@@ -75,7 +75,7 @@ export const ContentHeader = styled.header`
 	${(props) => props.loading && loading(0.5)}
 `;
 
-export const ContentSection = styled.section`
+export const NavigationContentSection = styled.section`
 	align-items: center;
 	display: flex;
 	flex-direction: column;
@@ -84,7 +84,7 @@ export const ContentSection = styled.section`
 	${(props) => props.loading && loading()}
 `;
 
-export const ContentFooter = styled.footer`
+export const NavigationContentFooter = styled.footer`
 	align-items: center;
 	display: flex;
 	flex: auto;
