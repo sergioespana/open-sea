@@ -15,6 +15,7 @@ export const UIStore = (state) => {
 			return localStorage.getItem('navExpanded') === 'true';
 		},
 		isCreateDrawerOpen: false as boolean,
+		isKSModalOpen: false as boolean,
 		isSearchDrawerOpen: false as boolean
 	});
 

@@ -17,20 +17,23 @@ export const actions = (state) => {
 
 	const toggleSearchDrawerOpen = action((value?: boolean) => state.isSearchDrawerOpen = isBoolean(value) ? value : !state.isSearchDrawerOpen);
 
+	const toggleKSModalOpen = action((value?: boolean) => state.isKSModalOpen = isBoolean(value) ? value : !state.isKSModalOpen);
+
 	Mousetrap.bind('[', () => {
 		toggleNavExpanded();
-		return false;
-	});
-	Mousetrap.bind('c', () => {
-		toggleCreateDrawerOpen(true);
 		return false;
 	});
 	Mousetrap.bind('/', () => {
 		toggleSearchDrawerOpen(true);
 		return false;
 	});
+	Mousetrap.bind('?', () => {
+		toggleKSModalOpen();
+		return false;
+	});
 	Mousetrap.bind('esc', () => {
 		toggleCreateDrawerOpen(false);
+		toggleKSModalOpen(false);
 		toggleSearchDrawerOpen(false);
 		return false;
 	});
@@ -38,6 +41,7 @@ export const actions = (state) => {
 	return {
 		toggleNavExpanded,
 		toggleCreateDrawerOpen,
+		toggleKSModalOpen,
 		toggleSearchDrawerOpen
 	};
 };

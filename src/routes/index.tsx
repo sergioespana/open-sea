@@ -14,8 +14,10 @@ import MdPeople from 'react-icons/lib/md/people';
 import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
 import { Switch } from 'react-router-dom';
+import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
 import { Menu, MenuOption } from '../components/Menu';
+import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Modal';
 import { Button as NavButton, Navigation } from '../components/Navigation';
 import { Redirect } from '../components/Redirect';
 import { Route } from '../components/Route';
@@ -28,7 +30,7 @@ import OrganisationRoutes from './organisation';
 
 const Routes = inject(app('UIStore'))(observer((props) => {
 	const { state, UIStore } = props;
-	const { isAuthed, isCreateDrawerOpen, isLoading, isReady, isSearchDrawerOpen } = state;
+	const { isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady, isSearchDrawerOpen } = state;
 
 	// We render different navigation components on different routes.
 	// Too many variables change for us to do this within a single
@@ -45,6 +47,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 		</Switch>
 	);
 
+	// Prepare the component making up the global search drawer.
 	const SearchDrawer = (
 		<Drawer
 			closeIconPosition="top"
@@ -62,6 +65,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 		</Drawer>
 	);
 
+	// Prepare the component making up the global create drawer.
 	const CreateDrawer = (
 		<Drawer
 			closeIconPosition="bottom"
@@ -74,6 +78,31 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			<DrawerButton to="/create/organisation"><MdBusiness />Organisation</DrawerButton>
 			<DrawerButton to="/create/network"><MdGroupWork />Network</DrawerButton>
 		</Drawer>
+	);
+
+	// Prepare the component making up the global keyboard shortcut modal.
+	const KSModal = (
+		<Modal isOpen={isKSModalOpen} onClose={UIStore.toggleKSModalOpen}>
+			<ModalHeader>
+				<h1>Keyboard shortcuts</h1>
+			</ModalHeader>
+			<ModalSection>
+				<ul>
+					<li>Expand and collapse navigation <strong>[</strong></li>
+					<li>Focus the site search <strong>/</strong></li>
+					<li>Create a report <strong>C</strong> then <strong>R</strong></li>
+					<li>Create an organisation <strong>C</strong> then <strong>O</strong></li>
+					<li>Create a network <strong>C</strong> then <strong>N</strong></li>
+					<li>Display this help <strong>?</strong></li>
+					<li>Go to dashboard <strong>G</strong> then <strong>D</strong></li>
+					<li>Go to organisations <strong>G</strong> then <strong>O</strong></li>
+					<li>Go to network <strong>G</strong> then <strong>N</strong></li>
+				</ul>
+			</ModalSection>
+			<ModalFooter>
+				<Button appearance="default" onClick={UIStore.toggleKSModalOpen}>Close</Button>
+			</ModalFooter>
+		</Modal>
 	);
 
 	// Show an empty screen if we don't know whether the user is
@@ -101,6 +130,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			</main>
 			{CreateDrawer}
 			{SearchDrawer}
+			{KSModal}
 		</div>
 	);
 }));
@@ -145,7 +175,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 							<h3>Help</h3>
 							<MenuOption>openSEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
-							<MenuOption>Keyboard shortcuts</MenuOption>
+							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
 							<MenuOption>About openSEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
@@ -313,7 +343,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							<h3>Help</h3>
 							<MenuOption>openSEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
-							<MenuOption>Keyboard shortcuts</MenuOption>
+							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
 							<MenuOption>About openSEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
