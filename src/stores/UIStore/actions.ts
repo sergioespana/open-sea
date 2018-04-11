@@ -25,6 +25,7 @@ export const actions = (state) => {
 		return false;
 	});
 	Mousetrap.bind('/', () => {
+		toggleKSModalOpen(false);
 		toggleSearchDrawerOpen(true);
 		return false;
 	});
