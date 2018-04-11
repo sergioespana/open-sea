@@ -2,6 +2,7 @@ import { isBoolean } from 'lodash';
 import { action, reaction } from 'mobx';
 import localStorage from 'mobx-localstorage';
 import Mousetrap from 'mousetrap';
+import { history } from '../../app';
 import { setAppState } from '../helpers';
 
 export const actions = (state) => {
@@ -37,6 +38,13 @@ export const actions = (state) => {
 		toggleSearchDrawerOpen(false);
 		return false;
 	});
+	Mousetrap.bind('c r', () => history.push('/create/report'));
+	Mousetrap.bind('c o', () => history.push('/create/organisation'));
+	Mousetrap.bind('c n', () => history.push('/create/network'));
+	Mousetrap.bind('g d', () => history.push('/dashboard/overview'));
+	Mousetrap.bind('g o', () => history.push('/dashboard/organisations'));
+	Mousetrap.bind('g n', () => history.push('/dashboard/networks'));
+	Mousetrap.bind('g p', () => history.push('/dashboard/people'));
 
 	return {
 		toggleNavExpanded,

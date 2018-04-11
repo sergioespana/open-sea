@@ -81,6 +81,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 	);
 
 	// Prepare the component making up the global keyboard shortcut modal.
+	// TODO: Revisit this for styling.
 	const KSModal = (
 		<Modal isOpen={isKSModalOpen} onClose={UIStore.toggleKSModalOpen}>
 			<ModalHeader>
@@ -88,15 +89,20 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			</ModalHeader>
 			<ModalSection>
 				<ul>
+					<h3>Global actions</h3>
 					<li>Expand and collapse navigation <strong>[</strong></li>
 					<li>Focus the site search <strong>/</strong></li>
 					<li>Create a report <strong>C</strong> then <strong>R</strong></li>
 					<li>Create an organisation <strong>C</strong> then <strong>O</strong></li>
 					<li>Create a network <strong>C</strong> then <strong>N</strong></li>
+					<h3>Application</h3>
+					<li>Dismiss dialog <strong>ESC</strong></li>
 					<li>Display this help <strong>?</strong></li>
+					<h3>Global navigation</h3>
 					<li>Go to dashboard <strong>G</strong> then <strong>D</strong></li>
 					<li>Go to organisations <strong>G</strong> then <strong>O</strong></li>
 					<li>Go to network <strong>G</strong> then <strong>N</strong></li>
+					<li>Go to people <strong>G</strong> then <strong>P</strong></li>
 				</ul>
 			</ModalSection>
 			<ModalFooter>

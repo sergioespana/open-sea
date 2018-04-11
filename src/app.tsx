@@ -1,15 +1,18 @@
+import createHistory from 'history/createBrowserHistory';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { hot } from 'react-hot-loader';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { injectGlobal, ThemeProvider } from 'styled-components';
 import { global, theme } from './mixins/index';
 import Routes from './routes/index';
 import ProductRoutes from './routes/product/index';
 
+export const history = createHistory();
+
 export const App = () => (
 	<ThemeProvider {...theme}>
-		<Router>
+		<Router history={history}>
 			<React.Fragment>
 				<Helmet
 					titleTemplate="%s — openSEA"
