@@ -1,6 +1,6 @@
 import React, { Component, SyntheticEvent } from 'react';
 import { createPortal } from 'react-dom';
-import Overlay from './Overlay';
+import Overlay from '../FullscreenOverlay';
 import Wrapper from './Wrapper';
 
 interface ModalProps {

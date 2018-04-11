@@ -1,5 +1,5 @@
 import { darken, transparentize } from 'polished';
-import styled from '../../util/styled-components';
+import styled from '../util/styled-components';
 
 export default styled.div`
 	align-items: center;

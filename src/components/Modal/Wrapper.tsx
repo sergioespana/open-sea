@@ -2,7 +2,7 @@ import React, { SFC } from 'react';
 import styled from '../../util/styled-components';
 
 interface WrapperProps {
-	width: number;
+	width?: number;
 }
 
 const UnstyledWrapper: SFC<WrapperProps> = ({ children, ...props }) => <div {...props}><article role="dialog">{children}</article></div>;
