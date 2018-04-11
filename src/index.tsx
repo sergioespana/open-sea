@@ -1,9 +1,12 @@
+import createHistory from 'history/createBrowserHistory';
 import { createStore } from 'mobx-app';
 import { Provider } from 'mobx-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
 import * as stores from './stores/index';
+
+export const history = createHistory();
 
 const providerProps = createStore(stores);
 

@@ -2,7 +2,7 @@ import { isBoolean } from 'lodash';
 import { action, reaction } from 'mobx';
 import localStorage from 'mobx-localstorage';
 import Mousetrap from 'mousetrap';
-import { history } from '../../app';
+import { history } from '../../index';
 import { setAppState } from '../helpers';
 
 export const actions = (state) => {

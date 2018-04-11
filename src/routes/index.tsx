@@ -88,17 +88,21 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 				<h1>Keyboard shortcuts</h1>
 			</ModalHeader>
 			<ModalSection>
+				<h3>Global actions</h3>
 				<ul>
-					<h3>Global actions</h3>
 					<li>Expand and collapse navigation <strong>[</strong></li>
 					<li>Focus the site search <strong>/</strong></li>
 					<li>Create a report <strong>C</strong> then <strong>R</strong></li>
 					<li>Create an organisation <strong>C</strong> then <strong>O</strong></li>
 					<li>Create a network <strong>C</strong> then <strong>N</strong></li>
-					<h3>Application</h3>
+				</ul>
+				<h3>Application</h3>
+				<ul>
 					<li>Dismiss dialog <strong>ESC</strong></li>
 					<li>Display this help <strong>?</strong></li>
-					<h3>Global navigation</h3>
+				</ul>
+				<h3>Global navigation</h3>
+				<ul>
 					<li>Go to dashboard <strong>G</strong> then <strong>D</strong></li>
 					<li>Go to organisations <strong>G</strong> then <strong>O</strong></li>
 					<li>Go to network <strong>G</strong> then <strong>N</strong></li>
