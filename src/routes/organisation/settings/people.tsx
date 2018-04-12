@@ -6,7 +6,6 @@ import React, { Component, SyntheticEvent } from 'react';
 import { Button, ButtonGroup } from '../../../components/Button';
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
-import { SingleSelect } from '../../../components/Input';
 import { Link } from '../../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
 import Select, { AsyncSelect, SelectOption } from '../../../components/Select';
@@ -88,7 +87,6 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						]}
 						data={users}
 						defaultSort="-access"
-						filters={['access']}
 					/>
 				</Container>
 				<Modal

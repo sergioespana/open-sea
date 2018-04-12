@@ -2,13 +2,13 @@ import linkState from 'linkstate';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import MdClose from 'react-icons/lib/md/close';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
-import Input from '../../../components/NewInput';
 import { Link } from '../../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
-import MdClose from 'react-icons/lib/md/close';
+import Input from '../../../components/NewInput';
 
 interface State {
 	name: string;
