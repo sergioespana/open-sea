@@ -16,6 +16,7 @@ import MdSettings from 'react-icons/lib/md/settings';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
+import Lozenge from '../components/Lozenge';
 import { Menu, MenuOption } from '../components/Menu';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Modal';
 import { Button as NavButton, Navigation } from '../components/Navigation';
@@ -90,23 +91,23 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			<ModalSection>
 				<h3>Global actions</h3>
 				<ul>
-					<li>Expand and collapse navigation <strong>[</strong></li>
-					<li>Focus the site search <strong>/</strong></li>
-					<li>Create a report <strong>C</strong> then <strong>R</strong></li>
-					<li>Create an organisation <strong>C</strong> then <strong>O</strong></li>
-					<li>Create a network <strong>C</strong> then <strong>N</strong></li>
+					<li>Expand and collapse navigation <Lozenge appearance="default">[</Lozenge></li>
+					<li>Focus the site search <Lozenge appearance="default">/</Lozenge></li>
+					<li>Create a report <Lozenge appearance="default">C</Lozenge> then <Lozenge appearance="default">R</Lozenge></li>
+					<li>Create an organisation <Lozenge appearance="default">C</Lozenge> then <Lozenge appearance="default">O</Lozenge></li>
+					<li>Create a network <Lozenge appearance="default">C</Lozenge> then <Lozenge appearance="default">N</Lozenge></li>
 				</ul>
 				<h3>Application</h3>
 				<ul>
-					<li>Dismiss dialog <strong>ESC</strong></li>
-					<li>Display this help <strong>?</strong></li>
+					<li>Dismiss dialog <Lozenge appearance="default">ESC</Lozenge></li>
+					<li>Display this help <Lozenge appearance="default">?</Lozenge></li>
 				</ul>
 				<h3>Global navigation</h3>
 				<ul>
-					<li>Go to dashboard <strong>G</strong> then <strong>D</strong></li>
-					<li>Go to organisations <strong>G</strong> then <strong>O</strong></li>
-					<li>Go to network <strong>G</strong> then <strong>N</strong></li>
-					<li>Go to people <strong>G</strong> then <strong>P</strong></li>
+					<li>Go to dashboard <Lozenge appearance="default">G</Lozenge> then <Lozenge appearance="default">D</Lozenge></li>
+					<li>Go to organisations <Lozenge appearance="default">G</Lozenge> then <Lozenge appearance="default">O</Lozenge></li>
+					<li>Go to network <Lozenge appearance="default">G</Lozenge> then <Lozenge appearance="default">N</Lozenge></li>
+					<li>Go to people <Lozenge appearance="default">G</Lozenge> then <Lozenge appearance="default">P</Lozenge></li>
 				</ul>
 			</ModalSection>
 			<ModalFooter>

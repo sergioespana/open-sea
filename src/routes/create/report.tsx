@@ -1,10 +1,12 @@
 import linkState from 'linkstate';
-import { map } from 'lodash';
+import { get, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
-import React, { Component } from 'react';
+import { parse } from 'query-string';
+import React, { Component, FormEvent } from 'react';
 import Helmet from 'react-helmet';
-import Button from '../../components/Button';
+import slugify from 'slugify';
+import Button, { LinkButton } from '../../components/Button';
 import Form from '../../components/Form';
 import Input from '../../components/NewInput';
 import Select from '../../components/Select';
@@ -28,31 +30,36 @@ export default class CreateReport extends Component<any, State> {
 	};
 
 	render () {
-		const { state } = this.props;
+		const { location, state } = this.props;
 		const { name, organisation, url } = this.state;
 		const { organisations } = state;
+		const preventSubmit = isBlank(name) || isBlank(organisation) || isBlank(url);
+		const paramOrganisation = get(parse(location.search), 'organisation');
 
 		return (
 			<React.Fragment>
 				<Helmet title="Create a report" />
-				<Form>
+				<Form isStandalone>
 					<header>
 						<h1>Create a report</h1>
 					</header>
 					<Select
+						autoFocus={!paramOrganisation}
+						isDisabled={!!paramOrganisation}
 						isCompact
 						isSearchable
 						label="Organisation"
 						onChange={linkState(this, 'organisation', 'value')}
 						options={toOptions(organisations)}
 						required
-						value={organisation}
+						value={paramOrganisation || organisation}
 					/>
 					<Input
 						appearance="default"
+						autoFocus={!!paramOrganisation}
 						isCompact
 						label="Name"
-						onChange={linkState(this, 'name')}
+						onChange={this.onNameChange}
 						required
 						type="text"
 						value={name}
@@ -61,20 +68,29 @@ export default class CreateReport extends Component<any, State> {
 						appearance="default"
 						isCompact
 						label="URL"
+						onBlur={this.onURLBlur}
 						onChange={linkState(this, 'url')}
 						required
-						prefix={`${window.location.hostname}/${organisation}${organisation !== '' && '/'}`}
+						prefix={`${window.location.hostname}/${organisation}${organisation !== '' ? '/' : ''}`}
 						type="text"
 						value={url}
 					/>
 					<footer>
-						<Button appearance="default" type="submit">Create report</Button>
-						<Button appearance="link" type="reset">Cancel</Button>
+						<Button appearance="default" disabled={preventSubmit} type="submit">Create report</Button>
+						<LinkButton appearance="link" to="/">Cancel</LinkButton>
 					</footer>
 				</Form>
 			</React.Fragment>
 		);
 	}
+
+	private onNameChange = ({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => {
+		const { name, url } = this.state;
+		const slugified = slugify(value, { lower: true });
+		return slugify(name, { lower: true }) === url ? this.setState({ name: value, url: slugified }) : this.setState({ name: value });
+	}
+	private onURLBlur = ({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => this.setState({ url: slugify(isBlank(value) ? this.state.name : value, { lower: true }) });
 }
 
+const isBlank = (str: string) => str === '';
 const toOptions = (orgCol) => map(orgCol, ({ _id, avatar, name }) => ({ value: _id, icon: <img src={avatar} />, label: name }));

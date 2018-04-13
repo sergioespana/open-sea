@@ -2,7 +2,7 @@ import { get, isFunction, set } from 'lodash';
 import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
 import Area from './Area';
-import Container from './Container';
+import FieldContainer from './FieldContainer';
 import FieldLabel from './FieldLabel';
 import Help from './Help';
 import { InputProps, InputState } from './Input';
@@ -22,7 +22,7 @@ export default class TextArea extends Component<InputProps & HTMLProps<HTMLTextA
 		return (
 			<Wrapper {...wrapper}>
 				{label && <FieldLabel htmlFor={id} required={props.required}>{label}</FieldLabel>}
-				<Container {...container}>
+				<FieldContainer {...container}>
 					{prefix}
 					<Area
 						{...props}
@@ -32,7 +32,7 @@ export default class TextArea extends Component<InputProps & HTMLProps<HTMLTextA
 						rows={props.rows || 5}
 					/>
 					{suffix}
-				</Container>
+				</FieldContainer>
 				{children}
 				{help && <Help>{help}</Help>}
 			</Wrapper>

@@ -1,55 +1,99 @@
-import React from 'react';
+import linkState from 'linkstate';
+import React, { Component, FormEvent } from 'react';
 import Helmet from 'react-helmet';
-import Button from '../../components/Button';
+import slugify from 'slugify';
+import Button, { LinkButton } from '../../components/Button';
 import Form from '../../components/Form';
 import Input, { TextArea } from '../../components/NewInput';
 
-const CreateNetwork = () => {
+interface State {
+	avatar: string;
+	description: string;
+	isPublic: boolean;
+	name: string;
+	url: string;
+}
 
-	return (
-		<React.Fragment>
-			<Helmet title="Create a network" />
-			<Form>
-				<header>
-					<h1>Create a network</h1>
-				</header>
-				<Input
-					appearance="default"
-					isCompact
-					label="Name"
-					required
-					type="text"
-				/>
-				<Input
-					appearance="default"
-					isCompact
-					label="URL"
-					required
-					prefix={`${window.location.hostname}/`}
-					type="text"
-				/>
-				<TextArea
-					appearance="default"
-					isCompact
-					label="Description"
-					required
-				/>
-				<Input
-					appearance="default"
-					help="Public networks and their reports are visible to anyone. Explicitly granted access is still required for certain operations."
-					isCompact
-					label="Public"
-					placeholder="This is a public network"
-					required
-					type="checkbox"
-				/>
-				<footer>
-					<Button appearance="default">Create network</Button>
-					<Button appearance="link">Cancel</Button>
-				</footer>
-			</Form>
-		</React.Fragment>
-	);
-};
+export default class CreateNetwork extends Component<any, State> {
+	readonly state: State = {
+		avatar: '/assets/images/organisation-avatar-placeholder.png',
+		description: '',
+		isPublic: false,
+		name: '',
+		url: ''
+	};
 
-export default CreateNetwork;
+	render () {
+		const { avatar, description, isPublic, name, url } = this.state;
+		const preventSubmit = isBlank(name) || isBlank(url);
+
+		return (
+			<React.Fragment>
+				<Helmet title="Create a network" />
+				<Form isStandalone>
+					<header>
+						<h1>Create a network</h1>
+					</header>
+					<Input
+						appearance="default"
+						autoFocus
+						isCompact
+						label="Name"
+						onChange={this.onNameChange}
+						required
+						type="text"
+						value={name}
+					/>
+					<Input
+						appearance="default"
+						isCompact
+						label="URL"
+						onBlur={this.onURLBlur}
+						onChange={linkState(this, 'url')}
+						required
+						prefix={`${window.location.hostname}/`}
+						type="text"
+						value={url}
+					/>
+					<Input
+						appearance="default"
+						isCompact
+						label="Avatar"
+						type="image"
+						value={avatar}
+					/>
+					<TextArea
+						appearance="default"
+						isCompact
+						label="Description"
+						onChange={linkState(this, 'description')}
+						value={description}
+					/>
+					<Input
+						appearance="default"
+						checked={isPublic}
+						help="Public networks and their organisations are visible to anyone. Explicitly granted access is still required for certain operations."
+						isCompact
+						label="Public"
+						onChange={linkState(this, 'isPublic')}
+						placeholder="This is a public network"
+						type="checkbox"
+					/>
+					<footer>
+						<Button appearance="default" disabled={preventSubmit} type="submit">Create network</Button>
+						<LinkButton appearance="link" to="/">Cancel</LinkButton>
+					</footer>
+				</Form>
+			</React.Fragment>
+		);
+	}
+
+	private onNameChange = ({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => {
+		const { name, url } = this.state;
+		const slugified = slugify(value, { lower: true });
+		return slugify(name, { lower: true }) === url ? this.setState({ name: value, url: slugified }) : this.setState({ name: value });
+	}
+	private onURLBlur = ({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => this.setState({ url: slugify(isBlank(value) ? this.state.name : value, { lower: true }) });
+}
+
+const isBlank = (str: string) => str === '';

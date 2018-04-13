@@ -39,7 +39,7 @@ export default class Drawer extends Component<DrawerProps> {
 					</DrawerMainSection>
 					<DrawerSection>
 						<DrawerContentHeader />
-						<DrawerContentSection>
+						<DrawerContentSection onClick={onClose}>
 							{closeIconPosition === 'bottom' && <Button disabled />}
 							{children}
 						</DrawerContentSection>

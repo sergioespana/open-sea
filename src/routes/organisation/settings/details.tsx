@@ -33,6 +33,13 @@ const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((
 							label="Name"
 							required
 						/>
+						<Input
+							appearance="default"
+							defaultValue={organisation.avatar || '/assets/images/organisation-avatar-placeholder.png'}
+							isCompact
+							label="Avatar"
+							type="image"
+						/>
 						<TextArea
 							appearance="default"
 							defaultValue={organisation.description}

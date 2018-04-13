@@ -1,6 +1,6 @@
-import Container from '../NewInput/Container';
+import FieldContainer from '../NewInput/FieldContainer';
 
-export default Container.extend`
+export default FieldContainer.extend`
 	:hover {
 		cursor: ${({ isSearchable }: any) => isSearchable ? 'text' : 'pointer'};
 	}

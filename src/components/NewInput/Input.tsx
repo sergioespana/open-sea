@@ -3,6 +3,7 @@ import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
 import Container from './Container';
 import Field from './Field';
+import FieldContainer from './FieldContainer';
 import FieldLabel, { FieldLegend } from './FieldLabel';
 import Help from './Help';
 import Prefix from './Prefix';
@@ -46,6 +47,17 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 			);
 		case 'file':
 			return <input {...props} />;
+		case 'image':
+			return (
+				<Wrapper {...wrapper}>
+					{label && <FieldLegend required={props.required}>{label}</FieldLegend>}
+					<Container>
+						<img src={props.value || props.defaultValue} />
+						<a>select image</a>
+						<input {...props} accept="image/*" type="file" value="" />
+					</Container>
+				</Wrapper>
+			);
 		case 'radio':
 			return <input {...props} />;
 		case 'range':
@@ -54,7 +66,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 			return (
 				<Wrapper {...wrapper}>
 					{label && <FieldLabel htmlFor={id} required={props.required}>{label}</FieldLabel>}
-					<Container {...container}>
+					<FieldContainer {...container}>
 						<Prefix>{prefix}</Prefix>
 						<Field
 							{...props}
@@ -63,7 +75,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 							onBlur={toggleState(this, 'isFocus', 'onBlur')}
 						/>
 						{suffix}
-					</Container>
+					</FieldContainer>
 					{children}
 					{help && <Help>{help}</Help>}
 				</Wrapper>
