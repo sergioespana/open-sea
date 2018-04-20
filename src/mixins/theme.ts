@@ -13,6 +13,7 @@ const theme: ThemeInterface = {
 	muted: desaturate(0.7, primary),
 	red: '#DE350B',
 	yellow: '#FF991F',
+	green: '#00875A',
 	text: {
 		contrast: transparentize(0.1, readableColor(primary)),
 		link: '#0052CC',

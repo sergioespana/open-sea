@@ -1,3 +1,4 @@
+import { map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -16,6 +17,7 @@ import MdSettings from 'react-icons/lib/md/settings';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
+import Flag, { FlagGroup } from '../components/Flag';
 import Lozenge from '../components/Lozenge';
 import { Menu, MenuOption } from '../components/Menu';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Modal';
@@ -29,9 +31,19 @@ import DashboardRoutes from './dashboard';
 import DashboardOverview from './dashboard/overview';
 import OrganisationRoutes from './organisation';
 
+const addFlag = (UIStore) => () => UIStore.addFlag({
+	appearance: 'normal',
+	actions: [
+		{ label: 'Action', to: '/' },
+		{ label: 'Another', to: '/' }
+	],
+	title: 'Whoa a new flag!',
+	description: 'Marzipan croissant pie. Jelly beans gingerbread caramels brownie icing.'
+});
+
 const Routes = inject(app('UIStore'))(observer((props) => {
 	const { state, UIStore } = props;
-	const { isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady, isSearchDrawerOpen } = state;
+	const { flags, isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady, isSearchDrawerOpen } = state;
 
 	// We render different navigation components on different routes.
 	// Too many variables change for us to do this within a single
@@ -116,6 +128,12 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 		</Modal>
 	);
 
+	const Flags = (
+		<FlagGroup>
+			{map(flags, (flag, i) => <Flag {...flag} onDismiss={UIStore.removeFlag(i)} />)}
+		</FlagGroup>
+	);
+
 	// Show an empty screen if we don't know whether the user is
 	// authenticated or not.
 	if (!isReady) return null;
@@ -142,6 +160,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			{CreateDrawer}
 			{SearchDrawer}
 			{KSModal}
+			{Flags}
 		</div>
 	);
 }));

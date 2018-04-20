@@ -1,7 +1,8 @@
-import { isBoolean } from 'lodash';
+import { filter, isBoolean } from 'lodash';
 import { action, reaction } from 'mobx';
 import localStorage from 'mobx-localstorage';
 import Mousetrap from 'mousetrap';
+import { IFlag } from '../../components/Flag';
 import { history } from '../../index';
 import { setAppState } from '../helpers';
 
@@ -11,6 +12,10 @@ export const actions = (state) => {
 		() => state.isLoading,
 		(isLoading) => !isLoading && setAppState(state, 'isBusy', false)
 	);
+
+	const addFlag = action((flag: IFlag) => state.flags = [flag, ...state.flags]);
+
+	const removeFlag = (index: number) => action(() => state.flags = filter(state.flags, (flag: IFlag, i: number) => index !== i));
 
 	const toggleNavExpanded = action((value?: boolean) => localStorage.setItem('navExpanded', String(isBoolean(value) ? value : !state.isNavExpanded)));
 
@@ -48,6 +53,8 @@ export const actions = (state) => {
 	Mousetrap.bind('g p', () => history.push('/dashboard/people'));
 
 	return {
+		addFlag,
+		removeFlag,
 		toggleNavExpanded,
 		toggleCreateDrawerOpen,
 		toggleKSModalOpen,
