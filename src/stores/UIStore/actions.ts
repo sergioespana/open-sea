@@ -10,7 +10,12 @@ export const actions = (state) => {
 
 	const onLoadingStateChanged = reaction(
 		() => state.isLoading,
-		(isLoading) => !isLoading && setAppState(state, 'isBusy', false)
+		(isLoading) => {
+			if (!isLoading) {
+				setAppState(state, 'isBusy', false);
+				setAppState(state, 'initDone', true);
+			}
+		}
 	);
 
 	const addFlag = action((flag: IFlag) => state.flags = [flag, ...state.flags]);

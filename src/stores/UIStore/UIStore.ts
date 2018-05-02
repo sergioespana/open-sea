@@ -10,8 +10,9 @@ export const UIStore = (state) => {
 	extendObservable(state, {
 		flags: [] as IFlag[],
 		isBusy: false as boolean,
+		initDone: false as boolean,
 		get isLoading (): boolean {
-			return !isUndefined(find(listeners, { status: 'pending' }));
+			return state.initDone ? false : !isUndefined(find(listeners, { status: 'pending' }));
 		},
 		get isNavExpanded (): boolean {
 			return localStorage.getItem('navExpanded') === 'true';
