@@ -1,4 +1,4 @@
-import { isUndefined } from 'lodash';
+import { find, get, isUndefined } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -10,10 +10,10 @@ import Header from '../../components/Header';
 import { Link } from '../../components/Link';
 import { Lozenge } from '../../components/Lozenge';
 import { Section } from '../../components/Section';
-import { Table } from '../../components/Table';
+import Table from '../../components/Table';
 
 const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId } }, OrganisationsStore } = props;
+	const { match: { params: { orgId } }, OrganisationsStore, state } = props;
 	const organisation = OrganisationsStore.getItem(orgId, '_id') || {};
 	const reports = organisation._reports;
 
@@ -59,8 +59,10 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 							format: (name, { _id }) => <Link to={`/${_id}`}>{name}</Link>
 						},
 						{
-							key: 'creator',
-							label: 'Created by'
+							key: 'createdBy',
+							label: 'Created by',
+							value: ({ createdBy }) => get(find(state.users, { _id: createdBy }), 'name'),
+							format: (name, { createdBy }) => <Link to={`/dashboard/people/${createdBy}`}>{name}</Link>
 						},
 						{
 							label: 'Last updated',
@@ -68,8 +70,10 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 							format: (updated) => moment().diff(updated) > 86400000 ? moment(updated).format('DD-MM-YYYY') : moment(updated).fromNow()
 						},
 						{
-							key: 'updater',
-							label: 'Updated by'
+							key: 'updatedBy',
+							label: 'Updated by',
+							value: ({ updatedBy }) => get(find(state.users, { _id: updatedBy }), 'name'),
+							format: (name, { updatedBy }) => <Link to={`/dashboard/people/${updatedBy}`}>{name}</Link>
 						},
 						{
 							key: 'status',
@@ -80,7 +84,7 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 					]}
 					data={reports}
 					defaultSort="-last-updated"
-					filters={['status', 'creator']}
+					filters={['status', 'createdBy']}
 				/>
 			</Container>
 		</React.Fragment>
