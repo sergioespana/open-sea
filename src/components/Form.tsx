@@ -10,11 +10,11 @@ const FormActions = styled.div`
 	}
 `;
 
-interface FormProps {
+interface IForm {
 	isStandalone?: boolean;
 }
 
-const UnstyledForm: SFC<FormProps & HTMLProps<HTMLFormElement>> = (props) => <form {...props} />;
+const UnstyledForm: SFC<IForm & HTMLProps<HTMLFormElement>> = (props) => <form {...props} />;
 const Form = styled(UnstyledForm)`
 	margin: ${({ isStandalone }) => isStandalone ? '60px' : 0} auto 0 auto;
 	max-width: 640px;
@@ -22,6 +22,10 @@ const Form = styled(UnstyledForm)`
 
 	& > * {
 		margin-bottom: 24px;
+	}
+
+	& > footer {
+		margin-top: 48px;
 	}
 `;
 
