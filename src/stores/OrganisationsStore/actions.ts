@@ -44,11 +44,11 @@ export const actions = (state) => {
 		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, onNetworkOrganisation(orgId));
 	};
 
-	const onOrganisationReport = (orgId: string) => (report: Report) => {
-		const { _id: repId, ...data } = report;
-		const _id = `${orgId}/${repId}`;
-		const organisation = organisations.getItem(orgId, '_id');
-		collection(organisation._reports).updateOrAdd({ _id, orgId, repId, ...data }, '_id');
+	const onOrganisationReport = (_orgId: string) => (report: Report) => {
+		const { _id: _repId, ...data } = report;
+		const _id = `${_orgId}/${_repId}`;
+		const organisation = organisations.getItem(_orgId, '_id');
+		collection(organisation._reports).updateOrAdd({ _id, _orgId, _repId, ...data }, '_id');
 	};
 
 	const onOrganisationUser = (orgId: string) => (user: User) => {
