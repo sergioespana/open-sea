@@ -1,11 +1,11 @@
 import { extendObservable } from 'mobx';
-import { OrganisationCollection } from '../../domain/Organisation';
+import { Organisation } from '../../domain/Organisation';
 import { actions } from './actions';
 
 export const OrganisationsStore = (state) => {
 
 	extendObservable(state, {
-		organisations: [] as OrganisationCollection
+		organisations: [] as Organisation[]
 	});
 
 	return actions(state);
