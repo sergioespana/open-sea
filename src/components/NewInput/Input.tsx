@@ -31,6 +31,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 		const { children, help, label, prefix, ref, suffix, ...props } = this.props;
 		const id = props.id || slugify(`field-${props.name || label || props.placeholder}`, { lower: true });
 		const container = { appearance: props.appearance, disabled: props.disabled, ...this.state };
+		const helpProps = { appearance: props.appearance };
 		const wrapper = { isCompact: props.isCompact };
 
 		switch (props.type) {
@@ -42,7 +43,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 						<input {...props} />
 						<span>{props.placeholder}</span>
 					</label>
-					{help && <Help>{help}</Help>}
+					{help && <Help {...helpProps}>{help}</Help>}
 				</Wrapper>
 			);
 		case 'file':
@@ -77,7 +78,7 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 						{suffix}
 					</FieldContainer>
 					{children}
-					{help && <Help>{help}</Help>}
+					{help && <Help {...helpProps}>{help}</Help>}
 				</Wrapper>
 			);
 		}

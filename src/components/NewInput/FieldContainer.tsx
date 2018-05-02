@@ -8,11 +8,37 @@ interface FieldContainerProps {
 	disabled?: boolean;
 	isFocus?: InputState['isFocus'];
 }
+
+const getBackgroundColor = (state?: 'hover' | 'active') => (props) => {
+	const { appearance = 'default', isFocus, theme } = props;
+	const hover = state === 'hover';
+
+	switch (appearance) {
+	case 'default':
+		return isFocus ? '#ffffff' : hover ? darken(0.05, theme.light) : theme.light;
+	case 'inline':
+		return hover ? theme.light : isFocus ? '#ffffff' : 'transparent';
+	default:
+		return '#ffffff';
+	}
+};
+
+const getBorderColor = (state?: 'hover' | 'active') => (props) => {
+	const { appearance, isFocus, theme } = props;
+
+	switch (appearance) {
+	case 'error':
+		return theme.red;
+	default:
+		return isFocus ? theme.accent : 'transparent';
+	}
+};
+
 const UnstyledFieldContainer: SFC<FieldContainerProps & HTMLProps<HTMLDivElement>> = (props) => <div {...props} />;
 const FieldContainer = styled(UnstyledFieldContainer)`
 	align-items: center;
-	background-color: ${({ appearance, isFocus, theme }) => appearance === 'inline' || isFocus ? '#ffffff' : theme.light};
-	border-color: ${({ isFocus, theme }) => isFocus ? theme.accent : 'transparent'};
+	background-color: ${getBackgroundColor()};
+	border-color: ${getBorderColor()};
 	border-radius: 5px;
 	border-style: solid;
 	border-width: 2px;
@@ -26,7 +52,7 @@ const FieldContainer = styled(UnstyledFieldContainer)`
 	will-change: background-color, border-color;
 
 	:hover {
-		background-color: ${({ appearance, disabled, isFocus, theme }) => (appearance === 'inline' && disabled) || isFocus ? '#ffffff' : appearance === 'inline' && !disabled ? theme.light : darken(0.05, theme.light)};
+		background-color: ${getBackgroundColor('hover')};
 	}
 
 	& > svg {
