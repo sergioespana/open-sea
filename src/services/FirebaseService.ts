@@ -75,6 +75,17 @@ export const startListening = (path: string, initialData: object = {}, ...callba
 	return addListener(path, isDocument ? docIntermediate : colIntermediate);
 };
 
+export const saveDoc = async (path: string, data: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+	const { onError, onSuccess } = callbacks;
+
+	try {
+		await db.doc(path).set(data, { merge: true });
+		if (onSuccess) onSuccess(data);
+	} catch (error) {
+		if (onError) onError(error);
+	}
+};
+
 export const signInWithEmailAndPassword = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
 
 export const signUpWithEmailAndPassword = (email, pass) => auth.createUserWithEmailAndPassword(email, pass);
