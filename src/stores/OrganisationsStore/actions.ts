@@ -4,7 +4,7 @@ import { collection } from 'mobx-app';
 import { Organisation, Report } from '../../domain/Organisation';
 import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
-import { getCurrentUser } from '../helpers';
+import { getCurrentUser, removePrivates } from '../helpers';
 
 export const actions = (state) => {
 
@@ -63,7 +63,14 @@ export const actions = (state) => {
 		users.updateOrAdd(user, '_id');
 	};
 
+	const addReport = (rep: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _repId } = rep;
+		const report = { ...removePrivates(rep), created: new Date(), createdBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, report, callbacks);
+	};
+
 	return {
-		...organisations
+		...organisations,
+		addReport
 	};
 };

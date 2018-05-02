@@ -1,18 +1,16 @@
 import linkState from 'linkstate';
-import { get, map } from 'lodash';
+import { find, get, isUndefined, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import { parse } from 'query-string';
 import React, { Component, FormEvent } from 'react';
 import Helmet from 'react-helmet';
+import { withRouter } from 'react-router-dom';
 import slugify from 'slugify';
 import Button, { LinkButton } from '../../components/Button';
 import Form from '../../components/Form';
 import Input from '../../components/NewInput';
 import Select from '../../components/Select';
-
-// TODO: Handle name / URL input
-// TODO: Handle preselecting an organisation through URL in componentWillMount (or render a redirect?)
 
 interface State {
 	name: string;
@@ -20,9 +18,9 @@ interface State {
 	url: string;
 }
 
-@inject(app('state'))
+@inject(app('OrganisationsStore'))
 @observer
-export default class CreateReport extends Component<any, State> {
+class CreateReport extends Component<any, State> {
 	readonly state: State = {
 		name: '',
 		organisation: '',
@@ -30,22 +28,26 @@ export default class CreateReport extends Component<any, State> {
 	};
 
 	render () {
-		const { location, state } = this.props;
+		const { location, OrganisationsStore, state } = this.props;
 		const { name, organisation, url } = this.state;
-		const { organisations } = state;
-		const preventSubmit = isBlank(name) || isBlank(organisation) || isBlank(url);
+		const { isBusy, organisations } = state;
 		const paramOrganisation = get(parse(location.search), 'organisation');
+		const reportUrlTaken = !isUndefined(find(get(OrganisationsStore.getItem(organisation || paramOrganisation, '_id'), '_reports'), { _repId: url }));
+		const preventSubmit = reportUrlTaken || isBlank(name) || isBlank(organisation) || isBlank(url) || isBusy;
 
 		return (
 			<React.Fragment>
 				<Helmet title="Create a report" />
-				<Form isStandalone>
+				<Form
+					isStandalone
+					onSubmit={this.onSubmit}
+				>
 					<header>
 						<h1>Create a report</h1>
 					</header>
 					<Select
 						autoFocus={!paramOrganisation}
-						isDisabled={!!paramOrganisation}
+						isDisabled={!!paramOrganisation || isBusy}
 						isCompact
 						isSearchable
 						label="Organisation"
@@ -56,7 +58,7 @@ export default class CreateReport extends Component<any, State> {
 					/>
 					<Input
 						appearance="default"
-						autoFocus={!!paramOrganisation}
+						autoFocus={!!paramOrganisation || isBusy}
 						isCompact
 						label="Name"
 						onChange={this.onNameChange}
@@ -65,7 +67,9 @@ export default class CreateReport extends Component<any, State> {
 						value={name}
 					/>
 					<Input
-						appearance="default"
+						appearance={(!isBusy && reportUrlTaken) ? 'error' : 'default'}
+						disabled={isBusy}
+						help={(!isBusy && reportUrlTaken) && 'A report with this ID already exists. Please change it or pick another report name.'}
 						isCompact
 						label="URL"
 						onBlur={this.onURLBlur}
@@ -90,7 +94,31 @@ export default class CreateReport extends Component<any, State> {
 		return slugify(name, { lower: true }) === url ? this.setState({ name: value, url: slugified }) : this.setState({ name: value });
 	}
 	private onURLBlur = ({ currentTarget: { value } }: FormEvent<HTMLInputElement>) => this.setState({ url: slugify(isBlank(value) ? this.state.name : value, { lower: true }) });
+	private onSubmit = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const { props, state } = this;
+		const { history, OrganisationsStore } = props;
+		const report = toReport(state);
+
+		const onSuccess = () => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			history.push(`/${report._id}`);
+		};
+
+		const onError = (error) => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			// TODO: Show flag
+			console.log('failed:', error);
+		};
+
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+		return OrganisationsStore.addReport(report, { onSuccess, onError });
+	}
 }
+
+export default withRouter(CreateReport);
 
 const isBlank = (str: string) => str === '';
 const toOptions = (orgCol) => map(orgCol, ({ _id, avatar, name }) => ({ value: _id, icon: <img src={avatar} />, label: name }));
+const toReport = ({ name, organisation: _orgId, url: _repId }: State) => ({ name, _orgId, _repId, _id: `${_orgId}/${_repId}` });
