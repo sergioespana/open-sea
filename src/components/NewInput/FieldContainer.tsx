@@ -10,14 +10,14 @@ interface FieldContainerProps {
 }
 
 const getBackgroundColor = (state?: 'hover' | 'active') => (props) => {
-	const { appearance = 'default', isFocus, theme } = props;
+	const { appearance = 'default', disabled, isFocus, theme } = props;
 	const hover = state === 'hover';
 
 	switch (appearance) {
 	case 'default':
-		return isFocus ? '#ffffff' : hover ? darken(0.05, theme.light) : theme.light;
+		return isFocus ? '#ffffff' : hover && !disabled ? darken(0.05, theme.light) : theme.light;
 	case 'inline':
-		return hover ? theme.light : isFocus ? '#ffffff' : 'transparent';
+		return hover ? theme.light : isFocus || disabled ? '#ffffff' : 'transparent';
 	default:
 		return '#ffffff';
 	}
@@ -42,6 +42,7 @@ const FieldContainer = styled(UnstyledFieldContainer)`
 	border-radius: 5px;
 	border-style: solid;
 	border-width: 2px;
+	cursor: ${({ disabled }) => disabled ? 'no-drop' : 'text'};
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
