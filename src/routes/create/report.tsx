@@ -58,7 +58,8 @@ class CreateReport extends Component<any, State> {
 					/>
 					<Input
 						appearance="default"
-						autoFocus={!!paramOrganisation || isBusy}
+						autoFocus={!!paramOrganisation}
+						disabled={isBusy}
 						isCompact
 						label="Name"
 						onChange={this.onNameChange}
