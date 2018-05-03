@@ -94,6 +94,7 @@ export const renderFilter = (columns: TableProps['columns'], data: TableProps['d
 	case 'toggle': return (
 		<LinkButton
 			appearance="subtle"
+			key={filter}
 			selected={parse(location.search)[filter] === 'true'}
 			to={getFilterLocation(location, filter)}
 		>
@@ -157,6 +158,7 @@ export const renderColumnHead = (sortingDisabled: TableProps['sortingDisabled'],
 		<TableHeadCell key={key}>
 			<Link
 				aria-current={search.sort === `-${sortKey}` || search.sort === sortKey}
+				key={key}
 				tabIndex={-1}
 				to={getSortLocation(location, sortKey)}
 			>
