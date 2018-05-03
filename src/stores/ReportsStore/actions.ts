@@ -1,5 +1,15 @@
+import AJV from 'ajv';
+import { safeLoad } from 'js-yaml';
 import { isNumber, round } from 'lodash';
 import { eval as evaluate } from 'mathjs';
+import * as FirebaseService from '../../services/FirebaseService';
+import schema from '../../util/schema.json';
+import { removePrivates } from '../helpers';
+
+const ajv = new AJV({
+	coerceTypes: true,
+	useDefaults: true
+});
 
 export const actions = () => {
 
@@ -7,7 +17,23 @@ export const actions = () => {
 
 	const roundIfNumber = (val: any, precision?: number) => isNumber(val) ? round(val, precision) : val;
 
+	const parseStrToJson = (str: string) => safeLoad(str);
+
+	const validateModel = (obj: object) => {
+		if (ajv.validate(schema, obj)) return { accepted: obj, errors: null };
+		return { accepted: false, errors: ajv.errors };
+	};
+
+	const addModel = (mod: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _repId } = mod;
+		const model = { ...removePrivates(mod) };
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model }, callbacks);
+	};
+
 	return {
-		compute
+		addModel,
+		compute,
+		parseStrToJson,
+		validateModel
 	};
 };
