@@ -11,7 +11,7 @@ const ajv = new AJV({
 	useDefaults: true
 });
 
-export const actions = () => {
+export const actions = (state) => {
 
 	const compute = (value: string, data: object) => roundIfNumber(evaluate(value, data), 2);
 
@@ -30,7 +30,14 @@ export const actions = () => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model }, callbacks);
 	};
 
+	const addData = (obj: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _repId } = obj;
+		const data = { ...removePrivates(obj) };
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data }, callbacks);
+	};
+
 	return {
+		addData,
 		addModel,
 		compute,
 		parseStrToJson,
