@@ -1,5 +1,6 @@
 import { find, findIndex, isString } from 'lodash';
 import { action } from 'mobx';
+import { removePrivates } from './helpers';
 
 export default (collection: Array<any>, idKey: string = '_id', name: string = 'Collection') => {
 
@@ -46,7 +47,7 @@ export default (collection: Array<any>, idKey: string = '_id', name: string = 'C
 
 		const index = findIndexById(toUpdate);
 		const original = findById(toUpdate);
-		collection.splice(index, 1, { ...original, ...toUpdate });
+		collection.splice(index, 1, { ...original, ...removePrivates(toUpdate) });
 
 		return toUpdate;
 	});
