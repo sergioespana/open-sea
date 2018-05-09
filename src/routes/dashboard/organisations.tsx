@@ -66,7 +66,7 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 						},
 						{
 							label: 'Last updated',
-							value: ({ created, updated }) => created || updated,
+							value: ({ created, updated }) => updated || created,
 							format: (updated) => moment().diff(updated) > 86400000 ? moment(updated).format('DD-MM-YYYY') : moment(updated).fromNow()
 						},
 						{
