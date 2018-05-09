@@ -57,7 +57,7 @@ export const startListening = (path: string, initialData: object = {}, ...callba
 	const isDocument = path.split('/').length % 2 === 0;
 
 	const docIntermediate = (doc) => {
-		map(callbacks, (cb): User => cb({
+		map(callbacks, (cb) => cb({
 			_id: doc.id,
 			...initialData,
 			...doc.data()
