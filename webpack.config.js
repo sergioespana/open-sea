@@ -2,6 +2,7 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBar = require('webpackbar');
+const WebpackStylish = require('webpack-stylish');
 const WebpackWorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = (env, argv) => ({
@@ -80,7 +81,8 @@ module.exports = (env, argv) => ({
 		}),
 		new WebpackBar({
 			name: 'build'
-		})
+		}),
+		new WebpackStylish()
 	].concat(argv.mode === 'production' ? [
 		new WebpackWorkboxPlugin.InjectManifest({
 			globDirectory: path.resolve(__dirname, 'dist'),
@@ -95,6 +97,7 @@ module.exports = (env, argv) => ({
 		historyApiFallback: true,
 		hot: true,
 		inline: true,
-		publicPath: '/'
+		publicPath: '/',
+		stats: 'none'
 	}
 });
