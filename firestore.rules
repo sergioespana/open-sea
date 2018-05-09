@@ -1,0 +1,52 @@
+service cloud.firestore {
+	match /databases/{database}/documents {
+		// TODO: Add access level argument to currentUserHasAccess
+
+		function currentUserHasAccess(orgId) {
+			return exists(/databases/$(database)/documents/organisations/$(orgId)/users/$(request.auth.uid));
+		}
+
+		function isPublic(orgId) {
+			return resource.data.isPublic == true;
+		}
+
+		function isAuthed() {
+			return request.auth.uid != null;
+		}
+    
+		function isCurrentUser(uid) {
+			return request.auth.uid == uid;
+		}
+
+		match /organisations/{orgId} {
+			allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
+			allow create: if isAuthed();
+			allow update: if currentUserHasAccess(orgId);
+			allow delete: if currentUserHasAccess(orgId);
+			
+			match /organisations/{orgOrgId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId);
+			}
+
+			match /reports/{repId} {
+				allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId);
+			}
+
+			match /users/{uid} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId);
+			}
+		}
+
+		match /users/{uid} {
+			allow read, create;
+			allow update: if isCurrentUser(uid);
+
+			match /organisations/{orgId} {
+				allow read;
+			}
+		}
+	}
+}
