@@ -69,8 +69,15 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, report, callbacks);
 	};
 
+	const updateOrganisation = (org: Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _id } = org;
+		const organisation = { ...removePrivates(org), updated: new Date(), updatedBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_id}`, organisation, callbacks);
+	};
+
 	return {
 		...organisations,
-		addReport
+		addReport,
+		updateOrganisation
 	};
 };
