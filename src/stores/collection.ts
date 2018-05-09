@@ -11,7 +11,7 @@ export default (collection: Array<any>, idKey: string = '_id', name: string = 'C
 		if (findIndexById(toFind) < 0) throw new Error('Object does not exist!');
 	};
 
-	const clear = action(() => collection = []);
+	const clear = action(() => collection.splice(0, collection.length));
 
 	const findById = action((toFind: string | object) => find(collection, { [idKey]: isString(toFind) ? toFind : toFind[idKey] }));
 
