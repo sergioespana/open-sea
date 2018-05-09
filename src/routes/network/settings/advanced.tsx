@@ -26,7 +26,7 @@ export default class NetworkSettingsAdvanced extends Component<any, State> {
 	render() {
 		const { match: { params: { netId } }, OrganisationsStore } = this.props;
 		const { name, showModal } = this.state;
-		const network = OrganisationsStore.getItem(netId, '_id');
+		const network = OrganisationsStore.findById(netId);
 
 		return (
 			<React.Fragment>

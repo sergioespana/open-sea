@@ -1,20 +1,16 @@
-import { filter, isUndefined } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
-import { Lozenge } from '../../components/Lozenge';
 import { Section } from '../../components/Section';
-import { Table } from '../../components/Table';
 
 const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { netId } }, OrganisationsStore } = props;
-	const network = OrganisationsStore.getItem(netId, '_id') || {};
+	const network = OrganisationsStore.findById(netId) || {};
 	const organisations = network._organisations;
 
 	const PageHead = (

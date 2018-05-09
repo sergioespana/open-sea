@@ -36,7 +36,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 	render () {
 		const { AuthStore, match: { params: { orgId } }, OrganisationsStore, state } = this.props;
 		const { role, showModal, userId } = this.state;
-		const organisation = OrganisationsStore.getItem(orgId, '_id');
+		const organisation = OrganisationsStore.findById(orgId);
 		const users = organisation._users;
 
 		return (
@@ -56,15 +56,15 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						columns={[
 							{
 								label: 'Name',
-								value: ({ _id }) => get(AuthStore.getItem(_id, '_id'), 'name'),
+								value: ({ _id }) => get(AuthStore.findById(_id), 'name'),
 								format: (name, { _id }) => {
-									const avatar = get(AuthStore.getItem(_id, '_id'), 'avatar');
+									const avatar = get(AuthStore.findById(_id), 'avatar');
 									return <TableCellWrapper><img src={avatar} /><Link to={`/dashboard/people/${_id}`}>{name}</Link></TableCellWrapper>;
 								}
 							},
 							{
 								label: 'Email',
-								value: ({ _id }) => get(AuthStore.getItem(_id, '_id'), 'email')
+								value: ({ _id }) => get(AuthStore.findById(_id), 'email')
 							},
 							{
 								key: 'access',

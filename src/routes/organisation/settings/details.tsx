@@ -11,7 +11,7 @@ import { Section } from '../../../components/Section';
 
 const OrganisationSettingsDetails = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore } = props;
-	const organisation = OrganisationsStore.getItem(orgId, '_id');
+	const organisation = OrganisationsStore.findById(orgId);
 
 	return (
 		<React.Fragment>

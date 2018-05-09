@@ -16,7 +16,7 @@ import { Table } from '../../components/Table';
 
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
-	const organisation = OrganisationsStore.getItem(orgId, '_id') || {};
+	const organisation = OrganisationsStore.findById(orgId) || {};
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
 

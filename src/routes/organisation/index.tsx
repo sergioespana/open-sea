@@ -13,7 +13,7 @@ import OrganisationSettingsRoutes from './settings';
 
 const OrganisationRoutes = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore } = props;
-	const organisation = OrganisationsStore.getItem(orgId, '_id');
+	const organisation = OrganisationsStore.findById(orgId);
 
 	if (!organisation) return <Redirect to="/dashboard/organisations" />;
 

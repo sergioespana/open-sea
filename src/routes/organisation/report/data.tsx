@@ -1,5 +1,5 @@
 import { filter, get, isEmpty, map } from 'lodash';
-import { app, collection } from 'mobx-app';
+import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import { Button, LinkButton } from '../../../components/Button';
@@ -10,11 +10,12 @@ import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Input } from '../../../components/NewInput';
 import { Redirect } from '../../../components/Redirect';
+import collection from '../../../stores/collection';
 
 const OrganisationReportData = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId, repId } }, OrganisationsStore } = props;
-	const organisation = OrganisationsStore.getItem(orgId, '_id');
-	const report = collection(organisation._reports).getItem(`${orgId}/${repId}`, '_id');
+	const organisation = OrganisationsStore.findById(orgId);
+	const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
 
 	if (!report) return <Redirect to={`/${orgId}/reports`} />;
 

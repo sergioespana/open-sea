@@ -266,7 +266,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, state, UIStore } = props;
 	const { isLoading, isNavExpanded } = state;
-	const organisation = OrganisationsStore.getItem(orgId, '_id') || {};
+	const organisation = OrganisationsStore.findById(orgId) || {};
 	const curUser = getCurrentUser(state) || {}; // FIXME: Somehow return a Maybe or something.
 
 	const organisationItems = [

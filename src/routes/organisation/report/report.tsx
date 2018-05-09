@@ -1,5 +1,5 @@
 import { get, isEmpty, map } from 'lodash';
-import { app, collection } from 'mobx-app';
+import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
@@ -15,6 +15,7 @@ import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../componen
 import { LinkInput } from '../../../components/NewInput';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
 import { Section } from '../../../components/Section';
+import collection from '../../../stores/collection';
 
 interface State {
 	showModal: boolean;
@@ -30,8 +31,8 @@ class OrganisationReportOverview extends Component<any, State> {
 	render () {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = this.props;
 		const { showModal } = this.state;
-		const organisation = OrganisationsStore.getItem(orgId, '_id');
-		const report = collection(organisation._reports).getItem(`${orgId}/${repId}`, '_id');
+		const organisation = OrganisationsStore.findById(orgId);
+		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
 		const model = get(report, 'model');
 		const data = get(report, 'data');
 		const items = get(report, 'model.reportItems');

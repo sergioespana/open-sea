@@ -1,6 +1,6 @@
-import { collection } from 'mobx-app';
 import { User, UserOrganisation } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
+import collection from '../collection';
 import { setAppState } from '../helpers';
 
 export const actions = (state) => {
@@ -26,12 +26,12 @@ export const actions = (state) => {
 	};
 
 	const onUser = (user: User) => {
-		users.updateOrAdd(user, '_id');
+		users.updateOrInsert(user);
 	};
 
 	const onUserOrganisation = (uid: string) => (organisation: UserOrganisation) => {
-		const user = users.getItem(uid, '_id');
-		collection(user._organisations).updateOrAdd(organisation, '_id');
+		const user = users.findById(uid);
+		collection(user._organisations).updateOrInsert(organisation);
 	};
 
 	const signOut = () => FirebaseService.signOut();

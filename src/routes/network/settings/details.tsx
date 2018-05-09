@@ -10,7 +10,7 @@ import { Input } from '../../../components/NewInput';
 
 const NetworkSettingsDetails = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { netId } }, OrganisationsStore } = props;
-	const network = OrganisationsStore.getItem(netId, '_id');
+	const network = OrganisationsStore.findById(netId);
 
 	return (
 		<React.Fragment>

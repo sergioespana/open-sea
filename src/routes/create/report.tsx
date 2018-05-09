@@ -32,7 +32,7 @@ class CreateReport extends Component<any, State> {
 		const { name, organisation, url } = this.state;
 		const { isBusy, organisations } = state;
 		const paramOrganisation = get(parse(location.search), 'organisation');
-		const reportUrlTaken = !isUndefined(find(get(OrganisationsStore.getItem(organisation || paramOrganisation, '_id'), '_reports'), { _repId: url }));
+		const reportUrlTaken = !isUndefined(find(get(OrganisationsStore.findById(organisation || paramOrganisation), '_reports'), { _repId: url }));
 		const preventSubmit = reportUrlTaken || isBlank(name) || isBlank(organisation) || isBlank(url) || isBusy;
 
 		return (

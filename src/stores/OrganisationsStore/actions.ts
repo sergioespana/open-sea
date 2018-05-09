@@ -1,9 +1,9 @@
 import { map } from 'lodash';
 import { reaction } from 'mobx';
-import { collection } from 'mobx-app';
 import { Organisation, Report } from '../../domain/Organisation';
 import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
+import collection from '../collection';
 import { getCurrentUser, removePrivates } from '../helpers';
 
 export const actions = (state) => {
@@ -33,34 +33,34 @@ export const actions = (state) => {
 	};
 
 	const onNetworkOrganisation = (netId: string) => (organisation: Organisation) => {
-		const network = organisations.getItem(netId, '_id');
-		collection(network._organisations).updateOrAdd(organisation, '_id');
+		const network = organisations.findById(netId);
+		collection(network._organisations).updateOrInsert(organisation);
 
 		startListening(organisation._id);
 	};
 
 	const onOrganisation = (orgId: string) => (organisation: Organisation) => {
-		organisations.updateOrAdd(organisation, '_id');
+		organisations.updateOrInsert(organisation);
 		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, onNetworkOrganisation(orgId));
 	};
 
 	const onOrganisationReport = (_orgId: string) => (report: Report) => {
 		const { _id: _repId, ...data } = report;
 		const _id = `${_orgId}/${_repId}`;
-		const organisation = organisations.getItem(_orgId, '_id');
-		collection(organisation._reports).updateOrAdd({ _id, _orgId, _repId, ...data }, '_id');
+		const organisation = organisations.findById(_orgId);
+		collection(organisation._reports).updateOrInsert({ _id, _orgId, _repId, ...data });
 	};
 
 	const onOrganisationUser = (orgId: string) => (user: User) => {
-		const organisation = organisations.getItem(orgId, '_id');
-		collection(organisation._users).updateOrAdd(user, '_id');
+		const organisation = organisations.findById(orgId);
+		collection(organisation._users).updateOrInsert(user);
 
 		FirebaseService.startListening(`users/${user._id}`, {}, onUser);
 	};
 
 	const onUser = (user: User) => {
 		const users = collection(state.users);
-		users.updateOrAdd(user, '_id');
+		users.updateOrInsert(user);
 	};
 
 	const addReport = (rep: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {

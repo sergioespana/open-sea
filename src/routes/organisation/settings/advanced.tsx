@@ -26,7 +26,7 @@ export default class OrganisationSettingsAdvanced extends Component<any, State> 
 	render () {
 		const { match: { params: { orgId } }, OrganisationsStore } = this.props;
 		const { name, showModal } = this.state;
-		const organisation = OrganisationsStore.getItem(orgId, '_id');
+		const organisation = OrganisationsStore.findById(orgId);
 
 		return (
 			<React.Fragment>

@@ -19,7 +19,7 @@ export default class DashboardPeopleProfile extends Component<any> {
 	render () {
 		const { AuthStore, match: { params: { name, userId } } } = this.props;
 		const { editing } = this.state;
-		const user = AuthStore.getItem(userId, '_id');
+		const user = AuthStore.findById(userId);
 
 		if (name !== slugify(user.name, '+')) return <Redirect to={`/dashboard/people/${userId}/${slugify(user.name, '+')}`} />;
 

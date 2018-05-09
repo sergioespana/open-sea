@@ -27,7 +27,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 	render () {
 		const { match: { params: { netId } }, OrganisationsStore, state } = this.props;
 		const { organisation, showModal } = this.state;
-		const network = OrganisationsStore.getItem(netId, '_id');
+		const network = OrganisationsStore.findById(netId);
 		const organisations = network._organisations;
 
 		return (
@@ -47,9 +47,9 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 						columns={[
 							{
 								label: 'Network',
-								value: ({ _id }) => get(OrganisationsStore.getItem(_id, '_id'), 'name'),
+								value: ({ _id }) => get(OrganisationsStore.findById(_id), 'name'),
 								format: (name, { _id }) => {
-									const avatar = get(OrganisationsStore.getItem(_id, '_id'), 'avatar');
+									const avatar = get(OrganisationsStore.findById(_id), 'avatar');
 									return <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>;
 								}
 							},
