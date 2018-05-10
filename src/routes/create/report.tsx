@@ -28,6 +28,11 @@ class CreateReport extends Component<any, State> {
 		url: ''
 	};
 
+	componentWillMount () {
+		const { location } = this.props;
+		this.setState({ organisation: get(parse(location.search), 'organisation') || '' });
+	}
+
 	render () {
 		const { location, OrganisationsStore, state } = this.props;
 		const { name, organisation, url } = this.state;
@@ -35,7 +40,7 @@ class CreateReport extends Component<any, State> {
 		const curUser = getCurrentUser(state);
 		const organisations = hasAccess(curUser, state.organisations);
 		const paramOrganisation = get(parse(location.search), 'organisation');
-		const reportUrlTaken = organisation === '' ? false : !isUndefined(find(get(OrganisationsStore.findById(organisation || paramOrganisation), '_reports'), { _repId: url }));
+		const reportUrlTaken = organisation === '' ? false : !isUndefined(find(get(OrganisationsStore.findById(organisation), '_reports'), { _repId: url }));
 		const preventSubmit = reportUrlTaken || isBlank(name) || isBlank(organisation) || isBlank(url) || isBusy;
 
 		return (
