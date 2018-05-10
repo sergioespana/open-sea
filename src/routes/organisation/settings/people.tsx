@@ -2,6 +2,7 @@ import linkState from 'linkstate';
 import { debounce, find, get, inRange, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
+import moment from 'moment';
 import React, { Component, SyntheticEvent } from 'react';
 import { Button, ButtonGroup } from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -67,6 +68,11 @@ export default class OrganisationSettingsPeople extends Component<any> {
 							{
 								label: 'Email',
 								value: ({ _id }) => get(AuthStore.findById(_id), 'email')
+							},
+							{
+								key: 'added',
+								label: 'Added',
+								format: (updated) => moment().diff(updated) > 86400000 ? moment(updated).format('DD-MM-YYYY') : moment(updated).fromNow()
 							},
 							{
 								key: 'access',

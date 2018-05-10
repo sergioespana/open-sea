@@ -73,11 +73,11 @@ class OrganisationSettingsDetails extends Component<any, State> {
 							<Input
 								appearance="default"
 								checked={organisation.isPublic}
-								help="Public organisations and their reports are visible to anyone. Explicitly granted access is still required for certain operations."
+								help={`Public ${organisation.isNetwork ? 'network' : 'organisation'}s and their ${organisation.isNetwork ? 'organisation' : 'report'}s are visible to anyone. Explicitly granted access is still required for certain operations.`}
 								isCompact
 								label="Public"
 								onChange={linkState(this, 'organisation.isPublic', 'target.checked')}
-								placeholder="This is a public organisation"
+								placeholder={`This is a public ${organisation.isNetwork ? 'network' : 'organisation'}`}
 								type="checkbox"
 							/>
 							<FormActions>

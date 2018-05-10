@@ -39,7 +39,7 @@ export default class OrganisationSettingsAdvanced extends Component<any, State> 
 					]}
 				/>
 				<Container>
-					<Button appearance="error" onClick={this.toggleModal}>Delete this organisation</Button>
+					<Button appearance="error" onClick={this.toggleModal}>Delete this {organisation.isNetwork ? 'network' : 'organisation'}</Button>
 				</Container>
 				<Modal
 					isOpen={showModal}
@@ -51,12 +51,20 @@ export default class OrganisationSettingsAdvanced extends Component<any, State> 
 							<Button appearance="subtle" onClick={this.toggleModal}><MdClose /></Button>
 						</ModalHeader>
 						<ModalSection>
+							{ organisation.isNetwork ? (
+								<p>
+									This action <strong>cannot</strong> be undone. This will permanently delete the <strong>{organisation.name} </strong>
+									network. All aggregated reports will be lost. Organisations part of this network will <strong>not </strong>
+									be influenced by this action.
+								</p>
+							) : (
+								<p>
+									This action <strong>cannot</strong> be undone. This will permanently delete the <strong>{organisation.name} </strong>
+									organisation, its reports, and accompanying data.
+								</p>
+							) }
 							<p>
-								This action <strong>cannot</strong> be undone. This will permanently delete the <strong>{organisation.name} </strong>
-								organisation, its reports, and accompanying data.
-							</p>
-							<p>
-								Please type in the name of the organisation to confirm.
+								Please type in the name of the {organisation.isNetwork ? 'network' : 'organisation'} to confirm.
 							</p>
 							<Input
 								appearance="default"
@@ -71,7 +79,7 @@ export default class OrganisationSettingsAdvanced extends Component<any, State> 
 								style={{ width: '100%' }}
 								type="submit"
 							>
-								Delete this organisation
+								Permanently delete this {organisation.isNetwork ? 'network' : 'organisation'}
 							</Button>
 						</ModalFooter>
 					</form>

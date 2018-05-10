@@ -1,7 +1,8 @@
 import linkState from 'linkstate';
-import { find, get, map } from 'lodash';
+import { find, get, inRange, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
+import moment from 'moment';
 import React, { Component, SyntheticEvent } from 'react';
 import { Button, ButtonGroup } from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -10,6 +11,7 @@ import { Link } from '../../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
 import Select, { SelectOption } from '../../../components/Select';
 import { Table, TableCellWrapper } from '../../../components/Table';
+import { getCurrentUser } from '../../../stores/helpers';
 
 interface State {
 	organisation: string;
@@ -29,6 +31,8 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 		const { organisation, showModal } = this.state;
 		const network = OrganisationsStore.findById(netId);
 		const organisations = network._organisations;
+		const users = network._users;
+		const curUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
 
 		return (
 			<React.Fragment>
@@ -40,7 +44,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 						<Link key={`/${netId}/settings`} to={`/${netId}/settings`}>Settings</Link>
 					]}
 				>
-					<Button appearance="default" onClick={this.toggleModal}>Add organisation</Button>
+					{inRange(curUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add organisation</Button>}
 				</Header>
 				<Container style={{ display: 'block' }}>
 					<Table
@@ -54,9 +58,15 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 								}
 							},
 							{
+								key: 'added',
+								label: 'Added',
+								format: (updated) => moment().diff(updated) > 86400000 ? moment(updated).format('DD-MM-YYYY') : moment(updated).fromNow()
+							},
+							{
 								key: '',
 								label: 'Actions',
 								labelHidden: true,
+								hidden: !inRange(curUserAccess, 30, 101),
 								format: () => <a>Remove</a>
 							}
 						]}
