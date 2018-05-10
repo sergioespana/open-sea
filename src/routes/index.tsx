@@ -31,16 +31,6 @@ import DashboardRoutes from './dashboard';
 import DashboardOverview from './dashboard/overview';
 import OrganisationRoutes from './organisation';
 
-const addFlag = (UIStore) => () => UIStore.addFlag({
-	appearance: 'normal',
-	actions: [
-		{ label: 'Action', to: '/' },
-		{ label: 'Another', to: '/' }
-	],
-	title: 'Whoa a new flag!',
-	description: 'Marzipan croissant pie. Jelly beans gingerbread caramels brownie icing.'
-});
-
 const Routes = inject(app('UIStore'))(observer((props) => {
 	const { state, UIStore } = props;
 	const { flags, isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady, isSearchDrawerOpen } = state;
