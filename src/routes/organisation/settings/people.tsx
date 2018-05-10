@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { debounce, find, get, inRange, map } from 'lodash';
+import { debounce, find, get, inRange, isUndefined, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -11,8 +11,7 @@ import { Link } from '../../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
 import Select, { AsyncSelect, SelectOption } from '../../../components/Select';
 import { Table, TableCellWrapper } from '../../../components/Table';
-import { getCurrentUser } from '../../../stores/helpers';
-import { isUndefined } from 'util';
+import { getCurrentUserAccess } from '../../../stores/helpers';
 
 const options = [
 	{ label: 'Owner', value: 100, isDisabled: true },
@@ -41,7 +40,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		const { role, showModal, userId } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
 		const users = organisation._users;
-		const curUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
+		const currentUserAccess = getCurrentUserAccess(state, organisation);
 
 		return (
 			<React.Fragment>
@@ -53,7 +52,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						<Link key={`/${orgId}/settings`} to={`/${orgId}/settings`}>Settings</Link>
 					]}
 				>
-					{inRange(curUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add people</Button>}
+					{inRange(currentUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add people</Button>}
 				</Header>
 				<Container style={{ display: 'block' }}>
 					<Table
@@ -78,7 +77,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 							{
 								key: 'access',
 								label: 'Role',
-								format: (access, { _id }) => inRange(curUserAccess, 30, 101)
+								format: (access, { _id }) => inRange(currentUserAccess, 30, 101)
 									? (
 										<Select
 											isDisabled={access === 100}
@@ -94,7 +93,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 								key: 'access',
 								label: 'Actions',
 								labelHidden: true,
-								hidden: !inRange(curUserAccess, 30, 101),
+								hidden: !inRange(currentUserAccess, 30, 101),
 								format: (access, { _id }) => access < 100 && <a onClick={this.onRemove(_id)}>Remove</a>
 							}
 						]}

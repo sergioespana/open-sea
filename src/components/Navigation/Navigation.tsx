@@ -137,7 +137,10 @@ export default class Navigation extends Component<Props> {
 	}
 }
 
-const renderItems = (items: NavigationItem[], initialProps: object) => map(items, ({ element, icon, isHeader: large, label, to }) => {
+const renderItems = (items: NavigationItem[], initialProps: object) => map(items, ({ element, hidden, icon, isHeader: large, label, to }) => {
+	// If item is hidden (for example when the current user does not have access),
+	// render nothing.
+	if (hidden) return null;
 	// If an element is passed, render that immediately.
 	if (element) return element;
 	// If no icon, assume it's a text-only item and render a heading.

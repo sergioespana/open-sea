@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import linkState from 'linkstate';
-import { filter, flattenDeep, map, reject } from 'lodash';
+import { filter, flattenDeep, inRange, map, reject } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -27,7 +27,7 @@ import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Mod
 import { Button as NavButton, Navigation } from '../components/Navigation';
 import { Redirect } from '../components/Redirect';
 import { Route } from '../components/Route';
-import { getCurrentUser } from '../stores/helpers';
+import { getCurrentUser, getCurrentUserAccess } from '../stores/helpers';
 import AccountRoutes from './account/index';
 import CreateRoutes from './create/index';
 import DashboardRoutes from './dashboard';
@@ -288,7 +288,8 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 	const { match: { params: { orgId } }, OrganisationsStore, state, UIStore } = props;
 	const { isLoading, isNavExpanded } = state;
 	const organisation = OrganisationsStore.findById(orgId) || {};
-	const curUser = getCurrentUser(state) || {}; // FIXME: Somehow return a Maybe or something.
+	const curUser = getCurrentUser(state) || {};
+	const currentUserAccess = getCurrentUserAccess(state, organisation);
 
 	const organisationItems = [
 		{
@@ -313,6 +314,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/settings`,
 			navigationItems: [
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Details',
 					to: `/${orgId}/settings/details`
 				},
@@ -321,6 +323,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					to: `/${orgId}/settings/people`
 				},
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Advanced',
 					to: `/${orgId}/settings/advanced`
 				}
@@ -350,6 +353,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/settings`,
 			navigationItems: [
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Details',
 					to: `/${orgId}/settings/details`
 				},
@@ -358,10 +362,12 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					to: `/${orgId}/settings/people`
 				},
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Organisations',
 					to: `/${orgId}/settings/organisations`
 				},
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Advanced',
 					to: `/${orgId}/settings/advanced`
 				}

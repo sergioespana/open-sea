@@ -32,7 +32,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 		const network = OrganisationsStore.findById(netId);
 		const organisations = network._organisations;
 		const users = network._users;
-		const curUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
+		const currentUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
 
 		return (
 			<React.Fragment>
@@ -44,7 +44,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 						<Link key={`/${netId}/settings`} to={`/${netId}/settings`}>Settings</Link>
 					]}
 				>
-					{inRange(curUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add organisation</Button>}
+					{inRange(currentUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add organisation</Button>}
 				</Header>
 				<Container style={{ display: 'block' }}>
 					<Table
@@ -66,7 +66,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 								key: '',
 								label: 'Actions',
 								labelHidden: true,
-								hidden: organisations.length <= 1 || !inRange(curUserAccess, 30, 101),
+								hidden: organisations.length <= 1 || !inRange(currentUserAccess, 30, 101),
 								format: (_, { _id }) => <a onClick={this.onRemove(_id)}>Remove</a>
 							}
 						]}
