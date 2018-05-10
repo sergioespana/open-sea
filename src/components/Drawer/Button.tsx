@@ -15,4 +15,8 @@ export default NavButton.extend`
 	&[disabled]:not([disabled="false"]) {
 		pointer-events: none;
 	}
+
+	img {
+		border-radius: 50%;
+	}
 `;

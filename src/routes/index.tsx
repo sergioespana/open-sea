@@ -1,7 +1,10 @@
-import { map } from 'lodash';
+import Fuse from 'fuse.js';
+import linkState from 'linkstate';
+import { filter, flattenDeep, map, reject } from 'lodash';
+import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { Component } from 'react';
 import MdAccountCircle from 'react-icons/lib/md/account-circle';
 import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
@@ -31,9 +34,55 @@ import DashboardRoutes from './dashboard';
 import DashboardOverview from './dashboard/overview';
 import OrganisationRoutes from './organisation';
 
+@inject(app('UIStore'))
+@observer
+class SearchDrawer extends Component<any> {
+	readonly state = {
+		query: ''
+	};
+
+	render () {
+		const { state, UIStore } = this.props;
+		const { query } = this.state;
+		const { isSearchDrawerOpen } = state;
+
+		const reports = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _reports }) => _reports.length > 0), ({ _reports }) => _reports)), { keys: ['name'] })).search(query);
+		const organisations = (new Fuse(reject(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
+		const networks = (new Fuse(filter(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
+		const users = (new Fuse(state.users, { keys: ['name'] })).search(query);
+
+		return (
+			<Drawer
+				closeIconPosition="top"
+				isOpen={isSearchDrawerOpen}
+				mainIcon={<MdHome />}
+				onClose={UIStore.toggleSearchDrawerOpen}
+				width={550}
+			>
+				<form style={{ width: '100%' }}>
+					<SearchInput
+						autoFocus
+						onChange={linkState(this, 'query')}
+						placeholder="Search for organisations, reports, and more..."
+						value={query}
+					/>
+				</form>
+				{reports.length > 0 && <h3>Reports</h3>}
+				{reports.length > 0 && map(reports, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
+				{organisations.length > 0 && <h3>Organisations</h3>}
+				{organisations.length > 0 && map(organisations, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
+				{networks.length > 0 && <h3>Networks</h3>}
+				{networks.length > 0 && map(networks, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
+				{users.length > 0 && <h3>Users</h3>}
+				{users.length > 0 && map(users, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
+			</Drawer>
+		);
+	}
+}
+
 const Routes = inject(app('UIStore'))(observer((props) => {
 	const { state, UIStore } = props;
-	const { flags, isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady, isSearchDrawerOpen } = state;
+	const { flags, isAuthed, isCreateDrawerOpen, isKSModalOpen, isLoading, isReady } = state;
 
 	// We render different navigation components on different routes.
 	// Too many variables change for us to do this within a single
@@ -48,24 +97,6 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			<Route path="/:orgId" component={OrganisationNavigation} />
 			<Route path="*" component={DefaultNavigation} />
 		</Switch>
-	);
-
-	// Prepare the component making up the global search drawer.
-	const SearchDrawer = (
-		<Drawer
-			closeIconPosition="top"
-			isOpen={isSearchDrawerOpen}
-			mainIcon={<MdHome />}
-			onClose={UIStore.toggleSearchDrawerOpen}
-			width={550}
-		>
-			<form style={{ width: '100%' }}>
-				<SearchInput
-					autoFocus
-					placeholder="Search for organisations, reports, and more..."
-				/>
-			</form>
-		</Drawer>
 	);
 
 	// Prepare the component making up the global create drawer.
@@ -147,8 +178,8 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 					<Route path="/:orgId" component={OrganisationRoutes} />
 				</Switch>
 			</main>
+			<SearchDrawer />
 			{CreateDrawer}
-			{SearchDrawer}
 			{KSModal}
 			{Flags}
 		</div>

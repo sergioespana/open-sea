@@ -17,4 +17,8 @@ export default styled(UnstyledWrapper)`
 	top: 0;
 	width: ${({ width }) => width || 304}px;
 	z-index: 10;
+
+	h3 {
+		margin-top: 24px;
+	}
 `;
