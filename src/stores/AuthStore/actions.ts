@@ -13,8 +13,8 @@ export const actions = (state) => {
 			// - The user's information in the database
 			// - The collection of organisations the user has access to
 			const { uid } = res;
-			FirebaseService.startListening(`users/${uid}`, { _isCurrent: true, _organisations: [] }, onUser);
-			FirebaseService.startListening(`users/${uid}/organisations`, {}, onUserOrganisation(uid));
+			FirebaseService.startListening(`users/${uid}`, { _isCurrent: true, _organisations: [] }, { onAdded: onUser });
+			FirebaseService.startListening(`users/${uid}/organisations`, {}, { onAdded: onUserOrganisation(uid) });
 		} else {
 			// User is not logged in or has just logged out. Remove all loaded
 			// users from memory and remove all listeners.

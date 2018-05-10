@@ -50,32 +50,39 @@ const updateListenerStatus = (path, status: 'pending' | 'listening') => {
 
 // Convenient method to add a listener. Manages all Firebase interactions here, so the stores just
 // have to deal with updating state accordingly.
-export const startListening = (path: string, initialData: object = {}, ...callbacks: Function[]) => {
-	// TODO: Indicate that listeners have fired once. This way, if all listeners have been fired at least once,
-	// we can turn off loading state.
+export const startListening = (path: string, initialData: object = {}, callbacks: { onAdded?: (res: any) => void, onRemoved?: (id: string) => void } = {}) => {
+	const { onAdded, onRemoved } = callbacks;
 
-	const isDocument = path.split('/').length % 2 === 0;
-
-	const docIntermediate = (doc) => {
-		map(callbacks, (cb) => cb({
+	// Handler for when we're dealing with a document reference.
+	const docHandler = (doc) => {
+		// Document exists and was added or updated.
+		if (doc.exists && onAdded) onAdded({
 			_id: doc.id,
 			...initialData,
 			...doc.data()
-		}));
+		});
+
+		// Document does not exist and so we know it has been removed.
+		if (!doc.exists && onRemoved) onRemoved(doc.id);
+
 		updateListenerStatus(path, 'listening');
 	};
 
+	// Intermediate handler for when we're dealing with a collection. This intermediate
+	// sets listeners up for each item in a collection and removes listeners for deleted
+	// items. Removed individual items are handled in docHandler.
 	const colIntermediate = ({ docChanges }) => {
 		const [removed, added] = partition(docChanges, { type: 'removed' });
-		added.forEach(({ doc }: any) => startListening(doc.ref.path, doc.data(), ...callbacks));
+		added.forEach(({ doc }: any) => startListening(doc.ref.path, doc.data(), callbacks));
 		removed.forEach(({ doc }: any) => removeListener(doc.ref.path));
 		updateListenerStatus(path, 'listening');
 	};
 
-	return addListener(path, isDocument ? docIntermediate : colIntermediate);
+	const isDocument = path.split('/').length % 2 === 0;
+	return addListener(path, isDocument ? docHandler : colIntermediate);
 };
 
-export const saveDoc = async (path: string, data: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+export const saveDoc = async (path: string, data: object, callbacks: { onError?: Function, onSuccess?: Function } = {}) => {
 	const { onError, onSuccess } = callbacks;
 
 	try {

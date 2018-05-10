@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import { isString, map } from 'lodash';
 import { reaction } from 'mobx';
 import { Organisation, Report } from '../../domain/Organisation';
 import { User } from '../../domain/User';
@@ -27,9 +27,9 @@ export const actions = (state) => {
 	);
 
 	const startListening = (orgId: string) => {
-		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [] }, onOrganisation(orgId));
-		FirebaseService.startListening(`organisations/${orgId}/reports`, {}, onOrganisationReport(orgId));
-		FirebaseService.startListening(`organisations/${orgId}/users`, {}, onOrganisationUser(orgId));
+		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [] }, { onAdded: onOrganisation(orgId), onRemoved: organisations.remove });
+		FirebaseService.startListening(`organisations/${orgId}/reports`, {}, { onAdded: onOrganisationReport(orgId, 'added'), onRemoved: onOrganisationReport(orgId, 'removed') });
+		FirebaseService.startListening(`organisations/${orgId}/users`, {}, { onAdded: onOrganisationUser(orgId, 'added'), onRemoved: onOrganisationUser(orgId, 'removed') });
 	};
 
 	const onNetworkOrganisation = (netId: string) => (organisation: Organisation) => {
@@ -41,21 +41,26 @@ export const actions = (state) => {
 
 	const onOrganisation = (orgId: string) => (organisation: Organisation) => {
 		organisations.updateOrInsert(organisation);
-		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, onNetworkOrganisation(orgId));
+		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, { onAdded: onNetworkOrganisation(orgId) }); // TODO: Handle removed organisations
 	};
 
-	const onOrganisationReport = (_orgId: string) => (report: Report) => {
-		const { _id: _repId, ...data } = report;
-		const _id = `${_orgId}/${_repId}`;
+	const onOrganisationReport = (_orgId: string, action: 'added' | 'removed') => (report: any) => {
 		const organisation = organisations.findById(_orgId);
-		collection(organisation._reports).updateOrInsert({ _id, _orgId, _repId, ...data });
+
+		if (action === 'added') {
+			const { _id: _repId, ...data } = report;
+			const _id = `${_orgId}/${_repId}`;
+			collection(organisation._reports).updateOrInsert({ _id, _orgId, _repId, ...data });
+		} else collection(organisation._reports).remove(report);
 	};
 
-	const onOrganisationUser = (orgId: string) => (user: User) => {
+	const onOrganisationUser = (orgId: string, action: 'added' | 'removed') => (user: any) => {
 		const organisation = organisations.findById(orgId);
-		collection(organisation._users).updateOrInsert(user);
 
-		FirebaseService.startListening(`users/${user._id}`, {}, onUser);
+		if (action === 'added') {
+			collection(organisation._users).updateOrInsert(user);
+			FirebaseService.startListening(`users/${user._id}`, {}, { onAdded: onUser });
+		} else collection(organisation._users).remove(user);
 	};
 
 	const onUser = (user: User) => {
@@ -75,9 +80,23 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_id}`, organisation, callbacks);
 	};
 
+	const updateOrAddAccess = (org: string | Organisation, user: string | User, access: number = 10, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const orgId = isString(org) ? org : org._id;
+		const userId = isString(user) ? user : user._id;
+		FirebaseService.saveDoc(`organisations/${orgId}/users/${userId}`, { access, added: new Date() }, callbacks);
+	};
+
+	const removeAccess = (org: string | Organisation, user: string | User, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const orgId = isString(org) ? org : org._id;
+		const userId = isString(user) ? user : user._id;
+		FirebaseService.removeDoc(`organisations/${orgId}/users/${userId}`, callbacks);
+	};
+
 	return {
 		...organisations,
 		addReport,
-		updateOrganisation
+		removeAccess,
+		updateOrganisation,
+		updateOrAddAccess
 	};
 };
