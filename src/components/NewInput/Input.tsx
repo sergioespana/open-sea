@@ -49,16 +49,17 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 		case 'file':
 			return <input {...props} />;
 		case 'image':
-			return (
-				<Wrapper {...wrapper}>
-					{label && <FieldLegend required={props.required}>{label}</FieldLegend>}
-					<Container>
-						<img src={props.value || props.defaultValue} />
-						<a>select image</a>
-						<input {...props} accept="image/*" type="file" value="" />
-					</Container>
-				</Wrapper>
-			);
+			return null;
+			// return (
+			// 	<Wrapper {...wrapper}>
+			// 		{label && <FieldLegend required={props.required}>{label}</FieldLegend>}
+			// 		<Container>
+			// 			<img src={props.value || props.defaultValue} />
+			// 			<a>select image</a>
+			// 			<input {...props} accept="image/*" type="file" value="" />
+			// 		</Container>
+			// 	</Wrapper>
+			// );
 		case 'radio':
 			return <input {...props} />;
 		case 'range':
