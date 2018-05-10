@@ -1,4 +1,4 @@
-import { find, get, reject } from 'lodash';
+import { filter, find, get, isUndefined, reject } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -49,7 +49,11 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 						},
 						{
 							label: 'Network',
-							value: ({ network }) => get(find(state.organisations, { _id: network }), 'name'),
+							value: ({ _id }) => {
+								const allNetworks = filter(state.organisations, { isNetwork: true });
+								const networks = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })));
+								return get(networks, '[0].name');
+							},
 							format: (name, { network: netId }) => {
 								if (!name) return null;
 								const { _id, avatar } = find(state.organisations, { _id: netId });
