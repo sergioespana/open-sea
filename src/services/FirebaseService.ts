@@ -93,6 +93,17 @@ export const saveDoc = async (path: string, data: object, callbacks: { onError?:
 	}
 };
 
+export const removeDoc = async (path: string, callbacks: { onError?: Function, onSuccess?: Function } = {}) => {
+	const { onError, onSuccess } = callbacks;
+
+	try {
+		await db.doc(path).delete();
+		if (onSuccess) onSuccess();
+	} catch (error) {
+		if (onError) onError(error);
+	}
+};
+
 export const signInWithEmailAndPassword = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
 
 export const signUpWithEmailAndPassword = (email, pass) => auth.createUserWithEmailAndPassword(email, pass);
