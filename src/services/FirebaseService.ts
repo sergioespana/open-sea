@@ -29,9 +29,14 @@ export let listeners: Listener[] = observable([]);
 type snapshotHandler = (snapshot: firestore.DocumentSnapshot | firestore.QuerySnapshot) => void;
 const addListener = (path: string, handler: snapshotHandler) => isUndefined(find(listeners, { path })) && listeners.push({
 	path,
-	f: path.split('/').length % 2 === 0 ? db.doc(path).onSnapshot(handler, console.error) : db.collection(path).onSnapshot(handler),
+	f: path.split('/').length % 2 === 0 ? db.doc(path).onSnapshot(handler, handleError(path)) : db.collection(path).onSnapshot(handler, handleError(path)),
 	status: 'pending'
 });
+
+const handleError = (path: string) => (error) => {
+	console.error(error);
+	console.error(`The above error was thrown from the onSnapshot method that belongs to listener for path "${path}".`);
+};
 
 // Remove a single listener.
 const removeListener = (path: string) => listeners = observable(reject(listeners, { path }));

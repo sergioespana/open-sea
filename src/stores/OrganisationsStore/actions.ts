@@ -122,6 +122,7 @@ export const actions = (state) => {
 		create,
 		removeAccess,
 		removeOrganisation,
+		startListening,
 		updateOrganisation,
 		updateOrAddAccess
 	};

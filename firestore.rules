@@ -34,7 +34,7 @@ service cloud.firestore {
 			}
 
 			match /reports/{repId} {
-				allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
+				allow read;
 				allow write: if currentUserHasAccess(orgId);
 			}
 

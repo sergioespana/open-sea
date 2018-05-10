@@ -1,6 +1,6 @@
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { Component } from 'react';
 import { Switch } from 'react-router-dom';
 import { Redirect } from '../../components/Redirect';
 import { Route } from '../../components/Route';
@@ -11,30 +11,47 @@ import OrganisationReportRoutes from './report';
 import OrganisationReports from './reports';
 import OrganisationSettingsRoutes from './settings';
 
-const OrganisationRoutes = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { orgId } }, OrganisationsStore } = props;
-	const organisation = OrganisationsStore.findById(orgId);
+@inject(app('OrganisationsStore'))
+@observer
+class OrganisationRoutes extends Component<any> {
 
-	if (!organisation) return <Redirect to="/dashboard/organisations" />;
+	componentWillMount () {
+		const { match: { params: { orgId } }, OrganisationsStore, state } = this.props;
+		const { isAuthed } = state;
+		if (!isAuthed) {
+			console.log(`Organisation page will show but we're not authed, load only this org`);
+			OrganisationsStore.startListening(orgId);
+		} else console.log(`Organisation page will load and we're authed so no biggie`);
+	}
 
-	if (organisation.isNetwork) return (
-		<Switch>
-			<Route path="/:netId" exact component={NetworkOverview} />
-			<Route path="/:nedId/compare" exact />
-			<Route path="/:netId/overview" exact component={NetworkOverview} />
-			<Route path="/:netId/settings" component={NetworkSettingsRoutes} />
-		</Switch>
-	);
+	render () {
+		const { match: { params: { orgId } }, OrganisationsStore, state } = this.props;
+		const { isAuthed, isLoading } = state;
+		const organisation = OrganisationsStore.findById(orgId);
 
-	return (
-		<Switch>
-			<Route path="/:orgId" exact component={OrganisationOverview} />
-			<Route path="/:orgId/overview" exact component={OrganisationOverview} />
-			<Route path="/:orgId/reports" exact component={OrganisationReports} />
-			<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
-			<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
-		</Switch>
-	);
-}));
+		if (isLoading) return null;
+
+		if (!organisation && isAuthed) return <Redirect to="/dashboard/organisations" />;
+
+		if (organisation.isNetwork) return (
+			<Switch>
+				<Route path="/:netId" exact component={NetworkOverview} />
+				<Route path="/:nedId/compare" exact />
+				<Route path="/:netId/overview" exact component={NetworkOverview} />
+				<Route path="/:netId/settings" component={NetworkSettingsRoutes} />
+			</Switch>
+		);
+
+		return (
+			<Switch>
+				<Route path="/:orgId" exact component={OrganisationOverview} />
+				<Route path="/:orgId/overview" exact component={OrganisationOverview} />
+				<Route path="/:orgId/reports" exact component={OrganisationReports} />
+				<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
+				<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
+			</Switch>
+		);
+	}
+}
 
 export default OrganisationRoutes;
