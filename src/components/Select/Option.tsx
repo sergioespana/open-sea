@@ -9,7 +9,7 @@ const MainContent = styled.div`
 `;
 
 const MainLabel = styled.span`
-	color: ${({ theme }) => theme.text.primary};
+	color: inherit;
 	display: block;
 `;
 
@@ -26,8 +26,8 @@ const SubLabel = styled.span`
 `;
 
 // TODO: Add typing.
-const UnstyledOption = ({ className, data, innerProps, isFocused }) => (
-	<div {...{ className, ...innerProps }} data-hasFocus={isFocused}>
+const UnstyledOption = ({ className, data, innerProps, isDisabled, isFocused }) => (
+	<div {...{ className, ...innerProps }} data-hasFocus={isFocused} disabled={isDisabled}>
 		{data.icon}
 		<MainContent>
 			<MainLabel>{data.label}</MainLabel>
@@ -38,6 +38,7 @@ const UnstyledOption = ({ className, data, innerProps, isFocused }) => (
 
 export const Option = styled(UnstyledOption)`
 	align-items: center;
+	color: ${({ theme }) => theme.text.primary};
 	display: flex;
 	flex-wrap: nowrap;
 	padding: 8px 12px;
@@ -54,6 +55,11 @@ export const Option = styled(UnstyledOption)`
 	}
 
 	&[aria-selected]:not([aria-selected="false"]) {}
+
+	&[disabled]:not([disabled="false"]) {
+		color: ${({ theme }) => theme.text.secondary};
+		pointer-events: none;
+	}
 
 	& > img {
 		border-radius: 50%;
