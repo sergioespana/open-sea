@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { debounce, find, get, map } from 'lodash';
+import { debounce, find, get, inRange, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -10,9 +10,10 @@ import { Link } from '../../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
 import Select, { AsyncSelect, SelectOption } from '../../../components/Select';
 import { Table, TableCellWrapper } from '../../../components/Table';
+import { getCurrentUser } from '../../../stores/helpers';
 
 const options = [
-	{ label: 'Owner', value: 100 },
+	{ label: 'Owner', value: 100, isDisabled: true },
 	{ label: 'Administrator', value: 30 },
 	{ label: 'Auditor', value: 20 },
 	{ label: 'Viewer', value: 10 }
@@ -38,6 +39,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		const { role, showModal, userId } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
 		const users = organisation._users;
+		const curUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
 
 		return (
 			<React.Fragment>
@@ -49,7 +51,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						<Link key={`/${orgId}/settings`} to={`/${orgId}/settings`}>Settings</Link>
 					]}
 				>
-					<Button appearance="default" onClick={this.toggleModal}>Add people</Button>
+					{inRange(curUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add people</Button>}
 				</Header>
 				<Container style={{ display: 'block' }}>
 					<Table
@@ -69,20 +71,24 @@ export default class OrganisationSettingsPeople extends Component<any> {
 							{
 								key: 'access',
 								label: 'Role',
-								format: (access) => (
-									<Select
-										onChange={console.log}
-										options={options}
-										placeholder="Role"
-										value={access}
-									/>
-								)
+								format: (access, { _id }) => inRange(curUserAccess, 30, 101)
+									? (
+										<Select
+											isDisabled={access === 100}
+											onChange={this.onSelect(_id)}
+											options={options}
+											placeholder="Role"
+											value={access}
+										/>
+									)
+									: <span>{get(find(options, { value: access }), 'label')}</span>
 							},
 							{
-								key: '',
+								key: 'access',
 								label: 'Actions',
 								labelHidden: true,
-								format: () => <a>Remove</a>
+								hidden: !inRange(curUserAccess, 30, 101),
+								format: (access, { _id }) => access < 100 && <a onClick={this.onRemove(_id)}>Remove</a>
 							}
 						]}
 						data={users}
@@ -99,8 +105,8 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						</ModalHeader>
 						<ModalSection>
 							<p>
-								Please note that searching for a user currently is not supported. Typing in the box below will always yield
-								"no results".
+								Please note that searching for a user currently is not supported. Typing in the box below will result in
+								indefinite loading and no results.
 							</p>
 							<AsyncSelect
 								autoFocus
@@ -138,13 +144,45 @@ export default class OrganisationSettingsPeople extends Component<any> {
 	}
 
 	private toggleModal = () => this.setState(toggleModal);
-	private onSubmit = (event: SyntheticEvent<HTMLFormElement>) => event.preventDefault();
+	private onSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const { state, props } = this;
+		const { match: { params: { orgId } }, OrganisationsStore } = props;
+		const { role, userId } = state;
+
+		const onSuccess = () => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			this.toggleModal();
+		};
+
+		const onError = (error) => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			// TODO: Show flag
+			console.log('failed', error);
+			this.toggleModal();
+		};
+
+		return OrganisationsStore.updateOrAddAccess(orgId, userId, role, { onSuccess, onError });
+	}
 	private toOptions = (allUserCol, orgUserCol): SelectOption[] => map(allUserCol, ({ _id, avatar, name }) => ({
 		value: _id,
 		icon: <img src={avatar} />,
 		label: name,
 		subLabel: find(orgUserCol, { _id }) ? 'Already added to the organisation' : undefined
 	}))
+	private onSelect = (userId: string) => ({ value }) => {
+		const { props } = this;
+		const { match: { params: { orgId } }, OrganisationsStore } = props;
+
+		return OrganisationsStore.updateOrAddAccess(orgId, userId, value);
+	}
+	private onRemove = (userId: string) => () => {
+		const { props } = this;
+		const { match: { params: { orgId } }, OrganisationsStore } = props;
+
+		return OrganisationsStore.removeAccess(orgId, userId);
+	}
 }
 
 const toggleModal = (prevState: State) => ({ showModal: !prevState.showModal });
