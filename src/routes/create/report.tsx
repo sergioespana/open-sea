@@ -79,7 +79,7 @@ class CreateReport extends Component<any, State> {
 						onBlur={this.onURLBlur}
 						onChange={linkState(this, 'url')}
 						required
-						prefix={`${window.location.hostname}/${organisation}${organisation !== '' ? '/' : ''}`}
+						prefix={`${organisation}${organisation !== '' ? '/' : ''}`}
 						type="text"
 						value={url}
 					/>
