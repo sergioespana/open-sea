@@ -104,6 +104,16 @@ export const removeDoc = async (path: string, callbacks: { onError?: Function, o
 	}
 };
 
+export const docExists = async (path: string) => {
+	try {
+		return (await db.doc(path).get()).exists;
+	} catch (error) {
+		// FIXME: Saying a document does not exist when we get an error is
+		// BAD. Instead of catching permission errors here, fix permissions.
+		return false;
+	}
+}
+
 export const signInWithEmailAndPassword = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
 
 export const signUpWithEmailAndPassword = (email, pass) => auth.createUserWithEmailAndPassword(email, pass);

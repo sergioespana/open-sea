@@ -73,7 +73,7 @@ class CreateReport extends Component<any, State> {
 					<Input
 						appearance={(!isBusy && reportUrlTaken) ? 'error' : 'default'}
 						disabled={isBusy}
-						help={(!isBusy && reportUrlTaken) && 'A report with this ID already exists. Please change it or pick another report name.'}
+						help={(!isBusy && reportUrlTaken) && 'A report with this ID already exists. Please change it or pick another name.'}
 						isCompact
 						label="URL"
 						onBlur={this.onURLBlur}

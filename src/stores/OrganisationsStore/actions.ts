@@ -106,10 +106,20 @@ export const actions = (state) => {
 		FirebaseService.removeDoc(`organisations/${orgId}/users/${userId}`, callbacks);
 	};
 
+	const checkAvailability = (orgId: string) => FirebaseService.docExists(`organisations/${orgId}`);
+
+	const create = (org: Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _id } = org;
+		const organisation = { ...removePrivates(org), created: new Date(), createdBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_id}`, organisation, callbacks);
+	};
+
 	return {
 		...organisations,
 		addOrganisation,
 		addReport,
+		checkAvailability,
+		create,
 		removeAccess,
 		removeOrganisation,
 		updateOrganisation,

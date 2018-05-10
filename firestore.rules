@@ -1,6 +1,10 @@
 service cloud.firestore {
 	match /databases/{database}/documents {
 		// TODO: Add access level argument to currentUserHasAccess
+		
+		function orgNotExists(orgId) {
+			return exists(/databases/$(database)/documents/organisations/$(orgId)) == false;
+		}
 
 		function currentUserHasAccess(orgId) {
 			return exists(/databases/$(database)/documents/organisations/$(orgId)/users/$(request.auth.uid));
@@ -19,7 +23,7 @@ service cloud.firestore {
 		}
 
 		match /organisations/{orgId} {
-			allow read: if isPublic(orgId) || currentUserHasAccess(orgId);
+			allow read: if orgNotExists(orgId) || isPublic(orgId) || currentUserHasAccess(orgId);
 			allow create: if isAuthed();
 			allow update: if currentUserHasAccess(orgId);
 			allow delete: if currentUserHasAccess(orgId);
