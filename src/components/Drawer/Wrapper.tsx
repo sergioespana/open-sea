@@ -19,6 +19,6 @@ export default styled(UnstyledWrapper)`
 	z-index: 10;
 
 	h3 {
-		margin-top: 24px;
+		margin-top: 24px !important;
 	}
 `;

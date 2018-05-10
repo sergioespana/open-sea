@@ -1,6 +1,8 @@
 import { Button as NavButton } from '../Navigation/Button';
 
 export default NavButton.extend`
+	flex: 0 0 40px;
+
 	&,
 	&[aria-current]:not([aria-current="false"]) {
 		background-color: #ffffff;

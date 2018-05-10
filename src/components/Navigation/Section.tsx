@@ -68,6 +68,7 @@ export const NavigationSection = styled<SectionProps, 'section'>('section') `
 
 export const NavigationContentHeader = styled.header`
 	display: flex;
+	flex: 0 0 64px;
 	flex-direction: column;
 	height: 64px;
 	justify-content: center;
