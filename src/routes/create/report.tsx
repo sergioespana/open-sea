@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { find, get, isUndefined, map } from 'lodash';
+import { filter, find, get, isUndefined, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import { parse } from 'query-string';
@@ -11,6 +11,7 @@ import Button, { LinkButton } from '../../components/Button';
 import Form from '../../components/Form';
 import Input from '../../components/NewInput';
 import Select from '../../components/Select';
+import { getCurrentUser } from '../../stores/helpers';
 
 interface State {
 	name: string;
@@ -30,9 +31,11 @@ class CreateReport extends Component<any, State> {
 	render () {
 		const { location, OrganisationsStore, state } = this.props;
 		const { name, organisation, url } = this.state;
-		const { isBusy, organisations } = state;
+		const { isBusy } = state;
+		const curUser = getCurrentUser(state);
+		const organisations = hasAccess(curUser, state.organisations);
 		const paramOrganisation = get(parse(location.search), 'organisation');
-		const reportUrlTaken = !isUndefined(find(get(OrganisationsStore.findById(organisation || paramOrganisation), '_reports'), { _repId: url }));
+		const reportUrlTaken = organisation === '' ? false : !isUndefined(find(get(OrganisationsStore.findById(organisation || paramOrganisation), '_reports'), { _repId: url }));
 		const preventSubmit = reportUrlTaken || isBlank(name) || isBlank(organisation) || isBlank(url) || isBusy;
 
 		return (
@@ -123,3 +126,4 @@ export default withRouter(CreateReport);
 const isBlank = (str: string) => str === '';
 const toOptions = (orgCol) => map(orgCol, ({ _id, avatar, name }) => ({ value: _id, icon: <img src={avatar} />, label: name }));
 const toReport = ({ name, organisation: _orgId, url: _repId }: State) => ({ name, _orgId, _repId, _id: `${_orgId}/${_repId}` });
+const hasAccess = (curUser, orgCol) => filter(orgCol, ({ _users }) => get(find(_users, { _id: curUser._id }), 'access') >= 20);
