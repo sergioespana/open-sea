@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { find, get, inRange, map } from 'lodash';
+import { find, get, inRange, isUndefined, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -66,8 +66,8 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 								key: '',
 								label: 'Actions',
 								labelHidden: true,
-								hidden: !inRange(curUserAccess, 30, 101),
-								format: () => <a>Remove</a>
+								hidden: organisations.length <= 1 || !inRange(curUserAccess, 30, 101),
+								format: (_, { _id }) => <a onClick={this.onRemove(_id)}>Remove</a>
 							}
 						]}
 						data={organisations}
@@ -114,13 +114,43 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 	}
 
 	private toggleModal = () => this.setState(toggleModal);
-	private onSubmit = (event: SyntheticEvent<HTMLFormElement>) => event.preventDefault();
-	private toOptions = (allOrgCol, netOrgCol): SelectOption[] => map(allOrgCol, ({ _id, avatar, name }) => ({
-		value: _id,
-		icon: <img src={avatar} />,
-		label: name,
-		subLabel: find(netOrgCol, { _id }) ? 'Already part of the network' : undefined
-	}))
+	private onSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const { state, props } = this;
+		const { match: { params: { netId } }, OrganisationsStore } = props;
+		const { organisation: orgId } = state;
+
+		const onSuccess = () => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			this.toggleModal();
+		};
+
+		const onError = (error) => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			// TODO: Show flag
+			console.log('failed', error);
+			this.toggleModal();
+		};
+
+		return OrganisationsStore.addOrganisation(netId, orgId, { onSuccess, onError });
+	}
+	private toOptions = (allOrgCol, netOrgCol): SelectOption[] => map(allOrgCol, ({ _id, avatar, name }) => {
+		const alreadyInNetwork = !isUndefined(find(netOrgCol, { _id }));
+		return {
+			value: _id,
+			icon: <img src={avatar} />,
+			isDisabled: alreadyInNetwork,
+			label: name,
+			subLabel: alreadyInNetwork ? 'Already part of the network' : undefined
+		};
+	})
+	private onRemove = (orgId: string) => () => {
+		const { props } = this;
+		const { match: { params: { netId } }, OrganisationsStore } = props;
+
+		return OrganisationsStore.removeOrganisation(netId, orgId);
+	}
 }
 
 const toggleModal = (prevState: State) => ({ showModal: !prevState.showModal });

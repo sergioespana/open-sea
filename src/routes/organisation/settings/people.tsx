@@ -12,6 +12,7 @@ import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../componen
 import Select, { AsyncSelect, SelectOption } from '../../../components/Select';
 import { Table, TableCellWrapper } from '../../../components/Table';
 import { getCurrentUser } from '../../../stores/helpers';
+import { isUndefined } from 'util';
 
 const options = [
 	{ label: 'Owner', value: 100, isDisabled: true },
@@ -171,12 +172,17 @@ export default class OrganisationSettingsPeople extends Component<any> {
 
 		return OrganisationsStore.updateOrAddAccess(orgId, userId, role, { onSuccess, onError });
 	}
-	private toOptions = (allUserCol, orgUserCol): SelectOption[] => map(allUserCol, ({ _id, avatar, name }) => ({
-		value: _id,
-		icon: <img src={avatar} />,
-		label: name,
-		subLabel: find(orgUserCol, { _id }) ? 'Already added to the organisation' : undefined
-	}))
+	private toOptions = (allUserCol, orgUserCol): SelectOption[] => map(allUserCol, ({ _id, avatar, name }) => {
+		const alreadyInOrganisation = !isUndefined(find(orgUserCol, { _id }));
+
+		return {
+			value: _id,
+			icon: <img src={avatar} />,
+			isDisabled: alreadyInOrganisation,
+			label: name,
+			subLabel: alreadyInOrganisation ? 'Already added to the organisation' : undefined
+		};
+	})
 	private onSelect = (userId: string) => ({ value }) => {
 		const { props } = this;
 		const { match: { params: { orgId } }, OrganisationsStore } = props;

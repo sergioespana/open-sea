@@ -32,16 +32,18 @@ export const actions = (state) => {
 		FirebaseService.startListening(`organisations/${orgId}/users`, {}, { onAdded: onOrganisationUser(orgId, 'added'), onRemoved: onOrganisationUser(orgId, 'removed') });
 	};
 
-	const onNetworkOrganisation = (netId: string) => (organisation: Organisation) => {
+	const onNetworkOrganisation = (netId: string, action: 'added' | 'removed') => (organisation: any) => {
 		const network = organisations.findById(netId);
-		collection(network._organisations).updateOrInsert(organisation);
 
-		startListening(organisation._id);
+		if (action === 'added') {
+			collection(network._organisations).updateOrInsert(organisation);
+			startListening(organisation._id);
+		} else collection(network._organisations).remove(organisation);
 	};
 
 	const onOrganisation = (orgId: string) => (organisation: Organisation) => {
 		organisations.updateOrInsert(organisation);
-		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, { onAdded: onNetworkOrganisation(orgId) }); // TODO: Handle removed organisations
+		if (organisation.isNetwork) FirebaseService.startListening(`organisations/${orgId}/organisations`, {}, { onAdded: onNetworkOrganisation(orgId, 'added'), onRemoved: onNetworkOrganisation(orgId, 'removed') });
 	};
 
 	const onOrganisationReport = (_orgId: string, action: 'added' | 'removed') => (report: any) => {
@@ -74,6 +76,18 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, report, callbacks);
 	};
 
+	const addOrganisation = (net: string | Organisation, org: string | Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const netId = isString(net) ? net : net._id;
+		const orgId = isString(org) ? org : org._id;
+		FirebaseService.saveDoc(`organisations/${netId}/organisations/${orgId}`, { added: new Date() }, callbacks);
+	};
+
+	const removeOrganisation = (net: string | Organisation, org: string | Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const netId = isString(net) ? net : net._id;
+		const orgId = isString(org) ? org : org._id;
+		FirebaseService.removeDoc(`organisations/${netId}/organisations/${orgId}`, callbacks);
+	};
+
 	const updateOrganisation = (org: Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _id } = org;
 		const organisation = { ...removePrivates(org), updated: new Date(), updatedBy: getCurrentUser(state)._id };
@@ -94,8 +108,10 @@ export const actions = (state) => {
 
 	return {
 		...organisations,
+		addOrganisation,
 		addReport,
 		removeAccess,
+		removeOrganisation,
 		updateOrganisation,
 		updateOrAddAccess
 	};
