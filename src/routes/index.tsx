@@ -74,7 +74,7 @@ class SearchDrawer extends Component<any> {
 				{networks.length > 0 && <h3>Networks</h3>}
 				{networks.length > 0 && map(networks, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
 				{users.length > 0 && <h3>Users</h3>}
-				{users.length > 0 && map(users, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
+				{users.length > 0 && map(users, ({ _id, avatar, name }) => <DrawerButton to={`/dashboard/people/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
 			</Drawer>
 		);
 	}
