@@ -1,10 +1,10 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
 import { isNumber, round } from 'lodash';
-import { eval as evaluate } from 'mathjs';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { removePrivates } from '../helpers';
+import math from '../math';
 
 const ajv = new AJV({
 	coerceTypes: true,
@@ -13,7 +13,7 @@ const ajv = new AJV({
 
 export const actions = (state) => {
 
-	const compute = (value: string, data: object) => roundIfNumber(evaluate(value, data), 2);
+	const compute = (value: string, data: object) => roundIfNumber(math.eval(value, data), 2);
 
 	const roundIfNumber = (val: any, precision?: number) => isNumber(val) ? round(val, precision) : val;
 
