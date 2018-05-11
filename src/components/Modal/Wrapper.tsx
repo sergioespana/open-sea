@@ -13,10 +13,14 @@ export default styled(UnstyledWrapper)`
 	display: flex;
 	flex-direction: column;
 	left: 0;
+	opacity: ${({ animationState }) => animationState === 'exited' || animationState === 'exiting' ? 0 : 1};
 	pointer-events: none;
 	position: fixed;
 	right: 0;
+	transform: translate3d(0, ${({ animationState }) => animationState === 'exited' || animationState === 'exiting' ? '100px' : 0}, 0);
+	transition: all 200ms ease;
 	top: 0;
+	will-change: opacity, transform;
 	z-index: 10;
 
 	& > article {

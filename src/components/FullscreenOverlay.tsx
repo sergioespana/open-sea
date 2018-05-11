@@ -8,8 +8,10 @@ export default styled.div`
 	display: flex;
 	justify-content: center;
 	left: 0;
+	opacity: ${({ animationState }) => animationState === 'exited' || animationState === 'exiting' ? 0 : 1};
 	position: fixed;
 	right: 0;
 	top: 0;
+	transition: opacity 200ms ease;
 	z-index: 10;
 `;

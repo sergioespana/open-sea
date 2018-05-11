@@ -15,6 +15,8 @@ export default styled(UnstyledWrapper)`
 	left: 0;
 	position: fixed;
 	top: 0;
+	transform: translate3d(${({ animationState }) => animationState === 'exited' || animationState === 'exiting' ? '-100%' : 0}, 0, 0);
+	transition: transform 200ms ease;
 	width: ${({ width }) => width || 304}px;
 	z-index: 10;
 
