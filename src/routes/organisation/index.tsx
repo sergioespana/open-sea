@@ -18,10 +18,7 @@ class OrganisationRoutes extends Component<any> {
 	componentWillMount () {
 		const { match: { params: { orgId } }, OrganisationsStore, state } = this.props;
 		const { isAuthed } = state;
-		if (!isAuthed) {
-			console.log(`Organisation page will show but we're not authed, load only this org`);
-			OrganisationsStore.startListening(orgId);
-		} else console.log(`Organisation page will load and we're authed so no biggie`);
+		if (!isAuthed) OrganisationsStore.startListening(orgId);
 	}
 
 	render () {
