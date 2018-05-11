@@ -1,7 +1,9 @@
+import differenceInHours from 'date-fns/difference_in_hours';
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
+import format from 'date-fns/format';
 import { filter, find, get } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
 import React from 'react';
 import MdLock from 'react-icons/lib/md/lock';
 import { LinkButton } from '../../components/Button';
@@ -57,7 +59,7 @@ const DashboardNetworks = inject(app('state'))(observer((props) => {
 						{
 							label: 'Last updated',
 							value: ({ created, updated }) => updated || created,
-							format: (updated) => moment().diff(updated) > 86400000 ? moment(updated).format('DD-MM-YYYY') : moment(updated).fromNow()
+							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
 						},
 						{
 							label: 'Organisations',
