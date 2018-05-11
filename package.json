@@ -7,7 +7,7 @@
 	"license": "GPL-3.0",
 	"author": "Niels Bik <hey@nielsbik.nl> (https://nielsbik.nl)",
 	"main": "./dist/index.js",
-	"repository": "bitbucket:nielsrowinbik/open-sea",
+	"repository": "nielsrowinbik/open-sea",
 	"scripts": {
 		"prebuild": "yarn clean",
 		"build": "webpack --mode production",
