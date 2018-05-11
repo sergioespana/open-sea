@@ -286,7 +286,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 
 const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, state, UIStore } = props;
-	const { isLoading, isNavExpanded } = state;
+	const { isAuthed, isLoading, isNavExpanded } = state;
 	const organisation = OrganisationsStore.findById(orgId) || {};
 	const curUser = getCurrentUser(state) || {};
 	const currentUserAccess = getCurrentUserAccess(state, organisation);
@@ -407,19 +407,13 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							<MenuOption>Privacy Policy</MenuOption>
 						</Menu>
 					)
-				},
+				}
+			].concat(isAuthed ? [
 				{
 					element: (
 						<Menu
 							position="bottom-right"
-							trigger={(
-								<NavButton
-									appearance={isNavExpanded ? 'default' : 'light'}
-									round
-								>
-									{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}
-								</NavButton>
-							)}
+							trigger={<NavButton round>{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}</NavButton>}
 						>
 							<h3>Your openSEA</h3>
 							<MenuOption to={`/dashboard/people/${curUser._id}`}>Profile</MenuOption>
@@ -428,7 +422,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 						</Menu>
 					)
 				}
-			]}
+			] : [])}
 			loading={isLoading}
 			mainIcon={<MdHome />}
 			mainIconHref="/"
