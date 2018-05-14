@@ -108,8 +108,8 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</React.Fragment>
 	);
 
-	const model = get(last(withData), 'model');
-	const items = get(last(withData), 'model.reportItems');
+	const model = get(organisation.isNetwork ? organisation : last(withData), 'model');
+	const items = get(model, 'reportItems');
 
 	return (
 		<React.Fragment>

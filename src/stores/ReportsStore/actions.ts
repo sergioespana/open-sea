@@ -1,6 +1,7 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
 import { isNumber, round } from 'lodash';
+import { Report } from '../../domain/Organisation';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { removePrivates } from '../helpers';
@@ -24,13 +25,16 @@ export const actions = (state) => {
 		return { accepted: false, errors: ajv.errors };
 	};
 
-	const addModel = (mod: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+	const addModel = (mod: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = mod;
 		const model = { ...removePrivates(mod) };
-		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model }, callbacks);
+		// Add model to a report or to an organisation (only networks will call this function) depending
+		// on whether _repId is set within the model.
+		if (_repId) FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model }, callbacks);
+		else FirebaseService.saveDoc(`organisations/${_orgId}`, { model }, callbacks);
 	};
 
-	const addData = (obj: object, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = obj;
 		const data = { ...removePrivates(obj) };
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data }, callbacks);

@@ -34,7 +34,7 @@ class OrganisationReportOverview extends Component<any, State> {
 		const { showModal } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-		const model = get(report, 'model');
+		const model = get(organisation.isNetwork ? organisation : report, 'model');
 		const data = get(report, 'data');
 
 		const PageHead = (

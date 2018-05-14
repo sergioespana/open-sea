@@ -358,6 +358,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					to: `/${orgId}/settings/details`
 				},
 				{
+					hidden: !inRange(currentUserAccess, 30, 101),
+					label: 'Model',
+					to: `/${orgId}/settings/model`
+				},
+				{
 					label: 'People',
 					to: `/${orgId}/settings/people`
 				},
