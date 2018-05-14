@@ -60,6 +60,7 @@ export const Button = styled<ButtonProps, any>((props: ButtonProps) => createEle
 		flex: 0 0 ${({ large, round }) => round ? 32 : large ? 40 : 24}px;
 		height: ${({ large, round }) => round ? 32 : large ? 40 : 24}px;
 		margin: ${({ round }) => round ? '0' : '0 8px 0 0'};
+		object-fit: contain;
 		width: ${({ large, round }) => round ? 32 : large ? 40 : 24}px;
 	}
 `;
