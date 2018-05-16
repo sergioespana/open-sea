@@ -52,7 +52,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						label: 'Last updated',
 						hidden: true,
 						value: ({ created, updated }) => created || updated,
-						format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+						format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 					}
 				]}
 				data={reports}

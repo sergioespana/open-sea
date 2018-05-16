@@ -62,7 +62,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 							{
 								key: 'added',
 								label: 'Added',
-								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 							},
 							{
 								key: '',

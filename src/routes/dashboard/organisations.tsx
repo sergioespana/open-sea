@@ -73,7 +73,7 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 						{
 							label: 'Last updated',
 							value: ({ created, updated }) => updated || created,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 						},
 						{
 							label: 'Reports',
