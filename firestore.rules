@@ -12,6 +12,10 @@ service cloud.firestore {
 			return resource.data.isPublic == true;
 		}
 
+		function isNetwork(orgId) {
+			return resource.data.isNetwork == true;
+		}
+
 		function isAuthed() {
 			return request.auth.uid != null;
 		}
@@ -33,7 +37,7 @@ service cloud.firestore {
 
 			match /reports/{repId} {
 				allow read;
-				allow write: if currentUserHasAccess(orgId, 20);
+				allow write: if currentUserHasAccess(orgId, 20) && !isNetwork(orgId);
 			}
 
 			match /users/{uid} {

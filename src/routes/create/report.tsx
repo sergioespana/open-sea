@@ -1,5 +1,5 @@
 import linkState from 'linkstate';
-import { filter, find, get, isUndefined, map } from 'lodash';
+import { filter, find, get, isUndefined, map, reject } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import { parse } from 'query-string';
@@ -38,7 +38,7 @@ class CreateReport extends Component<any, State> {
 		const { name, organisation, url } = this.state;
 		const { isBusy } = state;
 		const curUser = getCurrentUser(state);
-		const organisations = hasAccess(curUser, state.organisations);
+		const organisations = hasAccess(curUser, reject(state.organisations, { isNetwork: true }));
 		const paramOrganisation = get(parse(location.search), 'organisation');
 		const reportUrlTaken = organisation === '' ? false : !isUndefined(find(get(OrganisationsStore.findById(organisation), '_reports'), { _repId: url }));
 		const preventSubmit = reportUrlTaken || isBlank(name) || isBlank(organisation) || isBlank(url) || isBusy;
