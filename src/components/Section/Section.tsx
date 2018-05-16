@@ -1,11 +1,14 @@
 import styled from 'styled-components';
 
 interface SectionProps {
+	maxWidth?: number;
 	width?: number;
 }
 
 export default styled<SectionProps, 'section'>('section')`
 	flex: ${({ width }) => width ? `0 0 ${width}px` : 'auto'};
+	margin: 0 auto;
+	max-width: ${({ maxWidth }) => maxWidth ? `${maxWidth}px` : 'none'};
 	padding: 20px 20px 100px;
 
 	&:first-child {

@@ -115,7 +115,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		<React.Fragment>
 			{PageHead}
 			<Container>
-				<Section>
+				<Section maxWidth={700}>
 					<ReportGrid>
 						{map(items, (item) => {
 							const chart = {

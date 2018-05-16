@@ -135,7 +135,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			<React.Fragment>
 				{PageHead}
 				<Container>
-					<Section>
+					<Section maxWidth={700}>
 						<ReportGrid>
 							{map(items, (item) => {
 								// Show chart if the chart object is set. Prefer chart
