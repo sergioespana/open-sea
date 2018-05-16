@@ -68,8 +68,8 @@ class NetworkSettingsModel extends Component<any> {
 							<h1>This page is in development</h1>
 							<p>
 								Your network already has a model. In a later version, you will be able to visualise and
-								change the model right here on this page, however for now you may only
-								<LinkInput accept=".yml" onChange={this.onFileChange}> upload a new model</LinkInput>.
+								change the model right here on this page, however for now you may
+								only <LinkInput accept=".yml" onChange={this.onFileChange}>upload a new model</LinkInput>.
 							</p>
 						</EmptyState>
 					</Section>
