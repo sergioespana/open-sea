@@ -1,10 +1,10 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
-import { isNumber, round } from 'lodash';
+import { get, isNumber, round } from 'lodash';
 import { Report } from '../../domain/Organisation';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
-import { removePrivates } from '../helpers';
+import { getCurrentUser, removePrivates } from '../helpers';
 import math from '../math';
 
 const ajv = new AJV({
@@ -30,14 +30,14 @@ export const actions = (state) => {
 		const model = { ...removePrivates(mod) };
 		// Add model to a report or to an organisation (only networks will call this function) depending
 		// on whether _repId is set within the model.
-		if (_repId) FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model }, callbacks);
-		else FirebaseService.saveDoc(`organisations/${_orgId}`, { model }, callbacks);
+		if (_repId) FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
+		else FirebaseService.saveDoc(`organisations/${_orgId}`, { model, updated: new Date() }, callbacks);
 	};
 
 	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = obj;
 		const data = { ...removePrivates(obj) };
-		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data }, callbacks);
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
 	};
 
 	return {
