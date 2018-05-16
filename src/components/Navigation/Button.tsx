@@ -63,6 +63,14 @@ export const Button = styled<ButtonProps, any>((props: ButtonProps) => createEle
 		object-fit: contain;
 		width: ${({ large, round }) => round ? 32 : large ? 40 : 24}px;
 	}
+
+	& > span {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		word-wrap: normal;
+	}
 `;
 
 const BackButtonContainer = styled.div`
