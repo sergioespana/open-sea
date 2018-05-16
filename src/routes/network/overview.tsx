@@ -1,4 +1,4 @@
-import { get, inRange } from 'lodash';
+import { get, inRange, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -9,6 +9,7 @@ import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
 import { Section } from '../../components/Section';
+import OrganisationGrid, { UserGridItem as OrganisationGridItem } from '../../components/UserGrid';
 import { getCurrentUserAccess } from '../../stores/helpers';
 
 const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
@@ -82,7 +83,23 @@ const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 		<React.Fragment>
 			{PageHead}
 			<Container>
-				<Section />
+				<Section>
+					<OrganisationGrid>
+						{map(organisations, ({ _id }) => {
+							const { avatar, name } = OrganisationsStore.findById(_id);
+							return (
+								<OrganisationGridItem
+									appearance="subtle"
+									key={_id}
+									to={`/${_id}`}
+								>
+									<img src={avatar} />
+									<span>{name}</span>
+								</OrganisationGridItem>
+							);
+						})}
+					</OrganisationGrid>
+				</Section>
 			</Container>
 		</React.Fragment>
 	);
