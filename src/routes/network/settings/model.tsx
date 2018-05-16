@@ -10,7 +10,7 @@ import { Link } from '../../../components/Link';
 import { LinkInput } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 
-@inject(app('OrganisationsStore', 'ReportsStore'))
+@inject(app('OrganisationsStore', 'ReportsStore', 'UIStore'))
 @observer
 class NetworkSettingsModel extends Component<any> {
 
@@ -103,10 +103,11 @@ class NetworkSettingsModel extends Component<any> {
 	}
 	private validateAndStoreModel = (json) => {
 		const { history, match: { params: { netId } }, ReportsStore, UIStore } = this.props;
-		const { accepted } = ReportsStore.validateModel(json);
+		const { accepted, errors } = ReportsStore.validateModel(json);
 
 		if (!accepted) {
 			// TODO: Show first error in errors object in flag description.
+			errors.forEach(console.log);
 			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
 			this.setState({ showModal: false });
 		} else {
