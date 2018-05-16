@@ -1,10 +1,8 @@
-export interface Indicator {
-	value: string;
+export interface Model {
+	certifications: any;
+	indicators: any;
+	metrics: any;
 }
-
-export interface Metric {}
-
-export interface Model {}
 
 export interface Report {
 	_id: string;
@@ -25,5 +23,6 @@ export interface Organisation {
 	description: string;
 	isPublic?: boolean;
 	isNetwork?: boolean;
+	model: Model;
 	name: string;
 }
