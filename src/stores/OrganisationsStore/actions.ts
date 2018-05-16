@@ -1,4 +1,4 @@
-import { isString, map } from 'lodash';
+import { filter, find, isString, map } from 'lodash';
 import { reaction } from 'mobx';
 import { Organisation, Report } from '../../domain/Organisation';
 import { User } from '../../domain/User';
@@ -114,12 +114,18 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_id}`, organisation, callbacks);
 	};
 
+	const findParentNetworkById = (orgId: string) => {
+		const networks = filter(state.organisations, { isNetwork: true });
+		return find(networks, (network: Organisation) => find(network._organisations, { _id: orgId }));
+	};
+
 	return {
 		...organisations,
 		addOrganisation,
 		addReport,
 		checkAvailability,
 		create,
+		findParentNetworkById,
 		removeAccess,
 		removeOrganisation,
 		startListening,

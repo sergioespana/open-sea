@@ -1,4 +1,4 @@
-import { filter, get, isEmpty, isEqual, map, set, toNumber } from 'lodash';
+import { get, isEmpty, isEqual, isNumber, map, set, toNumber } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -35,13 +35,13 @@ class OrganisationReportData extends Component<any> {
 	render () {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, state } = this.props;
 		const organisation = OrganisationsStore.findById(orgId);
+		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
 
 		if (!report) return <Redirect to={`/${orgId}/reports`} />;
 
 		const { data } = this.state;
-		const model = get(report, 'model');
-		const categories = get(model, 'categories');
+		const model = get(parentNetwork ? parentNetwork : report, 'model');
 		const PageHead = (
 			<Header
 				title="Data"
@@ -77,15 +77,16 @@ class OrganisationReportData extends Component<any> {
 				{PageHead}
 				<Container>
 					<Form onSubmit={this.onSubmit}>
-						{isEmpty(categories)
-							? renderFields(this, model.metrics, data)
-							: map(categories, (category) => (
-								<React.Fragment>
-									<h3>{category}</h3>
-									{renderFields(this, filter(model.metrics, { category }), data)}
-								</React.Fragment>
-							))
-						}
+						{map(model.metrics, ({ name, ...rest }, key) => (
+							<Input
+								isCompact
+								label={name}
+								multiple={rest.type === 'text'}
+								onChange={linkDataInput(this, `data.${key}`)}
+								value={get(data, key)}
+								{...rest}
+							/>
+						))}
 						<FormActions>
 							<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
 							<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>
@@ -119,22 +120,11 @@ class OrganisationReportData extends Component<any> {
 	}
 }
 
-const renderFields = (component: Component, items: any[], data: object) => map(items, ({ name, ...rest }, key) => (
-	<Input
-		isCompact
-		label={name}
-		multiple={rest.type === 'text'}
-		onChange={linkDataInput(component, `data.${key}`)}
-		value={get(data, key)}
-		{...rest}
-	/>
-));
-
 const linkDataInput = (component: Component, key: string, eventPath = 'target.value') => (event) => {
-	const value = get(event, eventPath);
-	const final = value !== '' ? toNumber(value) : value;
+	const inputValue = get(event, eventPath);
+	const value = isNumber(inputValue) ? toNumber(inputValue) : inputValue;
 	const componentState = { ...component.state };
-	const newState = set(componentState, key, final);
+	const newState = set(componentState, key, value);
 	return component.setState(newState);
 };
 

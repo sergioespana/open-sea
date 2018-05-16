@@ -33,8 +33,9 @@ class OrganisationReportOverview extends Component<any, State> {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = this.props;
 		const { showModal } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
+		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-		const model = get(organisation.isNetwork ? organisation : report, 'model');
+		const model = get(parentNetwork || report, 'model');
 		const data = get(report, 'data');
 
 		const PageHead = (
@@ -58,6 +59,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			</Header>
 		);
 
+		// TODO: If this is part of an organisation, show a different error.
 		if (isEmpty(model)) {
 			const recentModel = get(findLast(organisation._reports, 'model'), 'model');
 
@@ -112,7 +114,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			</React.Fragment>
 		);
 
-		const items = get(report, 'model.reportItems');
+		const items = get(model, 'reportItems');
 
 		if (isEmpty(items)) return (
 			<React.Fragment>
@@ -164,7 +166,10 @@ class OrganisationReportOverview extends Component<any, State> {
 								if (item.value) return (
 									<ReportGridItem>
 										<h3>{item.name}</h3>
-										<p>{ReportsStore.compute(model.indicators[item.value].value, data)}</p>
+										<p>
+											{ReportsStore.compute(model.indicators[item.value].value, data)}
+											{model.indicators[item.value].type === 'percentage' && '%'}
+										</p>
 									</ReportGridItem>
 								);
 								// No value or chart specified, don't show the item.

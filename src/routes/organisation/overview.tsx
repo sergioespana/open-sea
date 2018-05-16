@@ -19,6 +19,7 @@ import { Table } from '../../components/Table';
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.findById(orgId) || {};
+	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
 
@@ -108,7 +109,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</React.Fragment>
 	);
 
-	const model = get(organisation.isNetwork ? organisation : last(withData), 'model');
+	const model = get(parentNetwork || last(withData), 'model');
 	const items = get(model, 'reportItems');
 
 	return (
