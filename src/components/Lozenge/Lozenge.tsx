@@ -40,6 +40,6 @@ export default styled<Props, 'span'>('span')`
 	padding: 3px 4px;
 	text-overflow: ellipsis;
 	text-transform: uppercase;
-	vertical-align: baseline;
+	vertical-align: middle;
 	white-space: nowrap;
 `;
