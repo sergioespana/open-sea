@@ -18,6 +18,7 @@ export interface Report {
 
 export interface Organisation {
 	_id: string;
+	_organisations: Organisation[];
 	_reports: Report[];
 	avatar: string;
 	created: Date;
