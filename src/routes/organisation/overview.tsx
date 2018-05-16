@@ -1,7 +1,7 @@
 import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
-import { filter, get, isUndefined, last, map } from 'lodash';
+import { filter, flatten, get, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -133,6 +133,10 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 										}] : []
 								}
 							};
+
+							const dataTypes = flatten(map(chart.data.datasets, (set) => map(set.values, (value) => typeof value)));
+							// Don't render a graph when there's string data in the datasets.
+							if (dataTypes.includes('string')) return null;
 
 							return (
 								<ReportGridItem key={item.name}>
