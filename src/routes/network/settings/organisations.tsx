@@ -2,7 +2,7 @@ import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import linkState from 'linkstate';
-import { find, get, inRange, isUndefined, map } from 'lodash';
+import { find, findLastIndex, get, inRange, isNumber, isUndefined, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -10,6 +10,7 @@ import { Button, ButtonGroup } from '../../../components/Button';
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
+import { Lozenge } from '../../../components/Lozenge';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
 import Select, { SelectOption } from '../../../components/Select';
 import { Table, TableCellWrapper } from '../../../components/Table';
@@ -20,7 +21,7 @@ interface State {
 	showModal: boolean;
 }
 
-@inject(app('AuthStore', 'OrganisationsStore'))
+@inject(app('AuthStore', 'OrganisationsStore', 'ReportsStore'))
 @observer
 export default class NetworkSettingsOrganisations extends Component<any> {
 	readonly state: State = {
@@ -29,7 +30,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 	};
 
 	render () {
-		const { match: { params: { netId } }, OrganisationsStore, state } = this.props;
+		const { match: { params: { netId } }, OrganisationsStore, ReportsStore, state } = this.props;
 		const { organisation, showModal } = this.state;
 		const network = OrganisationsStore.findById(netId);
 		const organisations = network._organisations;
@@ -63,6 +64,19 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 								key: 'added',
 								label: 'Added',
 								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
+							},
+							{
+								key: 'certification',
+								label: 'Certification',
+								value: ({ _id }) => {
+									const assessed = ReportsStore.assess(network, OrganisationsStore.findById(_id));
+									return isNumber(assessed) ? assessed : findLastIndex(assessed, { pass: true });
+								},
+								format: (value) => {
+									if (value < 0) return 'None';
+									const certification = get(network, `model.certifications[${value}]`);
+									return certification && <Lozenge appearance="default" bg={certification.colour}>{certification.name}</Lozenge>;
+								}
 							},
 							{
 								key: '',

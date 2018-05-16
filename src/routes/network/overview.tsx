@@ -1,4 +1,4 @@
-import { get, inRange, map } from 'lodash';
+import { findLastIndex, get, inRange, isNumber, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -8,12 +8,13 @@ import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
+import { Lozenge } from '../../components/Lozenge';
 import { Section } from '../../components/Section';
 import OrganisationGrid, { UserGridItem as OrganisationGridItem } from '../../components/UserGrid';
 import { getCurrentUserAccess } from '../../stores/helpers';
 
-const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
-	const { match: { params: { netId } }, OrganisationsStore, state } = props;
+const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
+	const { match: { params: { netId } }, OrganisationsStore, ReportsStore, state } = props;
 	const network = OrganisationsStore.findById(netId) || {};
 	const organisations = network._organisations;
 	const model = get(network, 'model');
@@ -86,7 +87,11 @@ const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 				<Section>
 					<OrganisationGrid>
 						{map(organisations, ({ _id }) => {
-							const { avatar, name } = OrganisationsStore.findById(_id);
+							const organisation = OrganisationsStore.findById(_id);
+							const { avatar, name } = organisation;
+							const assessed = ReportsStore.assess(network, organisation);
+							const certification = ReportsStore.getCertification(network, assessed);
+
 							return (
 								<OrganisationGridItem
 									appearance="subtle"
@@ -95,6 +100,7 @@ const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 								>
 									<img src={avatar} />
 									<span>{name}</span>
+									{!isNumber(certification) && <Lozenge appearance="default" bg={certification.colour}>{certification.name}</Lozenge>}
 								</OrganisationGridItem>
 							);
 						})}

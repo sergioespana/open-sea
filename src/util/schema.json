@@ -20,6 +20,7 @@
 				"properties": {
 					"name": { "type": "string" },
 					"description": { "type": "string" },
+					"colour": { "type": "string" },
 					"level": { "type": "number" },
 					"requirements": {
 						"type": "array",
@@ -27,8 +28,20 @@
 							"type": "object",
 							"properties": {
 								"indicator": { "type": "string" },
-								"operator": { "type": "string" },
-								"value": { "type": "string" }
+								"operator": {
+									"type": "string",
+									"enum": [ ">", ">=", "<", "<=", "==", "IN", "NOT IN" ]
+								},
+								"value": {
+									"anyOf": [
+										{ "type": "string" },
+										{ "type": "number" },
+										{
+											"type": "array",
+											"items": { "type": "string" }
+										}
+									]
+								}
 							},
 							"additionalProperties": false,
 							"required": [ "indicator", "operator", "value" ]
@@ -51,7 +64,7 @@
 						"enum": [ "text", "number", "list", "likert" ]
 					}
 				},
-				"required": [ "name", "help", "type" ]
+				"required": [ "name", "type" ]
 			}
 		},
 		"indicators": {

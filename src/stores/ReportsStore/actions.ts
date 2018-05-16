@@ -1,7 +1,7 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
-import { get, isNumber, round } from 'lodash';
-import { Report } from '../../domain/Organisation';
+import { find, findLastIndex, get, isNumber, isUndefined, last, map, round, sortBy, toNumber } from 'lodash';
+import { Organisation, Report } from '../../domain/Organisation';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { getCurrentUser, removePrivates } from '../helpers';
@@ -40,10 +40,49 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
 	};
 
+	const operators = {
+		'>': (a, b) => a > b,
+		'>=': (a, b) => a >= b,
+		'<': (a, b) => a < b,
+		'<=': (a, b) => a <= b,
+		'==': (a, b) => a === b
+	};
+
+	const assess = (network: Organisation, organisation: Organisation) => {
+		const model = network.model;
+		const report = last(sortBy(organisation._reports, ['created']));
+		// Return -1 ("no certification") if required inputs are missing.
+		if (!model || !report || !model.certifications || !report.data) return -1;
+
+		return map(model.certifications, (certification) => {
+			const { requirements } = certification;
+			const assessed = map(requirements, (requirement) => {
+				const { indicator, operator } = requirement;
+				const value = toNumber(requirement.value);
+				const computed = compute(model.indicators[indicator].value, report.data);
+				return { ...requirement, value, computed, pass: operators[operator](computed, value) };
+			});
+
+			return {
+				...certification,
+				requirements: assessed,
+				pass: isUndefined(find(assessed, { pass: false }))
+			};
+		});
+	};
+
+	const getCertification = (network: Organisation, assessed) => {
+		const model = network.model;
+		if (assessed < 0) return -1;
+		return get(model, `certifications[${findLastIndex(assessed, { pass: true })}]`) || -1;
+	};
+
 	return {
+		assess,
 		addData,
 		addModel,
 		compute,
+		getCertification,
 		parseStrToJson,
 		validateModel
 	};
