@@ -74,8 +74,8 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 						{
 							key: 'updatedBy',
 							label: 'Updated by',
-							value: ({ updatedBy }) => get(find(state.users, { _id: updatedBy }), 'name'),
-							format: (name, { updatedBy }) => <Link to={`/dashboard/people/${updatedBy}`}>{name}</Link>
+							value: ({ createdBy, updatedBy }) => get(find(state.users, { _id: updatedBy || createdBy }), 'name'),
+							format: (name, { createdBy, updatedBy }) => <Link to={`/dashboard/people/${updatedBy || createdBy}`}>{name}</Link>
 						},
 						{
 							key: 'status',
