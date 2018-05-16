@@ -16,7 +16,7 @@ const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 	const network = OrganisationsStore.findById(netId) || {};
 	const organisations = network._organisations;
 	const model = get(network, 'model');
-	const currentUserAccess = getCurrentUserAccess(state, netId);
+	const currentUserAccess = getCurrentUserAccess(state, network);
 
 	const PageHead = (
 		<Header
@@ -58,7 +58,7 @@ const NetworkOverview = inject(app('OrganisationsStore'))(observer((props) => {
 							<h1>Let's begin</h1>
 							<p>
 								To get started using openSEA for your network, add an organisation.
-						</p>
+							</p>
 							<p>
 								<LinkButton appearance="default" to={`/${netId}/settings/organisations`}>Manage organisations</LinkButton>
 							</p>
