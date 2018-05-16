@@ -1,24 +1,42 @@
 {
 	"type": "object",
 	"properties": {
-		"name": {
-			"type": "string"
-		},
-		"description": {
-			"type": "string"
-		},
-		"version": {
-			"type": "string"
-		},
+		"name": { "type": "string" },
+		"description": { "type": "string" },
+		"version": { "type": "string" },
 		"categories": {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
-					}
+					"name": { "type": "string" }
 				}
+			}
+		},
+		"certifications": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"level": { "type": "number" },
+					"requirements": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"indicator": { "type": "string" },
+								"operator": { "type": "string" },
+								"value": { "type": "string" }
+							},
+							"additionalProperties": false,
+							"required": [ "indicator", "operator", "value" ]
+						}
+					}
+				},
+				"additionalProperties": false,
+				"required": [ "name", "requirements" ]
 			}
 		},
 		"metrics": {
@@ -26,27 +44,14 @@
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"help": {
-						"type": "string"
-					},
+					"name": { "type": "string" },
+					"help": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [
-							"text",
-							"number",
-							"list",
-							"likert"
-						]
+						"enum": [ "text", "number", "list", "likert" ]
 					}
 				},
-				"required": [
-					"name",
-					"help",
-					"type"
-				]
+				"required": [ "name", "help", "type" ]
 			}
 		},
 		"indicators": {
@@ -54,32 +59,16 @@
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"description": {
-						"type": "string"
-					},
-					"category": {
-						"type": "string"
-					},
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"category": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [
-							"text",
-							"number",
-							"percentage",
-							"list"
-						]
+						"enum": [ "text", "number", "percentage", "list" ]
 					},
-					"value": {
-						"type": "string"
-					}
+					"value": { "type": "string" }
 				},
-				"required": [
-					"name",
-					"type"
-				]
+				"required": [ "name", "type" ]
 			}
 		},
 		"reportItems": {
@@ -87,58 +76,35 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"name": {
-						"type": "string"
-					},
+					"name": { "type": "string" },
 					"chart": {
 						"type": "object",
 						"properties": {
 							"colors": {
 								"type": "array",
-								"items": {
-									"type": "string"
-								}
+								"items": { "type": "string" }
 							},
 							"data": {
 								"type": "array",
-								"items": {
-									"type": "string"
-								}
+								"items": { "type": "string" }
 							},
 							"type": {
 								"type": "string",
-								"enum": [
-									"line",
-									"bar",
-									"scatter",
-									"pie",
-									"percentage"
-								]
+								"enum": [ "line", "bar", "scatter", "pie", "percentage" ]
 							}
 						},
 						"additionalProperties": false,
-						"required": [
-							"data",
-							"type"
-						]
+						"required": [ "data", "type" ]
 					},
-					"value": {
-						"type": "string"
-					},
+					"value": { "type": "string" },
 					"width": {
 						"type": "number",
 						"default": 100
 					}
 				},
-				"required": [
-					"name",
-					"width"
-				]
+				"required": [ "name", "width" ]
 			}
 		}
 	},
-	"required": [
-		"metrics",
-		"indicators"
-	]
+	"required": [ "metrics", "indicators" ]
 }
