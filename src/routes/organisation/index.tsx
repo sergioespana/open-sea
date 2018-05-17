@@ -6,6 +6,7 @@ import { Redirect } from '../../components/Redirect';
 import { Route } from '../../components/Route';
 import NetworkOverview from '../network/overview';
 import NetworkSettingsRoutes from '../network/settings';
+import OrganisationCertification from './certification';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
 import OrganisationReports from './reports';
@@ -44,6 +45,7 @@ class OrganisationRoutes extends Component<any> {
 				<Route path="/:orgId" exact component={OrganisationOverview} />
 				<Route path="/:orgId/overview" exact component={OrganisationOverview} />
 				<Route path="/:orgId/reports" exact component={OrganisationReports} />
+				<Route path="/:orgId/certification" exact component={OrganisationCertification} />
 				<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
 				<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
 			</Switch>

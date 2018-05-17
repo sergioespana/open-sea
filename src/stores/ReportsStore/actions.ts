@@ -74,7 +74,9 @@ export const actions = (state) => {
 	const getCertification = (network: Organisation, assessed) => {
 		const model = network.model;
 		if (assessed < 0) return -1;
-		return get(model, `certifications[${findLastIndex(assessed, { pass: true })}]`) || -1;
+		const index = findLastIndex(assessed, { pass: true });
+		const certification = get(model, `certifications[${index}]`);
+		return certification ? { ...certification, _index: index } : -1;
 	};
 
 	return {
