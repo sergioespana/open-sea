@@ -30,16 +30,12 @@
 								"indicator": { "type": "string" },
 								"operator": {
 									"type": "string",
-									"enum": [ ">", ">=", "<", "<=", "==", "IN", "NOT IN" ]
+									"enum": [ ">", ">=", "<", "<=", "==" ]
 								},
 								"value": {
 									"anyOf": [
 										{ "type": "string" },
-										{ "type": "number" },
-										{
-											"type": "array",
-											"items": { "type": "string" }
-										}
+										{ "type": "number" }
 									]
 								}
 							},
