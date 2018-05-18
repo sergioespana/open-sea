@@ -1,17 +1,19 @@
 service cloud.firestore {
 	match /databases/{database}/documents {
-		// TODO: Add access level argument to currentUserHasAccess
-		
 		function orgNotExists(orgId) {
 			return exists(/databases/$(database)/documents/organisations/$(orgId)) == false;
 		}
 
-		function currentUserHasAccess(orgId) {
-			return exists(/databases/$(database)/documents/organisations/$(orgId)/users/$(request.auth.uid));
+		function currentUserHasAccess(orgId, access) {
+			return get(/databases/$(database)/documents/organisations/$(orgId)/users/$(request.auth.uid)).data.access >= access;
 		}
 
 		function isPublic(orgId) {
 			return resource.data.isPublic == true;
+		}
+
+		function isNetwork(orgId) {
+			return resource.data.isNetwork == true;
 		}
 
 		function isAuthed() {
@@ -23,24 +25,24 @@ service cloud.firestore {
 		}
 
 		match /organisations/{orgId} {
-			allow read: if orgNotExists(orgId) || isPublic(orgId) || currentUserHasAccess(orgId);
-			allow create: if isAuthed();
-			allow update: if currentUserHasAccess(orgId);
-			allow delete: if currentUserHasAccess(orgId);
+			allow read: if orgNotExists(orgId) || isPublic(orgId) || currentUserHasAccess(orgId, 10);
+			allow create: if isAuthed() && orgNotExists(orgId);
+			allow update: if currentUserHasAccess(orgId, 30);
+			allow delete: if currentUserHasAccess(orgId, 100);
 			
 			match /organisations/{orgOrgId} {
 				allow read;
-				allow write: if currentUserHasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId, 30);
 			}
 
 			match /reports/{repId} {
 				allow read;
-				allow write: if currentUserHasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId, 20) && !isNetwork(orgId);
 			}
 
 			match /users/{uid} {
 				allow read;
-				allow write: if currentUserHasAccess(orgId);
+				allow write: if currentUserHasAccess(orgId, 30);
 			}
 		}
 

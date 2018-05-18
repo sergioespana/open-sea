@@ -43,12 +43,12 @@ const Table: React.StatelessComponent<TableProps> = (props) => {
 
 	return (
 		<TableWrapper>
-			{filters.length > 0 && (
+			{/* filters.length > 0 && (
 				<TableFilterWrapper>
 					<h3>Filter by:</h3>
 					{map(filters, renderFilter(columns, data, location))}
 				</TableFilterWrapper>
-			)}
+			) */}
 			<TableComponent>
 				<TableHead>
 					<tr>{map(columns, renderColumnHead(sortingDisabled, location))}</tr>

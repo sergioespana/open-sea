@@ -63,7 +63,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 								label: 'Last updated',
 								hidden: true,
 								value: ({ created, updated }) => created || updated,
-								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 							},
 							{
 								key: 'isPublic',

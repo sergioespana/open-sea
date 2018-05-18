@@ -1,4 +1,5 @@
-import { get, isEmpty, map } from 'lodash';
+import { findLast, get, isEmpty, isUndefined, map } from 'lodash';
+import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
@@ -32,10 +33,10 @@ class OrganisationReportOverview extends Component<any, State> {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = this.props;
 		const { showModal } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
+		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-		const model = get(report, 'model');
+		const model = get(parentNetwork || report, 'model');
 		const data = get(report, 'data');
-		const items = get(report, 'model.reportItems');
 
 		const PageHead = (
 			<Header
@@ -58,30 +59,42 @@ class OrganisationReportOverview extends Component<any, State> {
 			</Header>
 		);
 
-		if (isEmpty(model)) return (
-			<React.Fragment>
-				{PageHead}
-				<Container>
-					<EmptyState>
-						<img src="/assets/images/empty-state-no-model.svg" />
-						<h1>Let's get started</h1>
-						<p>
-							To begin, <LinkInput accept=".yml" onChange={this.onFileChange}>add a model</LinkInput> to this report. For more information on
-							how to set this up, <a>click here</a>.
-						</p>
-					</EmptyState>
-				</Container>
-				<Modal isOpen={showModal}>
-					<ModalHeader>
-						<h1>Validating model</h1>
-					</ModalHeader>
-					<ModalSection>
-						openSEA is validating and saving the model you've selected. This shouldn't take long.
-					</ModalSection>
-					<ModalFooter />
-				</Modal>
-			</React.Fragment>
-		);
+		// TODO: If this is part of an organisation, show a different error.
+		if (isEmpty(model)) {
+			const recentModel = get(findLast(organisation._reports, 'model'), 'model');
+
+			return (
+				<React.Fragment>
+					{PageHead}
+					<Container>
+						<EmptyState>
+							<img src="/assets/images/empty-state-no-model.svg" />
+							<h1>Let's get started</h1>
+							{ !isUndefined(recentModel) ? (
+								<p>
+									To begin, <LinkInput accept=".yml" onChange={this.onFileChange}>add a new model</LinkInput> to this report or
+									 <a onClick={this.copyModel(recentModel)}>use the previous report's</a>. To learn more, <a>click here</a>.
+								</p>
+							) : (
+								<p>
+									To begin, <LinkInput accept=".yml" onChange={this.onFileChange}>add a model</LinkInput> to this report. To learn more,
+									<a>click here</a>.
+								</p>
+							) }
+						</EmptyState>
+					</Container>
+					<Modal isOpen={showModal}>
+						<ModalHeader>
+							<h1>Validating model</h1>
+						</ModalHeader>
+						<ModalSection>
+							openSEA is validating and saving the model you've selected. This shouldn't take long.
+						</ModalSection>
+						<ModalFooter />
+					</Modal>
+				</React.Fragment>
+			);
+		}
 
 		if (isEmpty(data)) return (
 			<React.Fragment>
@@ -100,6 +113,8 @@ class OrganisationReportOverview extends Component<any, State> {
 				</Container>
 			</React.Fragment>
 		);
+
+		const items = get(model, 'reportItems');
 
 		if (isEmpty(items)) return (
 			<React.Fragment>
@@ -122,7 +137,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			<React.Fragment>
 				{PageHead}
 				<Container>
-					<Section>
+					<Section maxWidth={700}>
 						<ReportGrid>
 							{map(items, (item) => {
 								// Show chart if the chart object is set. Prefer chart
@@ -151,7 +166,10 @@ class OrganisationReportOverview extends Component<any, State> {
 								if (item.value) return (
 									<ReportGridItem>
 										<h3>{item.name}</h3>
-										<p>{ReportsStore.compute(model.indicators[item.value].value, data)}</p>
+										<p>
+											{ReportsStore.compute(model.indicators[item.value].value, data)}
+											{model.indicators[item.value].type === 'percentage' && '%'}
+										</p>
 									</ReportGridItem>
 								);
 								// No value or chart specified, don't show the item.
@@ -174,7 +192,7 @@ class OrganisationReportOverview extends Component<any, State> {
 	private onFileLoad = (ev: ProgressEvent) => {
 		const { srcElement }: { srcElement: Partial<FileReader> } = ev;
 		const { result } = srcElement;
-		const { history, match: { params: { orgId, repId } }, ReportsStore, UIStore } = this.props;
+		const { ReportsStore, UIStore } = this.props;
 
 		if (!result) {
 			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
@@ -183,6 +201,10 @@ class OrganisationReportOverview extends Component<any, State> {
 		}
 
 		const json = ReportsStore.parseStrToJson(result);
+		return this.validateAndStoreModel(json);
+	}
+	private validateAndStoreModel = (json) => {
+		const { history, match: { params: { orgId, repId } }, ReportsStore, UIStore } = this.props;
 		const { accepted } = ReportsStore.validateModel(json);
 
 		if (!accepted) {
@@ -193,6 +215,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			const model = { ...accepted, _orgId: orgId, _repId: repId };
 
 			const onSuccess = () => {
+				UIStore.addFlag({ appearance: 'success', title: 'Model saved successfully' });
 				history.push(`/${orgId}/${repId}/data`);
 			};
 			const onError = () => {
@@ -203,6 +226,7 @@ class OrganisationReportOverview extends Component<any, State> {
 			return ReportsStore.addModel(model, { onSuccess, onError });
 		}
 	}
+	private copyModel = (model) => () => this.validateAndStoreModel(toJS(model));
 }
 
 export default withRouter(OrganisationReportOverview);

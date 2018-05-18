@@ -17,6 +17,10 @@ export default LinkButton.extend`
 	}
 
 	& > span {
-		margin: 12px 0 0;
+		margin: 6px 0 0;
+
+		&:first-of-type {
+			margin: 12px 0 0;
+		}
 	}
 `;

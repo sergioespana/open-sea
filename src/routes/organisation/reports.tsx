@@ -68,14 +68,14 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 						},
 						{
 							label: 'Last updated',
-							value: ({ created, updated }) => created || updated,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+							value: ({ created, updated }) => updated || created,
+							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 						},
 						{
 							key: 'updatedBy',
 							label: 'Updated by',
-							value: ({ updatedBy }) => get(find(state.users, { _id: updatedBy }), 'name'),
-							format: (name, { updatedBy }) => <Link to={`/dashboard/people/${updatedBy}`}>{name}</Link>
+							value: ({ createdBy, updatedBy }) => get(find(state.users, { _id: updatedBy || createdBy }), 'name'),
+							format: (name, { createdBy, updatedBy }) => <Link to={`/dashboard/people/${updatedBy || createdBy}`}>{name}</Link>
 						},
 						{
 							key: 'status',

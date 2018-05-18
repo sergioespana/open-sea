@@ -1,7 +1,7 @@
 import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
-import { filter, get, isUndefined, last, map } from 'lodash';
+import { filter, flatten, get, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -19,6 +19,7 @@ import { Table } from '../../components/Table';
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.findById(orgId) || {};
+	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
 
@@ -51,7 +52,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						label: 'Last updated',
 						hidden: true,
 						value: ({ created, updated }) => created || updated,
-						format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+						format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 					}
 				]}
 				data={reports}
@@ -108,14 +109,14 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</React.Fragment>
 	);
 
-	const model = get(last(withData), 'model');
-	const items = get(last(withData), 'model.reportItems');
+	const model = get(parentNetwork || last(withData), 'model');
+	const items = get(model, 'reportItems');
 
 	return (
 		<React.Fragment>
 			{PageHead}
 			<Container>
-				<Section>
+				<Section maxWidth={700}>
 					<ReportGrid>
 						{map(items, (item) => {
 							const chart = {
@@ -133,6 +134,10 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 										}] : []
 								}
 							};
+
+							const dataTypes = flatten(map(chart.data.datasets, (set) => map(set.values, (value) => typeof value)));
+							// Don't render a graph when there's string data in the datasets.
+							if (dataTypes.includes('string')) return null;
 
 							return (
 								<ReportGridItem key={item.name}>

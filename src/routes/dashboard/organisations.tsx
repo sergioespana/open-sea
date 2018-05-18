@@ -66,14 +66,14 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 							label: 'Owner',
 							value: ({ _users }) => get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), 'name'),
 							format: (name, { _users }) => {
-								const { _id } = find(state.users, { _id: get(find(_users, { access: 100 }), '_id') });
-								return <Link to={`/dashboard/people/${_id}`}>{name}</Link>;
+								const id = get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), '_id');
+								return <Link to={`/dashboard/people/${id}`}>{name}</Link>;
 							}
 						},
 						{
 							label: 'Last updated',
 							value: ({ created, updated }) => updated || created,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : `${distanceInWordsToNow(updated)} ago`
+							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 						},
 						{
 							label: 'Reports',

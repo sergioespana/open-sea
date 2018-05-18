@@ -1,3 +1,4 @@
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 
 const getColor = (appearance) => {
@@ -24,11 +25,12 @@ const getBackgroundColor = (appearance) => {
 
 interface Props {
 	appearance: 'default' | 'success' | 'removed' | 'inprogress' | 'new' | 'moved';
+	bg: string;
 }
 export default styled<Props, 'span'>('span')`
-	background-color: ${({ appearance }) => getBackgroundColor(appearance)};
+	background-color: ${({ appearance, bg }) => bg ? transparentize(0.75, bg) : getBackgroundColor(appearance)};
 	border-radius: 3px;
-	color: ${({ appearance }) => getColor(appearance)};
+	color: ${({ appearance, bg }) => bg || getColor(appearance)};
 	display: inline-block;
 	font-size: 0.785rem;
 	font-weight: 700;
@@ -38,6 +40,6 @@ export default styled<Props, 'span'>('span')`
 	padding: 3px 4px;
 	text-overflow: ellipsis;
 	text-transform: uppercase;
-	vertical-align: baseline;
+	vertical-align: middle;
 	white-space: nowrap;
 `;

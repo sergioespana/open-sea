@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import linkState from 'linkstate';
-import { filter, flattenDeep, inRange, map, reject } from 'lodash';
+import { filter, flattenDeep, inRange, isUndefined, map, reject } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import MdAccountCircle from 'react-icons/lib/md/account-circle';
 import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
+import MdAssignmentTurnedIn from 'react-icons/lib/md/assignment-turned-in';
 import MdBusiness from 'react-icons/lib/md/business';
 import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
 import MdGroupWork from 'react-icons/lib/md/group-work';
@@ -288,6 +289,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 	const { match: { params: { orgId } }, OrganisationsStore, state, UIStore } = props;
 	const { isAuthed, isLoading, isNavExpanded } = state;
 	const organisation = OrganisationsStore.findById(orgId) || {};
+	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 	const curUser = getCurrentUser(state) || {};
 	const currentUserAccess = getCurrentUserAccess(state, organisation);
 
@@ -307,6 +309,12 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			icon: <MdAssessment />,
 			label: 'Reports',
 			to: `/${orgId}/reports`
+		},
+		{
+			hidden: isUndefined(parentNetwork),
+			icon: <MdAssignmentTurnedIn />,
+			label: 'Certification',
+			to: `/${orgId}/certification`
 		},
 		{
 			icon: <MdSettings />,
@@ -356,6 +364,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Details',
 					to: `/${orgId}/settings/details`
+				},
+				{
+					hidden: !inRange(currentUserAccess, 30, 101),
+					label: 'Model',
+					to: `/${orgId}/settings/model`
 				},
 				{
 					label: 'People',
