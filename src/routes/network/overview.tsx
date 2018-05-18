@@ -24,7 +24,7 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 
 	const PageHead = (
 		<Header
-			title="Overview"
+			title="Member overview"
 			headTitle={network.name}
 			breadcrumbs={[
 				<Link key={`/${netId}`} to={`/${netId}`}>{network.name}</Link>
