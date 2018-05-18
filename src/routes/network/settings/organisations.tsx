@@ -2,7 +2,7 @@ import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import linkState from 'linkstate';
-import { find, findLastIndex, get, inRange, isNumber, isUndefined, map } from 'lodash';
+import { filter, find, findLastIndex, get, inRange, isNumber, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -35,6 +35,9 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 		const network = OrganisationsStore.findById(netId);
 		const organisations = network._organisations;
 		const users = network._users;
+		const model = get(network, 'model');
+		const certifications = get(model, 'certifications');
+		const indicators = get(model, 'indicators');
 		const currentUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
 
 		return (
@@ -66,11 +69,18 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
 							},
 							{
+								hidden: !model || !certifications || !indicators,
 								key: 'certification',
 								label: 'Certification',
 								value: ({ _id }) => {
-									const assessed = ReportsStore.assess(network, OrganisationsStore.findById(_id));
-									return isNumber(assessed) ? assessed : findLastIndex(assessed, { pass: true });
+									const organisation = OrganisationsStore.findById(_id);
+									const withData = filter(organisation._reports, 'data');
+									const report = last(withData);
+
+									if (!report) return -1;
+
+									const assessed = ReportsStore.assess(certifications, indicators, report);
+									return ReportsStore.getCertificationIndex(assessed).current;
 								},
 								format: (value) => {
 									if (value < 0) return 'None';

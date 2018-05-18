@@ -1,4 +1,4 @@
-import { filter, get, isNumber, isUndefined, map } from 'lodash';
+import { filter, get, isNumber, isUndefined, last, map, partition } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -7,15 +7,13 @@ import Container from '../../components/Container';
 import Header from '../../components/Header';
 import Lozenge from '../../components/Lozenge';
 import { Section } from '../../components/Section';
+import { Certification, Organisation, Requirement } from '../../domain/Organisation';
 
 const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
-	const organisation = OrganisationsStore.findById(orgId) || {};
-	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
-	const assessed = ReportsStore.assess(parentNetwork, organisation);
-	const certification = ReportsStore.getCertification(parentNetwork, assessed);
-	const nextCertification = get(parentNetwork, `model.certifications[${certification._index + 1 || 0}]`);
-	const unmetRequirements = filter(get(assessed, `[${certification._index + 1 || 0}].requirements`), { pass: false });
+	const organisation: Organisation = OrganisationsStore.findById(orgId) || {};
+	const network: Organisation = OrganisationsStore.findParentNetworkById(orgId);
+	const model = get(network, 'model');
 
 	const PageHead = (
 		<Header
@@ -27,7 +25,21 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 		/>
 	);
 
-	// TODO: Catch cases in which no model or reports exist
+	// TODO: Show empty state.
+	if (!model) return null;
+
+	const certifications: Certification[] = get(model, 'certifications');
+
+	// TODO: Show empty state.
+	if (!certifications) return null;
+
+	const withData = filter(organisation._reports, 'data');
+	const report = last(withData);
+	const assessed: Certification[] = ReportsStore.assess(certifications, model.indicators, report);
+	const { current: currentIndex, next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
+	const current = assessed[currentIndex];
+	const next = assessed[nextIndex];
+	const [ unmet, met ] = partition(next.requirements, { _pass: false });
 
 	return (
 		<React.Fragment>
@@ -37,27 +49,40 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 					<div>
 						<h3>Current level:</h3>
 						<p>
-							{isNumber(certification)
+							{isUndefined(current)
 								? <span>None</span>
-								: <Lozenge appearance="default" bg={certification.colour}>{certification.name}</Lozenge>}
+								: <Lozenge appearance="default" bg={current.colour}>{current.name}</Lozenge>}
 						</p>
 					</div>
-					{!isUndefined(nextCertification) && <div>
+					{!isUndefined(next) && <div>
 						<h3>Next level:</h3>
 						<p>
-							<Lozenge appearance="default" bg={nextCertification.colour}>{nextCertification.name}</Lozenge>
+							<Lozenge appearance="default" bg={next.colour}>{next.name}</Lozenge>
 						</p>
-						<h3>Unmet requirements ({unmetRequirements.length}/{nextCertification.requirements.length})</h3>
-						<p>
-							<ul>
-								{map(unmetRequirements, ({ computed, indicator, operator, value }) => (
+						<h3>Requirements already met:</h3>
+						<ul>
+							{map(met, (requirement: Requirement) => {
+								const { _computed, indicator, operator, value } = requirement;
+								return (
 									<li>
-										<strong>{get(parentNetwork, `model.indicators.${indicator}.name`)}</strong> ({indicator})
-										should be <strong>{operator}{value}</strong>, current value is <strong>{computed}</strong>.
+										<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator}) is
+										currently at {operator !== '==' && `${_computed}, which meets the requirement of being`} {ReportsStore.operatorText[operator]} {value}.
 									</li>
-								))}
-							</ul>
-						</p>
+								);
+							})}
+						</ul>
+						<h3>Requirements to meet:</h3>
+						<ul>
+							{map(unmet, (requirement: Requirement) => {
+								const { _computed, indicator, operator, value } = requirement;
+								return (
+									<li>
+										<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator})
+										should be {ReportsStore.operatorText[operator]} {value}, however it is currently at {_computed}.
+									</li>
+								);
+							})}
+						</ul>
 					</div>}
 				</Section>
 			</Container>

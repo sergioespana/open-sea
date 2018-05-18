@@ -1,7 +1,7 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
-import { find, findLastIndex, get, isNumber, isUndefined, last, map, round, sortBy, toNumber } from 'lodash';
-import { Organisation, Report } from '../../domain/Organisation';
+import { find, findLastIndex, get, isNumber, isUndefined, map, round, toNumber } from 'lodash';
+import { Certification, Indicator, Report, Requirement } from '../../domain/Organisation';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { getCurrentUser, removePrivates } from '../helpers';
@@ -40,7 +40,7 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { data, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
 	};
 
-	const operators = {
+	const operatorFunctions = {
 		'>': (a, b) => a > b,
 		'>=': (a, b) => a >= b,
 		'<': (a, b) => a < b,
@@ -48,35 +48,36 @@ export const actions = (state) => {
 		'==': (a, b) => a === b
 	};
 
-	const assess = (network: Organisation, organisation: Organisation) => {
-		const model = network.model;
-		const report = last(sortBy(organisation._reports, ['created']));
-		// Return -1 ("no certification") if required inputs are missing.
-		if (!model || !report || !model.certifications || !report.data) return -1;
+	const operatorText = {
+		'>': 'more than',
+		'>=': 'at least',
+		'<': 'less than',
+		'<=': 'at most',
+		'==': 'exactly'
+	};
 
-		return map(model.certifications, (certification) => {
+	const assess = (certifications: Certification[], indicators: Indicator[], report: Report) =>
+		map(certifications, (certification: Certification) => {
 			const { requirements } = certification;
-			const assessed = map(requirements, (requirement) => {
+			const assessed = map(requirements, (requirement: Requirement) => {
 				const { indicator, operator } = requirement;
 				const value = toNumber(requirement.value);
-				const computed = compute(model.indicators[indicator].value, report.data);
-				return { ...requirement, value, computed, pass: operators[operator](computed, value) };
+				const _computed = compute(indicators[indicator].value, report.data);
+				const evaluate = operatorFunctions[operator];
+				return { ...requirement, value, _computed, _pass: evaluate(_computed, value) };
 			});
 
 			return {
 				...certification,
 				requirements: assessed,
-				pass: isUndefined(find(assessed, { pass: false }))
+				_pass: isUndefined(find(assessed, { _pass: false }))
 			};
 		});
-	};
 
-	const getCertification = (network: Organisation, assessed) => {
-		const model = network.model;
-		if (assessed < 0) return -1;
-		const index = findLastIndex(assessed, { pass: true });
-		const certification = get(model, `certifications[${index}]`);
-		return certification ? { ...certification, _index: index } : -1;
+	const getCertificationIndex = (certifications: Certification[]): { current: number, next: number } => {
+		const current = findLastIndex(certifications, { _pass: true });
+		const next = current + 1 > certifications.length ? -1 : current + 1;
+		return { current, next };
 	};
 
 	return {
@@ -84,8 +85,9 @@ export const actions = (state) => {
 		addData,
 		addModel,
 		compute,
-		getCertification,
+		getCertificationIndex,
 		parseStrToJson,
+		operatorText,
 		validateModel
 	};
 };

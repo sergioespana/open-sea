@@ -1,4 +1,4 @@
-import { findLastIndex, get, inRange, isNumber, map } from 'lodash';
+import { filter, get, inRange, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -18,6 +18,8 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 	const network = OrganisationsStore.findById(netId) || {};
 	const organisations = network._organisations;
 	const model = get(network, 'model');
+	const certifications = get(model, 'certifications');
+	const indicators = get(model, 'indicators');
 	const currentUserAccess = getCurrentUserAccess(state, network);
 
 	const PageHead = (
@@ -88,9 +90,24 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 					<OrganisationGrid>
 						{map(organisations, ({ _id }) => {
 							const organisation = OrganisationsStore.findById(_id);
-							const { avatar, name } = organisation;
-							const assessed = ReportsStore.assess(network, organisation);
-							const certification = ReportsStore.getCertification(network, assessed);
+							const withData = filter(organisation._reports, 'data');
+							const report = last(withData);
+
+							// Skip computing certification if there's no report with data to compute it with.
+							if (!certifications || !report) return (
+								<OrganisationGridItem
+									appearance="subtle"
+									key={_id}
+									to={`/${_id}`}
+								>
+									<img src={organisation.avatar} />
+									<span>{organisation.name}</span>
+								</OrganisationGridItem>
+							);
+
+							const assessed = ReportsStore.assess(certifications, indicators, report);
+							const { current: currentIndex } = ReportsStore.getCertificationIndex(assessed);
+							const current = assessed[currentIndex];
 
 							return (
 								<OrganisationGridItem
@@ -98,9 +115,9 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 									key={_id}
 									to={`/${_id}`}
 								>
-									<img src={avatar} />
-									<span>{name}</span>
-									{!isNumber(certification) && <Lozenge appearance="default" bg={certification.colour}>{certification.name}</Lozenge>}
+									<img src={organisation.avatar} />
+									<span>{organisation.name}</span>
+									{!isUndefined(current) && <Lozenge appearance="default" bg={current.colour}>{current.name}</Lozenge>}
 								</OrganisationGridItem>
 							);
 						})}
