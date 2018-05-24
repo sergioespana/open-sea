@@ -14,7 +14,7 @@ export const actions = (state) => {
 			// - The collection of organisations the user has access to
 			const { uid } = res;
 			FirebaseService.startListening(`users/${uid}`, { _isCurrent: true, _organisations: [] }, { onAdded: onUser });
-			FirebaseService.startListening(`users/${uid}/organisations`, {}, { onAdded: onUserOrganisation(uid) });
+			FirebaseService.startListening(`users/${uid}/organisations`, {}, { onAdded: onUserOrganisation(uid, 'added'), onRemoved: onUserOrganisation(uid, 'removed') });
 		} else {
 			// User is not logged in or has just logged out. Remove all loaded
 			// users from memory and remove all listeners.
@@ -29,9 +29,10 @@ export const actions = (state) => {
 		users.updateOrInsert(user);
 	};
 
-	const onUserOrganisation = (uid: string) => (organisation: UserOrganisation) => {
+	const onUserOrganisation = (uid: string, action: 'added' | 'removed') => (organisation: any) => {
 		const user = users.findById(uid);
-		collection(user._organisations).updateOrInsert(organisation);
+		if (action === 'added') return collection(user._organisations).updateOrInsert(organisation);
+		return collection(user._organisations).remove(organisation);
 	};
 
 	const signOut = () => FirebaseService.signOut();
