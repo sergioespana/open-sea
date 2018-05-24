@@ -3897,9 +3897,9 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-frappe-charts@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-0.0.8.tgz#1122813bfbce14f9832833add4eb05824a617b77"
+frappe-charts@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-1.1.0.tgz#c13929a1b79f4c4e72c943a0deca300b2eb78f77"
 
 fresh@0.5.2:
   version "0.5.2"
