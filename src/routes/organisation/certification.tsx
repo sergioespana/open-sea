@@ -65,8 +65,8 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 								const { _computed, indicator, operator, value } = requirement;
 								return (
 									<li>
-										<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator}) is
-										currently at {operator !== '==' && `${_computed}, which meets the requirement of being`} {ReportsStore.operatorText[operator]} {value}.
+										<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator}) should be {ReportsStore.operatorText[operator]}
+										&nbsp;{value}{operator !== '==' ? `. It currently has a value of ${_computed}.` : ', which it is.'}
 									</li>
 								);
 							})}
