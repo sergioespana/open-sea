@@ -19,7 +19,7 @@ const initialState = {
 
 type State = Readonly<typeof initialState>;
 
-@inject(app('state'))
+@inject(app('AuthStore'))
 @observer
 export default class AccountSignout extends Component<any, State> {
 	readonly state: State = initialState;
@@ -81,15 +81,19 @@ export default class AccountSignout extends Component<any, State> {
 
 	private onSubmit = async (event) => {
 		event.preventDefault();
-		const { AuthStore, state } = this.props;
-		const { email, pass } = this.state;
 
-		setAppState(state, 'isBusy', true);
+		const { props, state } = this;
+		const { AuthStore } = props;
+		const { email, name, pass } = state;
+
 		this.setState({ error: null });
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
 		try {
-			await AuthStore.signUp(email, pass);
+			await AuthStore.signUp(email, pass, { name });
 		} catch (error) {
 			this.setState({ error });
+		} finally {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
 		}
 	}
 }

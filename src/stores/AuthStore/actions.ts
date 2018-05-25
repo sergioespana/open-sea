@@ -1,4 +1,4 @@
-import { User, UserOrganisation } from '../../domain/User';
+import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
 import collection from '../collection';
 import { setAppState } from '../helpers';
@@ -39,7 +39,16 @@ export const actions = (state) => {
 
 	const signIn = (email: string, pass: string) => FirebaseService.signInWithEmailAndPassword(email, pass);
 
-	const signUp = (email: string, pass: string) => FirebaseService.signUpWithEmailAndPassword(email, pass);
+	const signUp = async (email: string, pass: string, initialData: any) => {
+		const { uid } = await FirebaseService.signUpWithEmailAndPassword(email, pass);
+		const user = {
+			...initialData,
+			avatar: initialData.avatar || '/assets/images/profile-avatar-placeholder.png',
+			created: new Date(),
+			email
+		};
+		await FirebaseService.saveDoc(`users/${uid}`, user);
+	};
 
 	FirebaseService.startListeningForAuthChanges(onAuthStateChanged);
 
