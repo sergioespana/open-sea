@@ -50,10 +50,13 @@ export const actions = (state) => {
 		await FirebaseService.saveDoc(`users/${uid}`, user);
 	};
 
+	const resetPassword = (email: string) => FirebaseService.resetPassword(email);
+
 	FirebaseService.startListeningForAuthChanges(onAuthStateChanged);
 
 	return {
 		...users,
+		resetPassword,
 		signIn,
 		signOut,
 		signUp
