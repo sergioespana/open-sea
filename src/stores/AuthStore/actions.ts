@@ -1,7 +1,6 @@
 import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
 import collection from '../collection';
-import { setAppState } from '../helpers';
 
 export const actions = (state) => {
 
@@ -22,7 +21,7 @@ export const actions = (state) => {
 			FirebaseService.stopListening();
 		}
 
-		setAppState(state, 'isReady', true);
+		state.isReady = true; // FIXME: Use setAppState for this when it works
 	};
 
 	const onUser = (user: User) => {

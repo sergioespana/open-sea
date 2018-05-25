@@ -4,7 +4,6 @@ import localStorage from 'mobx-localstorage';
 import Mousetrap from 'mousetrap';
 import { IFlag } from '../../components/Flag';
 import { history } from '../../index';
-import { setAppState } from '../helpers';
 
 export const actions = (state) => {
 
@@ -12,8 +11,8 @@ export const actions = (state) => {
 		() => state.isLoading,
 		(isLoading) => {
 			if (!isLoading) {
-				setAppState(state, 'isBusy', false);
-				setAppState(state, 'initDone', true);
+				state.isBusy = false; // FIXME: Use setAppState for this when it works
+				state.initDone = false; // FIXME: Use setAppState for this when it works
 			}
 		}
 	);

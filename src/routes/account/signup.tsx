@@ -8,7 +8,6 @@ import { Button } from '../../components/Button';
 import { PasswordField } from '../../components/Input';
 import { Link } from '../../components/Link';
 import { Input } from '../../components/NewInput';
-import { setAppState } from '../../stores/helpers';
 
 const initialState = {
 	email: '',

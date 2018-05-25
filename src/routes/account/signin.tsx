@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import AuthForm, { AuthButton, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/NewInput';
-import { setAppState } from '../../stores/helpers';
 
 const initialState = {
 	email: '',
