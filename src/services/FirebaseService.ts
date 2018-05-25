@@ -111,10 +111,12 @@ export const removeDoc = async (path: string, callbacks: { onError?: Function, o
 
 export const docExists = async (path: string) => (await db.doc(path).get()).exists;
 
-export const signInWithEmailAndPassword = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
+export const resetPassword = (email: string) => auth.sendPasswordResetEmail(email);
 
-export const signUpWithEmailAndPassword = (email, pass) => auth.createUserWithEmailAndPassword(email, pass);
+export const signInWithEmailAndPassword = (email: string, pass: string) => auth.signInWithEmailAndPassword(email, pass);
+
+export const signUpWithEmailAndPassword = (email: string, pass: string) => auth.createUserWithEmailAndPassword(email, pass);
 
 export const signOut = () => auth.signOut();
 
-export const startListeningForAuthChanges = (handler) => auth.onAuthStateChanged(handler);
+export const startListeningForAuthChanges = (handler: (a: fb.User) => any) => auth.onAuthStateChanged(handler);
