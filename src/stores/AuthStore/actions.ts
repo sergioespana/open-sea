@@ -51,11 +51,14 @@ export const actions = (state) => {
 
 	const resetPassword = (email: string) => FirebaseService.resetPassword(email);
 
+	const search = async (query: string, callbacks: { onError?: Function, onSuccess?: Function } = {}) => FirebaseService.search('users', ['name', 'email'], query, callbacks);
+
 	FirebaseService.startListeningForAuthChanges(onAuthStateChanged);
 
 	return {
 		...users,
 		resetPassword,
+		search,
 		signIn,
 		signOut,
 		signUp

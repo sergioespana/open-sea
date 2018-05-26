@@ -113,15 +113,14 @@ export default class OrganisationSettingsPeople extends Component<any> {
 						</ModalHeader>
 						<ModalSection>
 							<p>
-								Please note that searching for a user currently is not supported. Typing in the box below will result in
-								indefinite loading and no results.
+								Please note that searching for a user is currently only supported through a one's <i>exact</i> name
+								or e-mail address.
 							</p>
 							<AsyncSelect
-								autoFocus
 								components={{ DropdownIndicator: () => null }}
 								defaultOptions={this.toOptions(state.users, organisation._users)}
 								isSearchable
-								loadOptions={debounce(console.log, 400)}
+								loadOptions={debounce(this.loadOptions, 400)}
 								onChange={linkState(this, 'userId', 'value')}
 								placeholder="Type a name or email address"
 							/>
@@ -184,6 +183,13 @@ export default class OrganisationSettingsPeople extends Component<any> {
 			subLabel: alreadyInOrganisation ? 'Already added to the organisation' : undefined
 		};
 	})
+	private loadOptions = async (query, callback) => {
+		const { AuthStore, match: { params: { orgId } }, OrganisationsStore } = this.props;
+		const organisation = OrganisationsStore.findById(orgId);
+		const result = await AuthStore.search(query);
+		const options = this.toOptions(result, organisation._users);
+		callback(options);
+	}
 	private onSelect = (userId: string) => ({ value }) => {
 		const { props } = this;
 		const { match: { params: { orgId } }, OrganisationsStore } = props;
