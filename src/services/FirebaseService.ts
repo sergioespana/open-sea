@@ -1,8 +1,7 @@
 import fb, { firestore } from 'firebase';
 import 'firebase/firestore';
-import { find, findIndex, isUndefined, map, partition, reject } from 'lodash';
+import { find, findIndex, flatten, isString, isUndefined, map, partition, reject } from 'lodash';
 import { observable } from 'mobx';
-import { User } from '../domain/User';
 
 const firebase = fb.initializeApp({
 	apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
@@ -109,12 +108,29 @@ export const removeDoc = async (path: string, callbacks: { onError?: Function, o
 	}
 };
 
+export const search = async (collection: string, field: string | string[], query: string, callbacks: { onError?: Function, onSuccess?: Function } = {}) => {
+	const { onError, onSuccess } = callbacks;
+
+	try {
+		const ref = db.collection(collection);
+		const promises = isString(field) ? [ ref.where(field, '==', query).get() ] : map(field, (str) => ref.where(str, '==', query).get());
+		const result = await Promise.all(promises);
+		const userResult = flatten(map(result, (res) => map(res.docs, (doc) => doc.exists && ({ ...doc.data(), _id: doc.id }))));
+		if (onSuccess) onSuccess(userResult);
+		return userResult;
+	} catch (error) {
+		if (onError) onError(error);
+	}
+};
+
 export const docExists = async (path: string) => (await db.doc(path).get()).exists;
 
-export const signInWithEmailAndPassword = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
+export const resetPassword = (email: string) => auth.sendPasswordResetEmail(email);
 
-export const signUpWithEmailAndPassword = (email, pass) => auth.createUserWithEmailAndPassword(email, pass);
+export const signInWithEmailAndPassword = (email: string, pass: string) => auth.signInWithEmailAndPassword(email, pass);
+
+export const signUpWithEmailAndPassword = (email: string, pass: string) => auth.createUserWithEmailAndPassword(email, pass);
 
 export const signOut = () => auth.signOut();
 
-export const startListeningForAuthChanges = (handler) => auth.onAuthStateChanged(handler);
+export const startListeningForAuthChanges = (handler: (a: fb.User) => any) => auth.onAuthStateChanged(handler);

@@ -84,10 +84,20 @@ module.exports = (env, argv) => ({
 		}),
 		new WebpackStylish()
 	].concat(argv.mode === 'production' ? [
-		new WebpackWorkboxPlugin.InjectManifest({
-			globDirectory: path.resolve(__dirname, 'dist'),
-			globPatterns: ['**/*.{html,css,js}'],
-			swSrc: path.resolve(__dirname, 'src/sw.js'),
+		new WebpackWorkboxPlugin.GenerateSW({
+			clientsClaim: true,
+			exclude: [/\.(?:png|jpg|jpeg|svg)$/],
+			runtimeCaching: [
+				{
+					urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+					handler: 'cacheFirst'
+				},
+				{
+					urlPattern: new RegExp('https://firebasestorage.googleapis.com'),
+					handler: 'cacheFirst'
+				}
+			],
+			skipWaiting: true,
 			swDest: path.resolve(__dirname, 'dist/sw.js')
 		})
 	] : []),
@@ -99,5 +109,7 @@ module.exports = (env, argv) => ({
 		inline: true,
 		publicPath: '/',
 		stats: 'none'
-	}
+	},
+
+	stats: 'none'
 });

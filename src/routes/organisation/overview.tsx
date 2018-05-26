@@ -1,7 +1,7 @@
 import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
-import { filter, flatten, get, isUndefined, last, map } from 'lodash';
+import { filter, find, flatten, get, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -119,6 +119,19 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				<Section maxWidth={700}>
 					<ReportGrid>
 						{map(items, (item) => {
+							const itemIndicators = item.chart ? [...item.chart.values] : [item.value];
+							const yMarkers = model.certifications
+								? filter(flatten(map(itemIndicators, (indId) => map(model.certifications, (certification) => {
+									const toPlot: any = find(certification.requirements, { indicator: indId });
+									return !isUndefined(toPlot)
+										? {
+											label: certification.name,
+											value: toPlot.value
+										}
+										: undefined;
+								}))), (value) => !isUndefined(value))
+								: [];
+
 							const chart = {
 								type: 'line',
 								data: {
@@ -131,7 +144,8 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 										: item.value ? [{
 											title: model.indicators[item.value].name,
 											values: map(withData, ({ data }) => ReportsStore.compute(model.indicators[item.value].value, data))
-										}] : []
+										}] : [],
+									yMarkers: yMarkers.length > 0 && yMarkers
 								}
 							};
 

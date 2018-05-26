@@ -9,5 +9,8 @@
 		"@babel/react",
 		"@babel/typescript"
 	],
-	"plugins": ["@babel/plugin-transform-runtime"]
+	"plugins": [
+		"@babel/plugin-transform-runtime",
+		"lodash"
+	]
 }

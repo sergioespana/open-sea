@@ -1,8 +1,9 @@
-import { get } from 'lodash';
+import { safeDump } from 'js-yaml';
+import { get, map, toPairs } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import Button from '../../../components/Button';
+import Button, { ButtonGroup } from '../../../components/Button';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
@@ -63,15 +64,18 @@ class NetworkSettingsModel extends Component<any> {
 				{PageHead}
 				<Container>
 					<Section>
-						<EmptyState>
-							<img src="/assets/images/empty-state-development.svg" />
-							<h1>This page is in development</h1>
-							<p>
-								Your network already has a model. In a later version, you will be able to visualise and
-								change the model right here on this page, however for now you may
-								only <LinkInput accept=".yml" onChange={this.onFileChange}>upload a new model</LinkInput>.
-							</p>
-						</EmptyState>
+						<p style={{ marginTop: 0 }}>
+							Your network already has a model. In a later version, you will be able to<br />
+							visualise and change the model right here on this page.
+						</p>
+						<p>
+							<ButtonGroup style={{ alignItems: 'center' }}>
+								<Button appearance="default" onClick={this.exportModel(netId, model)}>Get YAML file</Button>
+								<LinkInput accept=".yml" onChange={this.onFileChange}>Upload a new model</LinkInput>
+							</ButtonGroup>
+						</p>
+						<h3>Current model</h3>
+						<pre>{JSON.stringify(model, null, 2)}</pre>
 					</Section>
 				</Container>
 			</React.Fragment>
@@ -124,6 +128,22 @@ class NetworkSettingsModel extends Component<any> {
 
 			return ReportsStore.addModel(model, { onSuccess, onError });
 		}
+	}
+	private exportModel = (netId, json) => () => {
+		const yaml = safeDump(json);
+		const blob = new Blob([yaml], {
+			type: 'text/plain;charset=utf-8'
+		});
+		const url = window.URL.createObjectURL(blob);
+
+		let a = document.createElement('a');
+		a.setAttribute('hidden', 'true');
+		a.setAttribute('href', url);
+		a.setAttribute('download', `${netId}.yml`);
+
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(url);
 	}
 }
 

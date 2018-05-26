@@ -1,4 +1,4 @@
-import { filter, find, isString, map } from 'lodash';
+import { difference, filter, find, isString, map } from 'lodash';
 import { reaction } from 'mobx';
 import { Organisation, Report } from '../../domain/Organisation';
 import { User } from '../../domain/User';
@@ -20,9 +20,20 @@ export const actions = (state) => {
 			// remove loaded organisations from memory.
 			if (length === 0) return organisations.clear();
 
-			// User has access to some organisations, so set listers for each of them.
-			const orgs = getCurrentUser(state)._organisations;
-			map(orgs, ({ _id }) => _id).forEach(startListening);
+			// Create lists of organisation IDs the user has access to as well as the ones
+			// we currently have in memory.
+			const userOrgIds = map(getCurrentUser(state)._organisations, ({ _id }) => _id);
+			const memoryOrgIds = map(state.organisations, ({ _id }) => _id);
+
+			// Remove organisations that are in memory but not in the user's organisations
+			// from memory as we no longer have access to those.
+			const removed = difference(memoryOrgIds, userOrgIds);
+			removed.forEach((orgId) => organisations.remove(orgId));
+
+			// Set a listener for organisations that aren't in memory but are in the user's
+			// organisations.
+			const added = difference(userOrgIds, memoryOrgIds);
+			added.forEach(startListening);
 		}
 	);
 

@@ -1,4 +1,4 @@
-import Frappe from 'frappe-charts/dist/frappe-charts.min.esm.js';
+import { Chart } from 'frappe-charts/dist/frappe-charts.min.esm.js';
 import { cloneDeep } from 'lodash';
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
@@ -11,11 +11,10 @@ const ChartWrapper = styled.div`
 	}
 `;
 
-export default class Chart extends Component {
-	chart = null;
-
+export default class ReactChart extends Component {
 	componentDidMount () {
-		this.chart = new Frappe({ parent: findDOMNode(this), ...cloneDeep(this.props) });
+		const chart = new Chart(findDOMNode(this), { ...cloneDeep(this.props) });
+		chart.unbindWindowEvents();
 	}
 
 	render () {

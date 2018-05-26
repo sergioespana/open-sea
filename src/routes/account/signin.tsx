@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import AuthForm, { AuthButton, AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/NewInput';
-import { setAppState } from '../../stores/helpers';
 
 const initialState = {
 	email: '',
@@ -74,16 +73,19 @@ export default class AccountSignin extends Component<any, State> {
 
 	private onSubmit = async (event) => {
 		event.preventDefault();
-		const { AuthStore, state } = this.props;
-		const { email, pass } = this.state;
 
-		setAppState(state, 'isBusy', true);
+		const { props, state } = this;
+		const { AuthStore } = props;
+		const { email, pass } = state;
+
 		this.setState({ error: null });
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
 		try {
 			await AuthStore.signIn(email, pass);
 		} catch (error) {
-			console.error(error);
 			this.setState({ error });
+		} finally {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
 		}
 	}
 }

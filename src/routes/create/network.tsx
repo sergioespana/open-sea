@@ -1,5 +1,6 @@
 import linkState from 'linkstate';
 import { debounce, find, isUndefined } from 'lodash';
+import { reaction } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, FormEvent } from 'react';
@@ -58,6 +59,7 @@ export default class CreateNetwork extends Component<any, State> {
 					</header>
 					<Input
 						appearance="default"
+						disabled={isBusy}
 						autoFocus
 						isCompact
 						label="Name"
@@ -69,6 +71,7 @@ export default class CreateNetwork extends Component<any, State> {
 					/>
 					<Input
 						appearance={(!isBusy && orgUrlTaken) ? 'error' : 'default'}
+						disabled={isBusy}
 						isCompact
 						help={(!isBusy && orgUrlTaken) && 'A network with this ID already exists. Please change it or pick another name.'}
 						label="URL"
@@ -81,6 +84,7 @@ export default class CreateNetwork extends Component<any, State> {
 					/>
 					<Input
 						appearance="default"
+						disabled={isBusy}
 						isCompact
 						label="Avatar"
 						type="image"
@@ -88,6 +92,7 @@ export default class CreateNetwork extends Component<any, State> {
 					/>
 					<TextArea
 						appearance="default"
+						disabled={isBusy}
 						isCompact
 						label="Description"
 						onChange={linkState(this, 'description')}
@@ -96,6 +101,7 @@ export default class CreateNetwork extends Component<any, State> {
 					<Input
 						appearance="default"
 						checked={isPublic}
+						disabled={isBusy}
 						help="Public networks and their organisations are visible to anyone. Explicitly granted access is still required for certain operations."
 						isCompact
 						label="Public"
@@ -104,8 +110,8 @@ export default class CreateNetwork extends Component<any, State> {
 						type="checkbox"
 					/>
 					<footer>
-						<Button appearance="default" disabled={preventSubmit} type="submit">Create network</Button>
-						<LinkButton appearance="link" to="/">Cancel</LinkButton>
+						<Button appearance="default" disabled={preventSubmit || isBusy} type="submit">Create network</Button>
+						{!isBusy && <LinkButton appearance="link" to="/">Cancel</LinkButton>}
 					</footer>
 				</Form>
 			</React.Fragment>
@@ -130,10 +136,16 @@ export default class CreateNetwork extends Component<any, State> {
 		const { avatar, description, isPublic, name, url } = state;
 		const network = { _id: url, avatar, description, isNetwork: true, isPublic, name };
 
-		const onSuccess = () => {
-			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
-			history.push(`/${network._id}`);
-		};
+		const onSuccess = reaction(
+			() => !isUndefined(find(props.state.organisations, { _id: url })),
+			(done) => {
+				if (done) {
+					onSuccess();
+					props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+					history.push(`/${network._id}`);
+				}
+			}
+		);
 
 		const onError = (error) => {
 			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
@@ -142,7 +154,7 @@ export default class CreateNetwork extends Component<any, State> {
 		};
 
 		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
-		return OrganisationsStore.create(network, { onSuccess, onError });
+		return OrganisationsStore.create(network, { onError });
 	}
 }
 

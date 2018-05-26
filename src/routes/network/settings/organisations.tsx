@@ -2,7 +2,7 @@ import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import linkState from 'linkstate';
-import { filter, find, findLastIndex, get, inRange, isNumber, isUndefined, last, map } from 'lodash';
+import { filter, find, get, inRange, isUndefined, last, map, reject } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -109,14 +109,13 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 						</ModalHeader>
 						<ModalSection>
 							<p>
-								Please note that searching for an organisation currently is not supported. Typing in the box below will always yield
-								"no results". You are able to choose from any organisation you already have access to.
+								You may only add organisations to this network that you yourself have access to. Searching for
+								organisations not in any way tied to you is not yet supported.
 							</p>
 							<Select
-								autoFocus
 								isSearchable
 								onChange={linkState(this, 'organisation', 'value')}
-								options={this.toOptions(state.organisations, network._organisations)}
+								options={this.toOptions(reject(state.organisations, { isNetwork: true }), network._organisations)}
 								placeholder="Choose organisation"
 								value={organisation}
 							/>

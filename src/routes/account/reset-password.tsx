@@ -3,26 +3,27 @@ import { trim } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import AuthForm, { AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
+import AuthForm, { AuthFormAlert, AuthFormFooter, AuthFormHeader, AuthFormWrapper } from '../../components/AuthForm';
 import { Button } from '../../components/Button';
 import { Link } from '../../components/Link';
 import { Input } from '../../components/NewInput';
 
-interface State {
-	email: string;
-}
+const initialState = {
+	email: '',
+	error: null
+};
 
-@inject(app('state'))
+type State = Readonly<typeof initialState>;
+
+@inject(app('AuthStore'))
 @observer
 export default class AccountResetPassword extends Component<any, State> {
-	readonly state: State = {
-		email: ''
-	};
+	readonly state: State = initialState;
 
 	render () {
 		const { state } = this.props;
 		const { isBusy } = state;
-		const { email } = this.state;
+		const { email, error } = this.state;
 
 		return (
 			<AuthFormWrapper>
@@ -31,6 +32,7 @@ export default class AccountResetPassword extends Component<any, State> {
 					<h2>Unable to login?</h2>
 				</AuthFormHeader>
 				<AuthForm onSubmit={this.onSubmit}>
+					{error && <AuthFormAlert>{error.message}</AuthFormAlert>}
 					<Input
 						appearance="default"
 						autoFocus
@@ -54,5 +56,22 @@ export default class AccountResetPassword extends Component<any, State> {
 		);
 	}
 
-	private onSubmit = (event) => event.preventDefault();
+	private onSubmit = async (event) => {
+		event.preventDefault();
+
+		const { props, state } = this;
+		const { AuthStore } = props;
+		const { email } = state;
+
+		this.setState({ error: null });
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+		try {
+			await AuthStore.resetPassword(email);
+			this.setState({ error: { message: `We've sent you an e-mail with a password reset link.` } });
+		} catch (error) {
+			this.setState({ error });
+		} finally {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+		}
+	}
 }
