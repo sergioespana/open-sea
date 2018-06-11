@@ -39,27 +39,43 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 	const { current: currentIndex, next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
 	const current = assessed[currentIndex];
 	const next = assessed[nextIndex];
-	const [ unmet, met ] = partition(next.requirements, { _pass: false });
+
+	const CurrentCertification = (
+		<div>
+			<h3>Current level</h3>
+			<p>
+				{isUndefined(current)
+					? <span>None</span>
+					: <Lozenge appearance="default" bg={current.colour}>{current.name}</Lozenge>}
+			</p>
+		</div>
+	);
+
+	if (isUndefined(next)) return (
+		<React.Fragment>
+			{PageHead}
+			<Container>
+				<Section>
+					{CurrentCertification}
+				</Section>
+			</Container>
+		</React.Fragment>
+	);
+
+	const [unmet, met] = partition(next.requirements, { _pass: false });
 
 	return (
 		<React.Fragment>
 			{PageHead}
 			<Container>
 				<Section>
+					{CurrentCertification}
 					<div>
-						<h3>Current level:</h3>
-						<p>
-							{isUndefined(current)
-								? <span>None</span>
-								: <Lozenge appearance="default" bg={current.colour}>{current.name}</Lozenge>}
-						</p>
-					</div>
-					{!isUndefined(next) && <div>
-						<h3>Next level:</h3>
+						<h3>Next level</h3>
 						<p>
 							<Lozenge appearance="default" bg={next.colour}>{next.name}</Lozenge>
 						</p>
-						<h3>Requirements already met:</h3>
+						<h3>Requirements already met</h3>
 						<ul>
 							{map(met, (requirement: Requirement) => {
 								const { _computed, indicator, operator, value } = requirement;
@@ -71,7 +87,7 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 								);
 							})}
 						</ul>
-						<h3>Requirements to meet:</h3>
+						<h3>Requirements to meet</h3>
 						<ul>
 							{map(unmet, (requirement: Requirement) => {
 								const { _computed, indicator, operator, value } = requirement;
@@ -83,7 +99,7 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 								);
 							})}
 						</ul>
-					</div>}
+					</div>
 				</Section>
 			</Container>
 		</React.Fragment>
