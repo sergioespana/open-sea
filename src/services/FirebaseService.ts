@@ -2,6 +2,7 @@ import fb, { firestore } from 'firebase';
 import 'firebase/firestore';
 import { find, findIndex, flatten, isString, isUndefined, map, partition, reject } from 'lodash';
 import { observable } from 'mobx';
+import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 
 const firebase = fb.initializeApp({
 	apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
@@ -54,8 +55,15 @@ const updateListenerStatus = (path, status: 'pending' | 'listening') => {
 
 // Convenient method to add a listener. Manages all Firebase interactions here, so the stores just
 // have to deal with updating state accordingly.
-export const startListening = (path: string, initialData: object = {}, callbacks: { onAdded?: (res: any) => void, onRemoved?: (id: string) => void } = {}) => {
-	const { onAdded, onRemoved } = callbacks;
+export const startListening = (
+	path: string,
+	initialData: object = {},
+	callbacks: {
+		onAdded?: (res: any) => void,
+		onEmpty?: (path: string) => void,
+		onRemoved?: (id: string) => void } = {}
+	) => {
+	const { onAdded, onEmpty, onRemoved } = callbacks;
 
 	// Handler for when we're dealing with a document reference.
 	const docHandler = (doc) => {
@@ -75,10 +83,12 @@ export const startListening = (path: string, initialData: object = {}, callbacks
 	// Intermediate handler for when we're dealing with a collection. This intermediate
 	// sets listeners up for each item in a collection and removes listeners for deleted
 	// items. Removed individual items are handled in docHandler.
-	const colIntermediate = ({ docChanges }) => {
-		const [removed, added] = partition(docChanges, { type: 'removed' });
-		added.forEach(({ doc }: any) => startListening(doc.ref.path, doc.data(), callbacks));
-		removed.forEach(({ doc }: any) => removeListener(doc.ref.path));
+	const colIntermediate = ({ docChanges, empty }) => {
+		if (!empty) {
+			const [removed, added] = partition(docChanges, { type: 'removed' });
+			added.forEach(({ doc }: any) => startListening(doc.ref.path, doc.data(), callbacks));
+			removed.forEach(({ doc }: any) => removeListener(doc.ref.path));
+		} else if (onEmpty) onEmpty(path);
 		updateListenerStatus(path, 'listening');
 	};
 
