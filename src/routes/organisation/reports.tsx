@@ -1,7 +1,7 @@
 import differenceInHours from 'date-fns/difference_in_hours';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
-import { find, get, isUndefined } from 'lodash';
+import { find, get } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -10,7 +10,6 @@ import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
-import { Lozenge } from '../../components/Lozenge';
 import { Section } from '../../components/Section';
 import Table from '../../components/Table';
 
@@ -76,12 +75,6 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 							label: 'Updated by',
 							value: ({ createdBy, updatedBy }) => get(find(state.users, { _id: updatedBy || createdBy }), 'name'),
 							format: (name, { createdBy, updatedBy }) => <Link to={`/dashboard/people/${updatedBy || createdBy}`}>{name}</Link>
-						},
-						{
-							key: 'status',
-							label: 'Status',
-							value: ({ data, model }) => (isUndefined(model) && isUndefined(data)) ? 'New' : 'In Progress',
-							format: (value) => <Lozenge appearance={value.split(' ').join('').toLowerCase()}>{value}</Lozenge>
 						}
 					]}
 					data={reports}
