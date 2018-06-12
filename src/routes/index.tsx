@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import linkState from 'linkstate';
-import { filter, flattenDeep, inRange, isUndefined, map, reject } from 'lodash';
+import { filter, flattenDeep, get, inRange, isUndefined, map, reject } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -312,7 +312,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/reports`
 		},
 		{
-			hidden: isUndefined(parentNetwork),
+			hidden: isUndefined(parentNetwork) || isUndefined(get(parentNetwork, 'model.certifications')),
 			icon: <MdAssignmentTurnedIn />,
 			label: 'Certification',
 			to: `/${orgId}/certification`
