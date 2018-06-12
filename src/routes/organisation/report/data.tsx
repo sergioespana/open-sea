@@ -1,4 +1,4 @@
-import { get, isEmpty, isEqual, isNumber, map, set, toNumber } from 'lodash';
+import { get, isEmpty, isEqual, isNumber, map, pickBy, set, toNumber } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -29,7 +29,7 @@ class OrganisationReportData extends Component<any> {
 		const { match: { params: { orgId, repId } }, OrganisationsStore } = this.props;
 		const organisation = OrganisationsStore.findById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-		return this.setState({ data: { ...get(report, 'data') } });
+		return this.setState({ data: { ...toJS(get(report, 'data')) } });
 	}
 
 	render () {
@@ -77,16 +77,24 @@ class OrganisationReportData extends Component<any> {
 				{PageHead}
 				<Container>
 					<Form onSubmit={this.onSubmit}>
-						{map(model.metrics, ({ name, ...rest }, key) => (
-							<Input
-								isCompact
-								label={name}
-								multiple={rest.type === 'text'}
-								onChange={linkDataInput(this, `data.${key}`)}
-								value={get(data, key)}
-								{...rest}
-							/>
-						))}
+						{model.categories
+							? (
+								<React.Fragment>
+									{map(model.categories, ({ name }, catId) => {
+										const items = pickBy(model.metrics, ({ category }) => category === catId);
+										if (isEmpty(items)) return null;
+										return (
+											<React.Fragment>
+												<h3>{name}</h3>
+												{map(items, this.renderItem(data))}
+											</React.Fragment>
+										);
+									})}
+									<h3>Uncategorised</h3>
+									{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
+								</React.Fragment>
+							)
+							: map(model.metrics, this.renderItem(data))}
 						<FormActions>
 							<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
 							<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>
@@ -97,6 +105,17 @@ class OrganisationReportData extends Component<any> {
 		);
 	}
 
+	private renderItem = (data) => ({ name, ...rest }, key) => (
+		<Input
+			appearance="default"
+			isCompact
+			label={name}
+			multiple={rest.type === 'text'}
+			onChange={linkDataInput(this, `data.${key}`)}
+			value={get(data, key)}
+			{...rest}
+		/>
+	)
 	private onSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
