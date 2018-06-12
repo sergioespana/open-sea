@@ -1,6 +1,7 @@
 import { get, isFunction, set } from 'lodash';
 import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
+import styled from '../../util/styled-components';
 import Field from './Field';
 import FieldContainer from './FieldContainer';
 import FieldLabel, { FieldLegend } from './FieldLabel';
@@ -36,13 +37,22 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 
 		switch (props.type) {
 		case 'checkbox':
+			const Label = styled.label`
+				&[disabled]:not([disabled="false"]):hover {
+					cursor: no-drop;
+
+					* {
+						pointer-events: none;
+					}
+				}
+			`;
 			return (
 				<Wrapper {...wrapper}>
 					{label && <FieldLegend required={props.required}>{label}</FieldLegend>}
-					<label>
+					<Label disabled={props.disabled}>
 						<input {...props} />
 						<span>{props.placeholder}</span>
-					</label>
+					</Label>
 					{help && <Help {...helpProps}>{help}</Help>}
 				</Wrapper>
 			);
