@@ -25,7 +25,7 @@ const getBackgroundColor = (appearance) => {
 
 interface Props {
 	appearance: 'default' | 'success' | 'removed' | 'inprogress' | 'new' | 'moved';
-	bg: string;
+	bg?: string;
 }
 export default styled<Props, 'span'>('span')`
 	background-color: ${({ appearance, bg }) => bg ? transparentize(0.75, bg) : getBackgroundColor(appearance)};
