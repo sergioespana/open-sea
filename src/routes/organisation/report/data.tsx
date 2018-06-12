@@ -39,8 +39,6 @@ class OrganisationReportData extends Component<any> {
 		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
 
-		if (!report) return <Redirect to={`/${orgId}/reports`} />;
-
 		const { data } = this.state;
 		const model = get(parentNetwork ? parentNetwork : report, 'model');
 		const PageHead = (
