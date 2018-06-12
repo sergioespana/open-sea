@@ -16,9 +16,11 @@ interface IForm {
 
 const UnstyledForm: SFC<IForm & HTMLProps<HTMLFormElement>> = (props) => <form {...props} />;
 const Form = styled(UnstyledForm)`
-	margin: ${({ isStandalone }) => isStandalone ? '60px' : 0} auto 0 auto;
-	max-width: 700px;
-	width: 100%;
+	${({ isStandalone }) => isStandalone && `
+		margin: 60px auto 0 auto;
+		max-width: 700px;
+		width: 100%;
+	`}
 
 	& > * {
 		margin-bottom: 24px;
