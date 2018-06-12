@@ -75,7 +75,7 @@ export default class ListInput extends Component<ListInputProps & HTMLProps<HTML
 		if (key === 'Enter' || keyCode === 13 || which === 13) {
 			event.preventDefault();
 			const { onChange } = this.props;
-			const mockEvent: FormEvent<HTMLInputElement> = { ...event, target: { value: [ ...this.props.value, trim(this.state.value) ] } };
+			const mockEvent: FormEvent<HTMLInputElement> = { ...event, target: { value: [ ...this.props.value || [], trim(this.state.value) ] } };
 			if (onChange) onChange(mockEvent);
 			this.setState({ value: '' });
 		}
