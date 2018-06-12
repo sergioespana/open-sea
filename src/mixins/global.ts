@@ -26,6 +26,7 @@ export default css`
 
 	body {
 		margin: 0;
+		overflow-y: scroll;
 	}
 
 	#app {
