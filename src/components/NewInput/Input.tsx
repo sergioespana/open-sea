@@ -1,11 +1,11 @@
 import { get, isFunction, set } from 'lodash';
 import React, { Component, HTMLProps } from 'react';
 import slugify from 'slugify';
-import Container from './Container';
 import Field from './Field';
 import FieldContainer from './FieldContainer';
 import FieldLabel, { FieldLegend } from './FieldLabel';
 import Help from './Help';
+import ListInput from './ListInput';
 import Prefix from './Prefix';
 import Wrapper from './Wrapper';
 
@@ -64,6 +64,8 @@ export default class Input extends Component<InputProps & HTMLProps<HTMLInputEle
 			return <input {...props} />;
 		case 'range':
 			return <input {...props} />;
+		case 'list':
+			return <ListInput {...this.props} />;
 		default:
 			return (
 				<Wrapper {...wrapper}>
