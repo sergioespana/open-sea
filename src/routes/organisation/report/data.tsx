@@ -92,7 +92,7 @@ class OrganisationReportData extends Component<any> {
 												</React.Fragment>
 											);
 										})}
-										<h3>Uncategorised</h3>
+										{!isEmpty(pickBy(model.metrics, ({ category }) => category === undefined)) && <h3>Uncategorised</h3>}
 										{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
 									</React.Fragment>
 								)
