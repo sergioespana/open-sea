@@ -28,6 +28,7 @@ import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Mod
 import { Button as NavButton, Navigation } from '../components/Navigation';
 import { Redirect } from '../components/Redirect';
 import { Route } from '../components/Route';
+import collection from '../stores/collection';
 import { getCurrentUser, getCurrentUserAccess } from '../stores/helpers';
 import AccountRoutes from './account/index';
 import CreateRoutes from './create/index';
@@ -336,7 +337,34 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					to: `/${orgId}/settings/advanced`
 				}
 			]
-		}
+		},
+		...map(organisation._reports, ({ _id }) => {
+			const report = collection(organisation._reports).findById(_id);
+			return {
+				hidden: true,
+				icon: null,
+				label: report.name,
+				to: `/${_id}`,
+				navigationItems: [
+					{
+						label: 'Report',
+						to: `/${_id}`
+					},
+					{
+						label: 'Data',
+						to: `/${_id}/data`
+					},
+					{
+						label: 'Model',
+						to: `/${_id}/model`
+					},
+					{
+						label: 'Settings',
+						to: `/${_id}/settings`
+					}
+				]
+			};
+		})
 	];
 	const networkItems = [
 		{

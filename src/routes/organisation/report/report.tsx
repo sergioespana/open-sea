@@ -47,7 +47,6 @@ class OrganisationReportOverview extends Component<any, State> {
 					<Link key={`/${orgId}/reports`} to={`/${orgId}/reports`}>Reports</Link>
 				]}
 			>
-				{!isEmpty(data) && <LinkButton appearance="light" to={`/${orgId}/${repId}/data`}>Edit data</LinkButton>}
 				{!isEmpty(data) && <Button appearance="light">Export</Button>}
 				<Menu
 					trigger={<Button appearance="light"><MdMoreHoriz height={24} width={24} /></Button>}
