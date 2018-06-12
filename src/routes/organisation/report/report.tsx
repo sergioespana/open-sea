@@ -121,11 +121,10 @@ class OrganisationReportOverview extends Component<any, State> {
 				<Container>
 					<EmptyState>
 						<img src="/assets/images/empty-state-no-data.svg" />
-						<h1>No reportitems</h1>
+						<h1>No report items</h1>
 						<p>
-							The model for this report contains no report items.
-							<LinkInput>Upload a new model</LinkInput> to get started. <a>Click here</a> for
-							more information.
+							The model for this report contains no report items. <LinkInput>Upload a new
+							model</LinkInput> to get started. <a>Click here</a> for more information.
 						</p>
 					</EmptyState>
 				</Container>
