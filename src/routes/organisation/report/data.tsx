@@ -12,6 +12,7 @@ import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Input } from '../../../components/NewInput';
 import { Redirect } from '../../../components/Redirect';
+import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
 
 interface State {
@@ -76,30 +77,32 @@ class OrganisationReportData extends Component<any> {
 			<React.Fragment>
 				{PageHead}
 				<Container>
-					<Form onSubmit={this.onSubmit}>
-						{model.categories
-							? (
-								<React.Fragment>
-									{map(model.categories, ({ name }, catId) => {
-										const items = pickBy(model.metrics, ({ category }) => category === catId);
-										if (isEmpty(items)) return null;
-										return (
-											<React.Fragment>
-												<h3>{name}</h3>
-												{map(items, this.renderItem(data))}
-											</React.Fragment>
-										);
-									})}
-									<h3>Uncategorised</h3>
-									{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
-								</React.Fragment>
-							)
-							: map(model.metrics, this.renderItem(data))}
-						<FormActions>
-							<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
-							<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>
-						</FormActions>
-					</Form>
+					<Section>
+						<Form onSubmit={this.onSubmit}>
+							{model.categories
+								? (
+									<React.Fragment>
+										{map(model.categories, ({ name }, catId) => {
+											const items = pickBy(model.metrics, ({ category }) => category === catId);
+											if (isEmpty(items)) return null;
+											return (
+												<React.Fragment>
+													<h3>{name}</h3>
+													{map(items, this.renderItem(data))}
+												</React.Fragment>
+											);
+										})}
+										<h3>Uncategorised</h3>
+										{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
+									</React.Fragment>
+								)
+								: map(model.metrics, this.renderItem(data))}
+							<FormActions>
+								<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
+								<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>
+							</FormActions>
+						</Form>
+					</Section>
 				</Container>
 			</React.Fragment>
 		);
