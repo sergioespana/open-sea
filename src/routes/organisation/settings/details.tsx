@@ -32,7 +32,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 		const { match: { params: { orgId } }, OrganisationsStore, state } = this.props;
 		const { organisation } = this.state;
 		const originalOrg = OrganisationsStore.findById(orgId);
-		const preventSubmit = state.isBusy || isEqual(organisation, originalOrg);
+		const preventSubmit = true/*state.isBusy || isEqual(organisation, originalOrg)*/;
 
 		return (
 			<React.Fragment>
