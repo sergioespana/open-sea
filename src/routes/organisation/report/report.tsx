@@ -1,5 +1,4 @@
 import { get, isEmpty, map } from 'lodash';
-import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
@@ -13,7 +12,6 @@ import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
-import { LinkInput } from '../../../components/NewInput';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
 import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
@@ -140,52 +138,6 @@ class OrganisationReportOverview extends Component<any, State> {
 			</React.Fragment>
 		);
 	}
-
-	private onFileChange = (event) => {
-		this.setState({ showModal: true });
-		const file = event.target.files[0];
-		const fr = new FileReader();
-		fr.onload = this.onFileLoad;
-		fr.readAsText(file);
-	}
-	private onFileLoad = (ev: ProgressEvent) => {
-		const { srcElement }: { srcElement: Partial<FileReader> } = ev;
-		const { result } = srcElement;
-		const { ReportsStore, UIStore } = this.props;
-
-		if (!result) {
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
-			this.setState({ showModal: false });
-			return;
-		}
-
-		const json = ReportsStore.parseStrToJson(result);
-		return this.validateAndStoreModel(json);
-	}
-	private validateAndStoreModel = (json) => {
-		const { history, match: { params: { orgId, repId } }, ReportsStore, UIStore } = this.props;
-		const { accepted } = ReportsStore.validateModel(json);
-
-		if (!accepted) {
-			// TODO: Show first error in errors object in flag description.
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
-			this.setState({ showModal: false });
-		} else {
-			const model = { ...accepted, _orgId: orgId, _repId: repId };
-
-			const onSuccess = () => {
-				UIStore.addFlag({ appearance: 'success', title: 'Model saved successfully' });
-				history.push(`/${orgId}/${repId}/data`);
-			};
-			const onError = () => {
-				this.setState({ showModal: false });
-				UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'There was an error storing your model. Please try again.' });
-			};
-
-			return ReportsStore.addModel(model, { onSuccess, onError });
-		}
-	}
-	private copyModel = (model) => () => this.validateAndStoreModel(toJS(model));
 }
 
 export default withRouter(OrganisationReportOverview);
