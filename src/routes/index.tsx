@@ -10,6 +10,7 @@ import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
 import MdAssignmentTurnedIn from 'react-icons/lib/md/assignment-turned-in';
 import MdBusiness from 'react-icons/lib/md/business';
+import MdCollectionsBookmark from 'react-icons/lib/md/collections-bookmark';
 import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
 import MdGroupWork from 'react-icons/lib/md/group-work';
 import MdHelp from 'react-icons/lib/md/help';
@@ -277,6 +278,11 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 					icon: <MdPeople />,
 					label: 'People',
 					to: '/dashboard/people'
+				},
+				{
+					icon: <MdCollectionsBookmark />,
+					label: 'Models',
+					to: '/dashboard/models'
 				}
 			]}
 			searchIcon={<MdSearch />}

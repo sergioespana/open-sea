@@ -29,10 +29,12 @@ export interface Metric {
 }
 
 export interface Model {
+	_id: string;
 	categories?: Category[];
 	certifications?: Certification[];
 	indicators: Indicator[];
 	metrics: Metric[];
+	name: string;
 	reportItems?: Array<any>;
 }
 
