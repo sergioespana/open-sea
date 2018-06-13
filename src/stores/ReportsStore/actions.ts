@@ -57,7 +57,7 @@ export const actions = (state) => {
 	const operatorText = {
 		'>': 'more than',
 		'>=': 'at least',
-		'<': 'less than',
+		'<': 'lower than',
 		'<=': 'at most',
 		'==': 'exactly'
 	};
