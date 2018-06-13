@@ -36,7 +36,7 @@ class OrganisationCertification extends Component<any, State> {
 		const organisation: Organisation = OrganisationsStore.findById(orgId) || {};
 		const network: Organisation = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(baseReport);
-		const model = get(report, 'model');
+		const model = get(network, 'model');
 		const certifications: Certification[] = get(model, 'certifications');
 
 		const PageHead = (
