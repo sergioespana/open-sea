@@ -29,6 +29,10 @@ export default css`
 		overflow-y: scroll;
 	}
 
+	pre {
+		white-space: pre-wrap;
+	}
+
 	#app {
 		display: flex;
 
