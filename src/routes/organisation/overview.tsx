@@ -5,13 +5,13 @@ import { filter, find, flatten, get, isUndefined, last, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
+import MdEdit from 'react-icons/lib/md/edit';
 import { LinkButton } from '../../components/Button';
 import Chart from '../../components/Chart';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
-import { Lozenge } from '../../components/Lozenge';
 import { ReportGrid, ReportGridItem } from '../../components/ReportGrid';
 import { Section } from '../../components/Section';
 import { Table } from '../../components/Table';
@@ -19,7 +19,6 @@ import { Table } from '../../components/Table';
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.findById(orgId) || {};
-	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
 
@@ -43,10 +42,10 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						format: (name, { _id }) => <Link to={`/${_id}`}>{name}</Link>
 					},
 					{
-						key: 'status',
-						label: 'Status',
-						value: ({ data, model }) => (isUndefined(model) && isUndefined(data)) ? 'New' : 'In Progress',
-						format: (value) => <Lozenge appearance={value.split(' ').join('').toLowerCase()}>{value}</Lozenge>
+						key: 'actions',
+						label: 'Edit',
+						labelHidden: true,
+						format: (_, { _id }) => <Link to={`/${_id}/data`}>Edit data</Link>
 					},
 					{
 						label: 'Last updated',
@@ -109,7 +108,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</React.Fragment>
 	);
 
-	const model = get(parentNetwork || last(withData), 'model');
+	const model = get(last(withData), 'model');
 	const items = get(model, 'reportItems');
 
 	return (

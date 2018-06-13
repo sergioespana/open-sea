@@ -18,7 +18,7 @@ const OrganisationReportSettings = inject(app('OrganisationsStore', 'ReportsStor
 	const PageHead = (
 		<Header
 			title="Settings"
-			headTitle={`${organisation.name} / ${report.name} / Settings`}
+			headTitle={`Settings - ${organisation.name} / ${report.name}`}
 			breadcrumbs={[
 				<Link key={`/${orgId}`} to={`/${orgId}`}>{organisation.name}</Link>,
 				<Link key={`/${orgId}/reports`} to={`/${orgId}/reports`}>Reports</Link>,

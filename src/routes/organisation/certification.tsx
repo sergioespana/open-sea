@@ -1,8 +1,8 @@
-import { filter, get, isNumber, isUndefined, last, map, partition } from 'lodash';
+import { filter, get, isUndefined, last, map, partition } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Container from '../../components/Container';
 import Header from '../../components/Header';
 import Lozenge from '../../components/Lozenge';
@@ -13,7 +13,10 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation: Organisation = OrganisationsStore.findById(orgId) || {};
 	const network: Organisation = OrganisationsStore.findParentNetworkById(orgId);
-	const model = get(network, 'model');
+	const withData = filter(organisation._reports, 'data');
+	const report = last(withData);
+	const model = get(report, 'model');
+	const certifications: Certification[] = get(model, 'certifications');
 
 	const PageHead = (
 		<Header
@@ -25,16 +28,8 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 		/>
 	);
 
-	// TODO: Show empty state.
-	if (!model) return null;
+	if (!certifications) return <Redirect to={`/${orgId}`} />;
 
-	const certifications: Certification[] = get(model, 'certifications');
-
-	// TODO: Show empty state.
-	if (!certifications) return null;
-
-	const withData = filter(organisation._reports, 'data');
-	const report = last(withData);
 	const assessed: Certification[] = ReportsStore.assess(certifications, model.indicators, report);
 	const { current: currentIndex, next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
 	const current = assessed[currentIndex];
@@ -56,6 +51,9 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 			{PageHead}
 			<Container>
 				<Section>
+					<p style={{ marginTop: 0 }}>
+						<i>Certification level based on <Link to={`/${report._id}`}>{report.name}</Link>.</i>
+					</p>
 					{CurrentCertification}
 				</Section>
 			</Container>
@@ -69,6 +67,9 @@ const OrganisationCertification = inject(app('OrganisationsStore', 'ReportsStore
 			{PageHead}
 			<Container>
 				<Section>
+					<p style={{ marginTop: 0 }}>
+						<i>Certification level based on <Link to={`/${report._id}`}>{report.name}</Link>.</i>
+					</p>
 					{CurrentCertification}
 					<div>
 						<h3>Next level</h3>
