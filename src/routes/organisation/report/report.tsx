@@ -2,9 +2,8 @@ import { get, isEmpty, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdFileDownload from 'react-icons/lib/md/file-download';
-import MdPrint from 'react-icons/lib/md/print';
-import MdShare from 'react-icons/lib/md/share';
+import MdEdit from 'react-icons/lib/md/edit';
+import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
 import { Redirect, withRouter } from 'react-router-dom';
 import { Button, LinkButton } from '../../../components/Button';
 import Chart from '../../../components/Chart';
@@ -12,6 +11,7 @@ import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
+import { Menu, MenuOption } from '../../../components/Menu';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
 import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
@@ -43,9 +43,12 @@ class OrganisationReportOverview extends Component<any, State> {
 					<Link key={`/${orgId}/reports`} to={`/${orgId}/reports`}>Reports</Link>
 				]}
 			>
-				{!isEmpty(data) && <Button appearance="light"><MdFileDownload height={20} width={20} /></Button>}
-				{!isEmpty(data) && <Button appearance="light"><MdPrint height={20} width={20} /></Button>}
-				{!isEmpty(data) && <Button appearance="light"><MdShare height={20} width={20} /></Button>}
+				{!isEmpty(data) && <LinkButton appearance="light" to={`/${orgId}/${repId}/data`}><MdEdit height={20} width={20} /></LinkButton>}
+				{!isEmpty(data) && <Menu position="bottom-left" trigger={<Button appearance="light"><MdMoreHoriz height={20} width={20} /></Button>}>
+					<MenuOption>Share link</MenuOption>
+					<MenuOption>Print</MenuOption>
+					<MenuOption>Download</MenuOption>
+				</Menu>}
 			</Header>
 		);
 
