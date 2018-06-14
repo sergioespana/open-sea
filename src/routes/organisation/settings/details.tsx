@@ -49,6 +49,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 						<Form onSubmit={this.onSubmit}>
 							<Input
 								appearance="default"
+								disabled
 								isCompact
 								label="Name"
 								onChange={linkState(this, 'organisation.name')}
@@ -57,6 +58,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 							/>
 							<Input
 								appearance="default"
+								disabled
 								isCompact
 								label="Avatar"
 								onChange={linkState(this, 'organisation.image')}
@@ -65,6 +67,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 							/>
 							<TextArea
 								appearance="default"
+								disabled
 								isCompact
 								label="Description"
 								onChange={linkState(this, 'organisation.description')}
@@ -73,6 +76,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 							<Input
 								appearance="default"
 								checked={organisation.isPublic}
+								disabled
 								help={`Public ${organisation.isNetwork ? 'network' : 'organisation'}s and their ${organisation.isNetwork ? 'organisation' : 'report'}s are visible to anyone. Explicitly granted access is still required for certain operations.`}
 								isCompact
 								label="Public"
@@ -82,7 +86,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 							/>
 							<FormActions>
 								<Button appearance="default" disabled={preventSubmit} type="submit">Save details</Button>
-								<Button appearance="link" onClick={this.resetForm} type="button">Cancel</Button>
+								{/* <Button appearance="link" onClick={this.resetForm} type="button">Cancel</Button> */}
 							</FormActions>
 						</Form>
 					</Section>
