@@ -385,6 +385,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/overview`
 		},
 		{
+			hidden: true,
 			icon: <MdCompareArrows />,
 			label: 'Compare',
 			to: `/${orgId}/compare`
