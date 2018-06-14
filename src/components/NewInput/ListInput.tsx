@@ -49,7 +49,10 @@ export default class ListInput extends Component<ListInputProps & HTMLProps<HTML
 			<Wrapper {...wrapper}>
 				{label && <FieldLabel htmlFor={id} required={props.required}>{label}</FieldLabel>}
 				<TagWrapper>
-					{map(value, (item, i) => <Lozenge appearance="default" onClick={this.removeTag(i)}>{item}</Lozenge>)}
+					{value && value.length > 0
+						? map(value, (item, i) => <Lozenge appearance="default" onClick={this.removeTag(i)}>{item}</Lozenge>)
+						: <i><Help>No items...</Help></i>
+					}
 				</TagWrapper>
 				<FieldContainer {...container}>
 					{prefix}
