@@ -1,18 +1,24 @@
 import Fuse from 'fuse.js';
 import linkState from 'linkstate';
-import { find, map, reject, sortBy } from 'lodash';
+import { map, sortBy } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import MdClose from 'react-icons/lib/md/close';
+import MdFileUpload from 'react-icons/lib/md/file-upload';
+import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
-import { Input } from '../../../components/NewInput';
+import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
+import { Input, LinkInput } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 import { UserGrid, UserGridItem } from '../../../components/UserGrid';
 import { Model } from '../../../domain/Organisation';
 
 interface State {
+	addModalOpen: boolean;
+	model: Model;
 	searchable: Fuse;
 	query: string;
 }
@@ -21,6 +27,8 @@ interface State {
 @observer
 export default class DashboardModelsOverview extends Component<any, State> {
 	state: State = {
+		addModalOpen: false,
+		model: null,
 		searchable: new Fuse([], { keys: ['name', 'email'] }),
 		query: ''
 	};
@@ -38,14 +46,19 @@ export default class DashboardModelsOverview extends Component<any, State> {
 
 	render () {
 		const { state } = this.props;
-		const { searchable, query } = this.state;
+		const { addModalOpen, model, searchable, query } = this.state;
 		const models: Model[] = query === '' ? [
 			...sortBy(state.models, ['name']) as Model[]
 		] : searchable.search(query);
 
 		return (
 			<React.Fragment>
-				<Header title="Models" headTitle="dashboard / models" />
+				<Header
+					title="Models"
+					headTitle="dashboard / models"
+				>
+					{models.length > 0 && <Button appearance="light"><MdFileUpload width={20} height={20} /></Button>}
+				</Header>
 				<Container style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1024, padding: '0 20px' }}>
 					<Section>
 						<Input
@@ -74,16 +87,35 @@ export default class DashboardModelsOverview extends Component<any, State> {
 							</EmptyState>
 						) : (
 							<EmptyState>
-								<img src="/assets/images/empty-state-taken.svg" />
-								<h1>No models</h1>
+								<img src="/assets/images/empty-state-welcome.svg" />
+								<h1>Welcome to openSEA model repository</h1>
 								<p>
-									The openSEA model repository currently contains no models. Why don't you <a>add one</a>?
+									The openSEA model repository currently contains no models. Why don't you <LinkInput accept=".yml">add the first</LinkInput>?
 								</p>
 							</EmptyState>
 						)}
 					</Section>
 				</Container>
+				<Modal
+					isOpen={addModalOpen}
+					onClose={this.toggleAddModal}
+				>
+					<ModalHeader>
+						<h1>Add a model</h1>
+						<Button appearance="subtle" onClick={this.toggleAddModal}><MdClose /></Button>
+					</ModalHeader>
+					<ModalSection>
+						{model && <pre>{JSON.stringify(model, null, 2)}</pre>}
+					</ModalSection>
+					<ModalFooter>
+						<Button appearance="default">Save</Button>
+						<Button appearance="subtle-link" onClick={this.toggleAddModal}>Cancel</Button>
+					</ModalFooter>
+				</Modal>
 			</React.Fragment>
 		);
 	}
+
+	private toggleAddModal = () => this.setState({ addModalOpen: !this.state.addModalOpen });
+	private toggleViewModal = () => this.setState({ viewModalOpen: !this.state.viewModalOpen });
 }
