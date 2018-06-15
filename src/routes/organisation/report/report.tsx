@@ -1,10 +1,10 @@
-import { findLast, get, isEmpty, isUndefined, map } from 'lodash';
-import { toJS } from 'mobx';
+import { get, isEmpty, map } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import MdEdit from 'react-icons/lib/md/edit';
 import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
-import { withRouter } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { Button, LinkButton } from '../../../components/Button';
 import Chart from '../../../components/Chart';
 import Container from '../../../components/Container';
@@ -12,8 +12,6 @@ import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Menu, MenuOption } from '../../../components/Menu';
-import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
-import { LinkInput } from '../../../components/NewInput';
 import { ReportGrid, ReportGridItem } from '../../../components/ReportGrid';
 import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
@@ -31,11 +29,9 @@ class OrganisationReportOverview extends Component<any, State> {
 
 	render () {
 		const { match: { params: { orgId, repId } }, OrganisationsStore, ReportsStore } = this.props;
-		const { showModal } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
-		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 		const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-		const model = get(parentNetwork || report, 'model');
+		const model = get(report, 'model');
 		const data = get(report, 'data');
 
 		const PageHead = (
@@ -47,54 +43,16 @@ class OrganisationReportOverview extends Component<any, State> {
 					<Link key={`/${orgId}/reports`} to={`/${orgId}/reports`}>Reports</Link>
 				]}
 			>
-				{!isEmpty(data) && <LinkButton appearance="light" to={`/${orgId}/${repId}/data`}>Edit data</LinkButton>}
-				{!isEmpty(data) && <Button appearance="light">Export</Button>}
-				<Menu
-					trigger={<Button appearance="light"><MdMoreHoriz height={24} width={24} /></Button>}
-					position="bottom-left"
-				>
-					{!isEmpty(data) && <MenuOption>Share report</MenuOption>}
-					<MenuOption>Delete report</MenuOption>
-				</Menu>
+				{!isEmpty(data) && <LinkButton appearance="light" to={`/${orgId}/${repId}/data`}><MdEdit height={20} width={20} /></LinkButton>}
+				{!isEmpty(data) && <Menu position="bottom-left" trigger={<Button appearance="light"><MdMoreHoriz height={20} width={20} /></Button>}>
+					<MenuOption>Share link</MenuOption>
+					<MenuOption>Print</MenuOption>
+					<MenuOption>Download</MenuOption>
+				</Menu>}
 			</Header>
 		);
 
-		// TODO: If this is part of an organisation, show a different error.
-		if (isEmpty(model)) {
-			const recentModel = get(findLast(organisation._reports, 'model'), 'model');
-
-			return (
-				<React.Fragment>
-					{PageHead}
-					<Container>
-						<EmptyState>
-							<img src="/assets/images/empty-state-no-model.svg" />
-							<h1>Let's get started</h1>
-							{ !isUndefined(recentModel) ? (
-								<p>
-									To begin, <LinkInput accept=".yml" onChange={this.onFileChange}>add a new model</LinkInput> to this report or
-									 <a onClick={this.copyModel(recentModel)}>use the previous report's</a>. To learn more, <a>click here</a>.
-								</p>
-							) : (
-								<p>
-									To begin, <LinkInput accept=".yml" onChange={this.onFileChange}>add a model</LinkInput> to this report. To learn more,
-									<a>click here</a>.
-								</p>
-							) }
-						</EmptyState>
-					</Container>
-					<Modal isOpen={showModal}>
-						<ModalHeader>
-							<h1>Validating model</h1>
-						</ModalHeader>
-						<ModalSection>
-							openSEA is validating and saving the model you've selected. This shouldn't take long.
-						</ModalSection>
-						<ModalFooter />
-					</Modal>
-				</React.Fragment>
-			);
-		}
+		if (isEmpty(model)) return <Redirect to={`/${orgId}/${repId}/model`} />;
 
 		if (isEmpty(data)) return (
 			<React.Fragment>
@@ -122,11 +80,13 @@ class OrganisationReportOverview extends Component<any, State> {
 				<Container>
 					<EmptyState>
 						<img src="/assets/images/empty-state-no-data.svg" />
-						<h1>No reportitems</h1>
+						<h1>No report items</h1>
 						<p>
-							The model for this report contains no report items.
-							<LinkInput>Upload a new model</LinkInput> to get started. <a>Click here</a> for
-							more information.
+							The model for this report contains no report items which prevents openSEA from displaying anything here.
+						</p>
+						<p>
+							<LinkButton appearance="default" to={`/${orgId}/${repId}/model`}>Manage model</LinkButton>
+							<LinkButton appearance="link" to="#">Learn more</LinkButton>
 						</p>
 					</EmptyState>
 				</Container>
@@ -181,52 +141,6 @@ class OrganisationReportOverview extends Component<any, State> {
 			</React.Fragment>
 		);
 	}
-
-	private onFileChange = (event) => {
-		this.setState({ showModal: true });
-		const file = event.target.files[0];
-		const fr = new FileReader();
-		fr.onload = this.onFileLoad;
-		fr.readAsText(file);
-	}
-	private onFileLoad = (ev: ProgressEvent) => {
-		const { srcElement }: { srcElement: Partial<FileReader> } = ev;
-		const { result } = srcElement;
-		const { ReportsStore, UIStore } = this.props;
-
-		if (!result) {
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
-			this.setState({ showModal: false });
-			return;
-		}
-
-		const json = ReportsStore.parseStrToJson(result);
-		return this.validateAndStoreModel(json);
-	}
-	private validateAndStoreModel = (json) => {
-		const { history, match: { params: { orgId, repId } }, ReportsStore, UIStore } = this.props;
-		const { accepted } = ReportsStore.validateModel(json);
-
-		if (!accepted) {
-			// TODO: Show first error in errors object in flag description.
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
-			this.setState({ showModal: false });
-		} else {
-			const model = { ...accepted, _orgId: orgId, _repId: repId };
-
-			const onSuccess = () => {
-				UIStore.addFlag({ appearance: 'success', title: 'Model saved successfully' });
-				history.push(`/${orgId}/${repId}/data`);
-			};
-			const onError = () => {
-				this.setState({ showModal: false });
-				UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'There was an error storing your model. Please try again.' });
-			};
-
-			return ReportsStore.addModel(model, { onSuccess, onError });
-		}
-	}
-	private copyModel = (model) => () => this.validateAndStoreModel(toJS(model));
 }
 
 export default withRouter(OrganisationReportOverview);

@@ -10,15 +10,12 @@ const Area = styled(UnstyledArea)`
 	background-color: transparent;
 	border: none;
 	color: ${({ theme }) => theme.text.primary};
+	cursor: inherit;
 	font-family: inherit;
 	font-size: inherit;
 	padding: 8px 7px;
 	resize: none;
 	width: 100%;
-
-	:hover {
-		cursor: text;
-	}
 
 	:focus {
 		outline: none;

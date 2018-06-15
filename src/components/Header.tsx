@@ -69,6 +69,8 @@ const PrimaryContainer = styled.section`
 const SecondaryContainer = styled.section`
 	align-items: flex-end;
 	display: flex;
+	flex: auto;
+	justify-content: flex-end;
 
 	& > * {
 		margin-left: 10px;

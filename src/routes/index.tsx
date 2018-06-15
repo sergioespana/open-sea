@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import linkState from 'linkstate';
-import { filter, flattenDeep, inRange, isUndefined, map, reject } from 'lodash';
+import { filter, flattenDeep, get, inRange, isUndefined, map, reject } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
@@ -10,6 +10,7 @@ import MdAdd from 'react-icons/lib/md/add';
 import MdAssessment from 'react-icons/lib/md/assessment';
 import MdAssignmentTurnedIn from 'react-icons/lib/md/assignment-turned-in';
 import MdBusiness from 'react-icons/lib/md/business';
+import MdCollectionsBookmark from 'react-icons/lib/md/collections-bookmark';
 import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
 import MdGroupWork from 'react-icons/lib/md/group-work';
 import MdHelp from 'react-icons/lib/md/help';
@@ -28,6 +29,7 @@ import Modal, { ModalFooter, ModalHeader, ModalSection } from '../components/Mod
 import { Button as NavButton, Navigation } from '../components/Navigation';
 import { Redirect } from '../components/Redirect';
 import { Route } from '../components/Route';
+import collection from '../stores/collection';
 import { getCurrentUser, getCurrentUserAccess } from '../stores/helpers';
 import AccountRoutes from './account/index';
 import CreateRoutes from './create/index';
@@ -276,6 +278,12 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 					icon: <MdPeople />,
 					label: 'People',
 					to: '/dashboard/people'
+				},
+				{
+					hidden: true,
+					icon: <MdCollectionsBookmark />,
+					label: 'Models',
+					to: '/dashboard/models'
 				}
 			]}
 			searchIcon={<MdSearch />}
@@ -311,7 +319,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/reports`
 		},
 		{
-			hidden: isUndefined(parentNetwork),
+			hidden: isUndefined(parentNetwork) || isUndefined(get(parentNetwork, 'model.certifications')),
 			icon: <MdAssignmentTurnedIn />,
 			label: 'Certification',
 			to: `/${orgId}/certification`
@@ -336,7 +344,34 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					to: `/${orgId}/settings/advanced`
 				}
 			]
-		}
+		},
+		...map(organisation._reports, ({ _id }) => {
+			const report = collection(organisation._reports).findById(_id);
+			return {
+				hidden: true,
+				icon: null,
+				label: report.name,
+				to: `/${_id}`,
+				navigationItems: [
+					{
+						label: 'Report',
+						to: `/${_id}`
+					},
+					{
+						label: 'Data',
+						to: `/${_id}/data`
+					},
+					{
+						label: 'Model',
+						to: `/${_id}/model`
+					},
+					{
+						label: 'Settings',
+						to: `/${_id}/settings`
+					}
+				]
+			};
+		})
 	];
 	const networkItems = [
 		{
@@ -351,6 +386,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/overview`
 		},
 		{
+			hidden: true,
 			icon: <MdCompareArrows />,
 			label: 'Compare',
 			to: `/${orgId}/compare`

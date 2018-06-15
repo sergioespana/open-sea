@@ -11,7 +11,7 @@ import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import { Link } from '../../components/Link';
-import { Lozenge } from '../../components/Lozenge';
+import Progress from '../../components/Progress';
 import { ReportGrid, ReportGridItem } from '../../components/ReportGrid';
 import { Section } from '../../components/Section';
 import { Table } from '../../components/Table';
@@ -19,7 +19,6 @@ import { Table } from '../../components/Table';
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
 	const organisation = OrganisationsStore.findById(orgId) || {};
-	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
 
@@ -33,7 +32,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		/>
 	);
 	const RecentReports = (
-		<Section width={375}>
+		<React.Fragment>
 			<h1>Reports</h1>
 			<Table
 				columns={[
@@ -43,10 +42,10 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						format: (name, { _id }) => <Link to={`/${_id}`}>{name}</Link>
 					},
 					{
-						key: 'status',
-						label: 'Status',
-						value: ({ data, model }) => (isUndefined(model) && isUndefined(data)) ? 'New' : 'In Progress',
-						format: (value) => <Lozenge appearance={value.split(' ').join('').toLowerCase()}>{value}</Lozenge>
+						key: 'actions',
+						label: 'Edit',
+						labelHidden: true,
+						format: (_, { _id }) => <Link to={`/${_id}/data`}>Edit data</Link>
 					},
 					{
 						label: 'Last updated',
@@ -61,7 +60,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				sortingDisabled
 			/>
 			<p>Recently updated · <Link to={`/${orgId}/reports`}>View all reports</Link></p>
-		</Section>
+		</React.Fragment>
 	);
 
 	if (reports.length === 0) return (
@@ -104,13 +103,39 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						</p>
 					</EmptyState>
 				</Section>
-				{RecentReports}
+				<Section width={375}>
+					{RecentReports}
+				</Section>
 			</Container>
 		</React.Fragment>
 	);
 
-	const model = get(parentNetwork || last(withData), 'model');
+	const report = last(withData);
+	const model = get(report, 'model');
 	const items = get(model, 'reportItems');
+	let CertificationProgress = null;
+	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
+	const certModel = parentNetwork ? get(parentNetwork, 'model') : model;
+
+	// To display certifications, prefer the model from parent network. If there's no
+	// parent network, use the report's model. If neither have certifications defined,
+	// don't do anything.
+	if (certModel && certModel.certifications) {
+		const assessed = ReportsStore.assess(certModel.certifications, certModel.indicators, report);
+		const { next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
+		const next = assessed[nextIndex];
+
+		if (next) {
+			const met = filter(next.requirements, { _pass: true });
+			CertificationProgress = (
+				<React.Fragment>
+					<h1 style={{ margin: '36px 0 12px 0' }}>Certification</h1>
+					<Progress value={met.length} max={next.requirements.length} />
+					<p>Progress based on latest report · <Link to={`/${orgId}/certification`}>More details</Link></p>
+				</React.Fragment>
+			);
+		}
+	}
 
 	return (
 		<React.Fragment>
@@ -162,7 +187,10 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						})}
 					</ReportGrid>
 				</Section>
-				{RecentReports}
+				<Section width={375}>
+					{RecentReports}
+					{CertificationProgress}
+				</Section>
 			</Container>
 		</React.Fragment>
 	);

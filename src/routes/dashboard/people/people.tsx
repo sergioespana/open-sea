@@ -4,7 +4,6 @@ import { find, map, reject, sortBy } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdSearch from 'react-icons/lib/md/search';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';

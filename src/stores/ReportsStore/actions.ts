@@ -14,7 +14,13 @@ const ajv = new AJV({
 
 export const actions = (state) => {
 
-	const compute = (value: string, data: object) => roundIfNumber(math.eval(value, data), 2);
+	const compute = (value: string, data: object) => {
+		try {
+			return roundIfNumber(math.eval(value, data), 2);
+		} catch (error) {
+			return 0;
+		}
+	};
 
 	const roundIfNumber = (val: any, precision?: number) => isNumber(val) ? round(val, precision) : val;
 
@@ -51,7 +57,7 @@ export const actions = (state) => {
 	const operatorText = {
 		'>': 'more than',
 		'>=': 'at least',
-		'<': 'less than',
+		'<': 'lower than',
 		'<=': 'at most',
 		'==': 'exactly'
 	};

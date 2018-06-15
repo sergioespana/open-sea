@@ -90,24 +90,6 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 					<OrganisationGrid>
 						{map(organisations, ({ _id }) => {
 							const organisation = OrganisationsStore.findById(_id);
-							const withData = filter(organisation._reports, 'data');
-							const report = last(withData);
-
-							// Skip computing certification if there's no report with data to compute it with.
-							if (!certifications || !report) return (
-								<OrganisationGridItem
-									appearance="subtle"
-									key={_id}
-									to={`/${_id}`}
-								>
-									<img src={organisation.avatar} />
-									<span>{organisation.name}</span>
-								</OrganisationGridItem>
-							);
-
-							const assessed = ReportsStore.assess(certifications, indicators, report);
-							const { current: currentIndex } = ReportsStore.getCertificationIndex(assessed);
-							const current = assessed[currentIndex];
 
 							return (
 								<OrganisationGridItem
@@ -117,7 +99,6 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 								>
 									<img src={organisation.avatar} />
 									<span>{organisation.name}</span>
-									{!isUndefined(current) && <Lozenge appearance="default" bg={current.colour}>{current.name}</Lozenge>}
 								</OrganisationGridItem>
 							);
 						})}

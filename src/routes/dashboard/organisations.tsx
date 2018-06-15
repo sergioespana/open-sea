@@ -56,10 +56,11 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 								const networks = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })));
 								return get(networks, '[0].name');
 							},
-							format: (name, { network: netId }) => {
+							format: (name, { _id }) => {
 								if (!name) return null;
-								const { _id, avatar } = find(state.organisations, { _id: netId });
-								return <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>;
+								const allNetworks = filter(state.organisations, { isNetwork: true });
+								const { _id: netId, avatar } = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })))[0];
+								return <TableCellWrapper><img src={avatar} /><Link to={`/${netId}`}>{name}</Link></TableCellWrapper>;
 							}
 						},
 						{

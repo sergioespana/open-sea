@@ -26,6 +26,11 @@ export default css`
 
 	body {
 		margin: 0;
+		overflow-y: scroll;
+	}
+
+	pre {
+		white-space: pre-wrap;
 	}
 
 	#app {
