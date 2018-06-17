@@ -10,7 +10,8 @@ export const AuthStore = (state) => {
 			return !isUndefined(find(state.users, ['_isCurrent', true]));
 		},
 		isReady: false as boolean,
-		users: [] as UserCollection
+		users: [] as UserCollection,
+		models: [] as any[]
 	});
 
 	return actions(state);

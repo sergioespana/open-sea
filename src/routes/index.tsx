@@ -280,7 +280,6 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 					to: '/dashboard/people'
 				},
 				{
-					hidden: true,
 					icon: <MdCollectionsBookmark />,
 					label: 'Models',
 					to: '/dashboard/models'
