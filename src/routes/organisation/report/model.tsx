@@ -109,7 +109,6 @@ class OrganisationsReportModel extends Component<any> {
 	private getRef = (node) => this.input = node;
 	private openInput = () => this.input.click();
 	private onFileChange = (event) => {
-		this.setState({ showModal: true });
 		const file = event.target.files[0];
 		const fr = new FileReader();
 		fr.onload = this.onFileLoad;
@@ -122,7 +121,6 @@ class OrganisationsReportModel extends Component<any> {
 
 		if (!result) {
 			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
-			this.setState({ showModal: false });
 			return;
 		}
 
