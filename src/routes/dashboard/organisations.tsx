@@ -42,55 +42,57 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 		<React.Fragment>
 			<Header title="Organisations" headTitle="dashboard / organisations" />
 			<Container>
-				<Table
-					columns={[
-						{
-							key: 'name',
-							label: 'Organisation',
-							format: (name, { _id, avatar }) => <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>
-						},
-						{
-							label: 'Network',
-							value: ({ _id }) => {
-								const allNetworks = filter(state.organisations, { isNetwork: true });
-								const networks = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })));
-								return get(networks, '[0].name');
+				<Section>
+					<Table
+						columns={[
+							{
+								key: 'name',
+								label: 'Organisation',
+								format: (name, { _id, avatar }) => <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>
 							},
-							format: (name, { _id }) => {
-								if (!name) return null;
-								const allNetworks = filter(state.organisations, { isNetwork: true });
-								const { _id: netId, avatar } = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })))[0];
-								return <TableCellWrapper><img src={avatar} /><Link to={`/${netId}`}>{name}</Link></TableCellWrapper>;
+							{
+								label: 'Network',
+								value: ({ _id }) => {
+									const allNetworks = filter(state.organisations, { isNetwork: true });
+									const networks = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })));
+									return get(networks, '[0].name');
+								},
+								format: (name, { _id }) => {
+									if (!name) return null;
+									const allNetworks = filter(state.organisations, { isNetwork: true });
+									const { _id: netId, avatar } = filter(allNetworks, ({ _organisations }) => !isUndefined(find(_organisations, { _id })))[0];
+									return <TableCellWrapper><img src={avatar} /><Link to={`/${netId}`}>{name}</Link></TableCellWrapper>;
+								}
+							},
+							{
+								label: 'Owner',
+								value: ({ _users }) => get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), 'name'),
+								format: (name, { _users }) => {
+									const id = get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), '_id');
+									return <Link to={`/dashboard/people/${id}`}>{name}</Link>;
+								}
+							},
+							{
+								label: 'Last updated',
+								value: ({ created, updated }) => updated || created,
+								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
+							},
+							{
+								label: 'Reports',
+								value: ({ _reports }) => _reports.length
+							},
+							{
+								key: 'isPublic',
+								label: 'Public',
+								labelHidden: true,
+								format: (isPublic) => !isPublic && <MdLock style={{ height: 14, width: 14 }} />
 							}
-						},
-						{
-							label: 'Owner',
-							value: ({ _users }) => get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), 'name'),
-							format: (name, { _users }) => {
-								const id = get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), '_id');
-								return <Link to={`/dashboard/people/${id}`}>{name}</Link>;
-							}
-						},
-						{
-							label: 'Last updated',
-							value: ({ created, updated }) => updated || created,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
-						},
-						{
-							label: 'Reports',
-							value: ({ _reports }) => _reports.length
-						},
-						{
-							key: 'isPublic',
-							label: 'Public',
-							labelHidden: true,
-							format: (isPublic) => !isPublic && <MdLock style={{ height: 14, width: 14 }} />
-						}
-					]}
-					data={organisations}
-					defaultSort="-last-updated"
-					filters={['network', 'owner', 'public']}
-				/>
+						]}
+						data={organisations}
+						defaultSort="-last-updated"
+						filters={['network', 'owner', 'public']}
+					/>
+				</Section>
 			</Container>
 		</React.Fragment>
 	);

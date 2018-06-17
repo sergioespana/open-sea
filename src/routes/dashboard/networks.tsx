@@ -41,41 +41,43 @@ const DashboardNetworks = inject(app('state'))(observer((props) => {
 		<React.Fragment>
 			<Header title="Networks" headTitle="dashboard / networks" />
 			<Container>
-				<Table
-					columns={[
-						{
-							key: 'name',
-							label: 'Networks',
-							format: (name, { _id, avatar }) => <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>
-						},
-						{
-							label: 'Owner',
-							value: ({ _users }) => get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), 'name'),
-							format: (name, { _users }) => {
-								const { _id } = find(state.users, { _id: get(find(_users, { access: 100 }), '_id') });
-								return <Link to={`/dashboard/people/${_id}`}>{name}</Link>;
+				<Section>
+					<Table
+						columns={[
+							{
+								key: 'name',
+								label: 'Networks',
+								format: (name, { _id, avatar }) => <TableCellWrapper><img src={avatar} /><Link to={`/${_id}`}>{name}</Link></TableCellWrapper>
+							},
+							{
+								label: 'Owner',
+								value: ({ _users }) => get(find(state.users, { _id: get(find(_users, { access: 100 }), '_id') }), 'name'),
+								format: (name, { _users }) => {
+									const { _id } = find(state.users, { _id: get(find(_users, { access: 100 }), '_id') });
+									return <Link to={`/dashboard/people/${_id}`}>{name}</Link>;
+								}
+							},
+							{
+								label: 'Last updated',
+								value: ({ created, updated }) => updated || created,
+								format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
+							},
+							{
+								label: 'Organisations',
+								value: ({ _organisations }) => _organisations.length
+							},
+							{
+								key: 'isPublic',
+								label: 'Public',
+								labelHidden: true,
+								format: (isPublic) => !isPublic && <MdLock style={{ height: 14, width: 14 }} />
 							}
-						},
-						{
-							label: 'Last updated',
-							value: ({ created, updated }) => updated || created,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
-						},
-						{
-							label: 'Organisations',
-							value: ({ _organisations }) => _organisations.length
-						},
-						{
-							key: 'isPublic',
-							label: 'Public',
-							labelHidden: true,
-							format: (isPublic) => !isPublic && <MdLock style={{ height: 14, width: 14 }} />
-						}
-					]}
-					data={networks}
-					defaultSort="-last-updated"
-					filters={['owner', 'public']}
-				/>
+						]}
+						data={networks}
+						defaultSort="-last-updated"
+						filters={['owner', 'public']}
+					/>
+				</Section>
 			</Container>
 		</React.Fragment>
 	);
