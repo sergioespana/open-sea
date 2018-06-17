@@ -2,7 +2,6 @@ import fb, { firestore } from 'firebase';
 import 'firebase/firestore';
 import { find, findIndex, flatten, isString, isUndefined, map, partition, reject } from 'lodash';
 import { observable } from 'mobx';
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 
 const firebase = fb.initializeApp({
 	apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
