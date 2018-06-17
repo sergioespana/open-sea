@@ -37,7 +37,8 @@ export const actions = (state) => {
 		// Add model to a report or to an organisation (only networks will call this function) depending
 		// on whether _repId is set within the model.
 		if (_repId) FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { model, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
-		else FirebaseService.saveDoc(`organisations/${_orgId}`, { model, updated: new Date() }, callbacks);
+		else if (_orgId) FirebaseService.saveDoc(`organisations/${_orgId}`, { model, updated: new Date() }, callbacks);
+		else FirebaseService.saveDoc(`models`, { ...model }, callbacks);
 	};
 
 	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
