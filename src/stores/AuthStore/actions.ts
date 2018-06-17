@@ -5,6 +5,7 @@ import collection from '../collection';
 export const actions = (state) => {
 
 	const users = collection(state.users);
+	const models = collection(state.models);
 
 	const onAuthStateChanged = async (res) => {
 		if (res) {
@@ -14,6 +15,7 @@ export const actions = (state) => {
 			const { uid } = res;
 			FirebaseService.startListening(`users/${uid}`, { _isCurrent: true, _organisations: [] }, { onAdded: onUser });
 			FirebaseService.startListening(`users/${uid}/organisations`, {}, { onAdded: onUserOrganisation(uid, 'added'), onRemoved: onUserOrganisation(uid, 'removed') });
+			FirebaseService.startListening(`models`, {}, { onAdded: onModel('added'), onRemoved: onModel('removed') });
 		} else {
 			// User is not logged in or has just logged out. Remove all loaded
 			// users from memory and remove all listeners.
@@ -32,6 +34,11 @@ export const actions = (state) => {
 		const user = users.findById(uid);
 		if (action === 'added') return collection(user._organisations).updateOrInsert(organisation);
 		return collection(user._organisations).remove(organisation);
+	};
+
+	const onModel = (action: 'added' | 'removed') => (model: any) => {
+		if (action === 'added') models.updateOrInsert(model);
+		else models.remove(model);
 	};
 
 	const signOut = () => FirebaseService.signOut();

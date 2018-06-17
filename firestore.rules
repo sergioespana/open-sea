@@ -50,5 +50,9 @@ service cloud.firestore {
 				allow read;
 			}
 		}
+
+		match /models/{modelId} {
+			allow read, write: if isAuthed();
+		}
 	}
 }

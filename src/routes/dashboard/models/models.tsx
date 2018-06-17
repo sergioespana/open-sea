@@ -1,39 +1,20 @@
 import Fuse from 'fuse.js';
-import linkState from 'linkstate';
-import { map, sortBy } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdClose from 'react-icons/lib/md/close';
 import MdFileUpload from 'react-icons/lib/md/file-upload';
+import { Link } from 'react-router-dom';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
 import Header from '../../../components/Header';
-import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
-import { Input, LinkInput } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
-import { UserGrid, UserGridItem } from '../../../components/UserGrid';
-import { Model } from '../../../domain/Organisation';
+import { Table } from '../../../components/Table';
 
-interface State {
-	addModalOpen: boolean;
-	model: Model;
-	searchable: Fuse;
-	query: string;
-}
-
-@inject(app('state'))
+@inject(app('ReportsStore', 'UIStore'))
 @observer
-export default class DashboardModelsOverview extends Component<any, State> {
-	state: State = {
-		addModalOpen: false,
-		model: null,
-		searchable: new Fuse([], { keys: ['name', 'email'] }),
-		query: ''
-	};
-
-	searchable = null;
+export default class DashboardModelsOverview extends Component<any> {
+	input = null;
 
 	componentDidMount () {
 		return this.componentWillReceiveProps(this.props);
@@ -46,76 +27,110 @@ export default class DashboardModelsOverview extends Component<any, State> {
 
 	render () {
 		const { state } = this.props;
-		const { addModalOpen, model, searchable, query } = this.state;
-		const models: Model[] = query === '' ? [
-			...sortBy(state.models, ['name']) as Model[]
-		] : searchable.search(query);
+		const { models } = state;
+
+		const PageHead = (
+			<Header
+				title="Models"
+				headTitle="dashboard / models"
+			>
+				{models.length > 0 && <Button appearance="light" onClick={this.openInput}><MdFileUpload width={20} height={20} /></Button>}
+			</Header>
+		);
+		const ModelInput = (
+			<input
+				accept=".yml"
+				onChange={this.onFileChange}
+				ref={this.getRef}
+				style={{ display: 'none' }}
+				type="file"
+			/>
+		);
+
+		if (models.length === 0) return (
+			<React.Fragment>
+				{PageHead}
+				{ModelInput}
+				<Container>
+					<Section>
+						<EmptyState>
+							<img src="/assets/images/empty-state-welcome.svg" />
+							<h1>Welcome to openSEA model repository</h1>
+							<p>
+								The openSEA model repository currently contains no models. Why don't
+								you <a onClick={this.openInput}>add the first</a>?
+							</p>
+						</EmptyState>
+					</Section>
+				</Container>
+			</React.Fragment>
+		);
 
 		return (
 			<React.Fragment>
-				<Header
-					title="Models"
-					headTitle="dashboard / models"
-				>
-					{models.length > 0 && <Button appearance="light"><MdFileUpload width={20} height={20} /></Button>}
-				</Header>
-				<Container style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1024, padding: '0 20px' }}>
+				{PageHead}
+				{ModelInput}
+				<Container>
 					<Section>
-						<Input
-							appearance="default"
-							disabled={models.length === 0 && query === ''}
-							onChange={linkState(this, 'query')}
-							placeholder="Search by model name"
-							value={query}
+						<Table
+							columns={[
+								{
+									key: 'name',
+									label: 'Model',
+									format: (name, { _id }) => <Link to={`/dashboard/models/${_id}`}>{name}</Link>
+								},
+								{
+									key: 'version',
+									label: 'Version'
+								}
+							]}
+							data={models}
 						/>
-						{models.length > 0 ? (
-							<UserGrid>
-								{map(models, ({ _id, name }: Model) => (
-									<UserGridItem
-										appearance="subtle"
-										key={_id}
-										to={`/dashboard/models/${_id}`}
-									>
-										<span>{name}</span>
-									</UserGridItem>
-								))}
-							</UserGrid>
-						) : query !== '' ? (
-							<EmptyState>
-								<img src="/assets/images/empty-state-taken.svg" />
-								<h1>Couldn't find that model</h1>
-							</EmptyState>
-						) : (
-							<EmptyState>
-								<img src="/assets/images/empty-state-welcome.svg" />
-								<h1>Welcome to openSEA model repository</h1>
-								<p>
-									The openSEA model repository currently contains no models. Why don't you <LinkInput accept=".yml">add the first</LinkInput>?
-								</p>
-							</EmptyState>
-						)}
 					</Section>
 				</Container>
-				<Modal
-					isOpen={addModalOpen}
-					onClose={this.toggleAddModal}
-				>
-					<ModalHeader>
-						<h1>Add a model</h1>
-						<Button appearance="subtle" onClick={this.toggleAddModal}><MdClose /></Button>
-					</ModalHeader>
-					<ModalSection>
-						{model && <pre>{JSON.stringify(model, null, 2)}</pre>}
-					</ModalSection>
-					<ModalFooter>
-						<Button appearance="default">Save</Button>
-						<Button appearance="subtle-link" onClick={this.toggleAddModal}>Cancel</Button>
-					</ModalFooter>
-				</Modal>
 			</React.Fragment>
 		);
 	}
 
-	private toggleAddModal = () => this.setState({ addModalOpen: !this.state.addModalOpen });
-	private toggleViewModal = () => this.setState({ viewModalOpen: !this.state.viewModalOpen });
+	private getRef = (node) => this.input = node;
+	private openInput = () => this.input.click();
+	private onFileChange = (event) => {
+		const file = event.target.files[0];
+		const fr = new FileReader();
+		fr.onload = this.onFileLoad;
+		fr.readAsText(file);
+	}
+	private onFileLoad = (ev: ProgressEvent) => {
+		const { srcElement }: { srcElement: Partial<FileReader> } = ev;
+		const { result } = srcElement;
+		const { ReportsStore, UIStore } = this.props;
+
+		if (!result) {
+			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
+			return;
+		}
+
+		const json = ReportsStore.parseStrToJson(result);
+		return this.validateAndStoreModel(json);
+	}
+	private validateAndStoreModel = (json) => {
+		const { ReportsStore, UIStore } = this.props;
+		const { accepted, errors } = ReportsStore.validateModel(json);
+
+		if (!accepted) {
+			// TODO: Show first error in errors object in flag description.
+			errors.forEach(console.log);
+			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
+		} else {
+			const onSuccess = () => {
+				UIStore.addFlag({ appearance: 'success', title: 'Model saved successfully' });
+			};
+			const onError = (error) => {
+				console.log(error);
+				UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'There was an error storing your model. Please try again.' });
+			};
+
+			return ReportsStore.addModel(accepted, { onSuccess, onError });
+		}
+	}
 }

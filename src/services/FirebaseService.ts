@@ -2,7 +2,6 @@ import fb, { firestore } from 'firebase';
 import 'firebase/firestore';
 import { find, findIndex, flatten, isString, isUndefined, map, partition, reject } from 'lodash';
 import { observable } from 'mobx';
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 
 const firebase = fb.initializeApp({
 	apiKey: 'AIzaSyBlvDQQfMR66mrdo4UdCeS4vZOJugGk6rc',
@@ -98,9 +97,11 @@ export const startListening = (
 
 export const saveDoc = async (path: string, data: object, callbacks: { onError?: Function, onSuccess?: Function } = {}) => {
 	const { onError, onSuccess } = callbacks;
+	const isDocument = path.split('/').length % 2 === 0;
 
 	try {
-		await db.doc(path).set(data, { merge: true });
+		if (isDocument) await db.doc(path).set(data, { merge: true });
+		else await db.collection(path).add(data);
 		if (onSuccess) onSuccess(data);
 	} catch (error) {
 		if (onError) onError(error);
