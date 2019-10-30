@@ -40,6 +40,11 @@ service cloud.firestore {
 				allow read;
 				allow write: if currentUserHasAccess(orgId, 30);
 			}
+			
+			match /infographics/{infographicId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+			}
 		}
 
 		match /users/{uid} {

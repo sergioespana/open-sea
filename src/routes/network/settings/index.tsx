@@ -7,6 +7,7 @@ import { Redirect } from '../../../components/Redirect';
 import { Route } from '../../../components/Route';
 import { getCurrentUserAccess } from '../../../stores/helpers';
 import NetworkSettingsModel from '../../organisation/report/model';
+import NetworkSettingsSpecification from '../../organisation/settings/specification';
 import NetworkSettingsAdvanced from '../../organisation/settings/advanced';
 import NetworkSettingsDetails from '../../organisation/settings/details';
 import NetworkSettingsPeople from '../../organisation/settings/people';
@@ -23,6 +24,7 @@ const NetworkSettingsRoutes = inject(app('OrganisationsStore'))(observer((props)
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/advanced" exact component={NetworkSettingsAdvanced} />}
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/details" exact component={NetworkSettingsDetails} />}
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/model" exact component={NetworkSettingsModel} />}
+			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/specification" exact component={NetworkSettingsSpecification} />}
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:netId/settings/organisations" exact component={NetworkSettingsOrganisations} />}
 			<Route path="/:orgId/settings/people" exact component={NetworkSettingsPeople} />
 			{inRange(currentUserAccess, 30, 101)

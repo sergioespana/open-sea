@@ -1,0 +1,1 @@
+export { InfographicsStore } from './InfographicsStore';

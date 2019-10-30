@@ -9,6 +9,7 @@ import { getCurrentUserAccess } from '../../../stores/helpers';
 import OrganisationSettingsAdvanced from './advanced';
 import OrganisationSettingsDetails from './details';
 import OrganisationSettingsPeople from './people';
+import OrganisationSettingsSpecification from './specification';
 
 const OrganisationSettingsRoutes = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, state } = props;
@@ -19,6 +20,7 @@ const OrganisationSettingsRoutes = inject(app('OrganisationsStore'))(observer((p
 		<Switch>
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/advanced" exact component={OrganisationSettingsAdvanced} />}
 			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/details" exact component={OrganisationSettingsDetails} />}
+			{inRange(currentUserAccess, 30, 101) && <Route path="/:orgId/settings/specification" exact component={OrganisationSettingsSpecification} />}
 			<Route path="/:orgId/settings/people" exact component={OrganisationSettingsPeople} />
 			{inRange(currentUserAccess, 30, 101)
 				? <Redirect from="" exact to={`/${orgId}/settings/details`} />
