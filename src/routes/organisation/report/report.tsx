@@ -108,9 +108,9 @@ class OrganisationReportOverview extends Component<any, State> {
 									const chart = {
 										type: item.chart.type === 'pie' ? 'percentage' : item.chart.type,
 										data: {
-											labels: map(item.chart.data, (indId) => model.indicators[indId].name),
+											labels: map(item.chart.data, (indId) => model.indirectIndicators[indId].name),
 											datasets: [{
-												values: map(item.chart.data, (indId) => ReportsStore.compute(model.indicators[indId].value, data))
+												values: map(item.chart.data, (indId) => ReportsStore.compute(model.indirectIndicators[indId].value, data))
 											}]
 										}
 									};
@@ -127,8 +127,8 @@ class OrganisationReportOverview extends Component<any, State> {
 									<ReportGridItem>
 										<h3>{item.name}</h3>
 										<p>
-											{ReportsStore.compute(model.indicators[item.value].value, data)}
-											{model.indicators[item.value].type === 'percentage' && '%'}
+											{ReportsStore.compute(model.indirectIndicators[item.value].value, data)}
+											{model.indirectIndicators[item.value].type === 'percentage' && '%'}
 										</p>
 									</ReportGridItem>
 								);

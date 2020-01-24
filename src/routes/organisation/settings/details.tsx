@@ -12,12 +12,13 @@ import { Link } from '../../../components/Link';
 import Input, { TextArea } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 import { Organisation } from '../../../domain/Organisation';
+import { requestValidate } from '../../../util/lime-api';
 
 interface State {
 	organisation: Organisation;
 }
 
-@inject(app('OrganisationsStore'))
+@inject(app('OrganisationsStore', 'UIStore'))
 @observer
 class OrganisationSettingsDetails extends Component<any, State> {
 	readonly state: State = {
@@ -29,7 +30,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 	}
 
 	render () {
-		const { match: { params: { orgId } }, OrganisationsStore, state } = this.props;
+		const { match: { params: { orgId } }, OrganisationsStore, UIStore, state } = this.props;
 		const { organisation } = this.state;
 		const originalOrg = OrganisationsStore.findById(orgId);
 		const preventSubmit = true/*state.isBusy || isEqual(organisation, originalOrg)*/;
@@ -84,8 +85,41 @@ class OrganisationSettingsDetails extends Component<any, State> {
 								placeholder={`This is a public ${organisation.isNetwork ? 'network' : 'organisation'}`}
 								type="checkbox"
 							/>
+						<h2>Limesurvey Credentials</h2>
+								<Input
+									appearance="default"
+									disabled={false}
+									isCompact
+									label="Enter limesurvey host"
+									onChange={linkState(this, 'organisation.ls_host')}
+									//placeholder="Enter limesurvey host"
+									//required
+									help="e.g. mysurvey.limequery.org"
+									type="text"
+									value={organisation.ls_host}
+							/>
+							<Input
+									appearance="default"
+									disabled={false}
+									isCompact
+									onChange={linkState(this, 'organisation.ls_account')}
+									label="Enter limesurvey account"
+									//required
+									type="text"
+									value={organisation.ls_account}
+							/>
+							<Input
+									appearance="default"
+									disabled={false}
+									isCompact
+									onChange={linkState(this, 'organisation.ls_password')}
+									label="Enter limesurvey password"
+									//required
+									type="password"
+									value={organisation.ls_password}
+							/>
 							<FormActions>
-								<Button appearance="default" disabled={preventSubmit} type="submit">Save details</Button>
+								<Button appearance="default" disabled={false} type="submit">Save details</Button>
 								{/* <Button appearance="link" onClick={this.resetForm} type="button">Cancel</Button> */}
 							</FormActions>
 						</Form>
@@ -99,11 +133,11 @@ class OrganisationSettingsDetails extends Component<any, State> {
 		const { match: { params: { orgId } }, OrganisationsStore } = this.props;
 		return this.setState({ organisation: { ...OrganisationsStore.findById(orgId) } });
 	}
-	private onSubmit = (event: FormEvent<HTMLFormElement>) => {
+	private onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
 		const { props, state } = this;
-		const { history, match: { params: { orgId } }, OrganisationsStore } = props;
+		const { history, match: { params: { orgId } }, OrganisationsStore, UIStore } = props;
 		const { organisation } = state;
 
 		const onSuccess = () => {
@@ -117,7 +151,17 @@ class OrganisationSettingsDetails extends Component<any, State> {
 			console.log('failed', error);
 		};
 
-		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+		if (organisation.ls_host !== undefined || '' && organisation.ls_account !== undefined || '' && organisation.ls_password !== undefined || '') {
+
+			await requestValidate(organisation.ls_host,[organisation.ls_account, organisation.ls_password]).then(res => {
+				if (res.data.result.status === undefined) {
+					UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Credentials are valid' });
+					props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+				} else UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description: res.data.result.status.toString() });})
+				.catch(err => {
+					UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description:  'The host name is incorrect or cors is not disabled as explained in ..' });
+				});
+		}
 		return OrganisationsStore.updateOrganisation(organisation, { onSuccess, onError });
 	}
 }

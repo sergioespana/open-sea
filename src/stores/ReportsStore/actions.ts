@@ -1,7 +1,7 @@
 import AJV from 'ajv';
 import { safeLoad } from 'js-yaml';
 import { find, findLastIndex, get, isNumber, isUndefined, map, round, toNumber } from 'lodash';
-import { Certification, Indicator, Report, Requirement } from '../../domain/Organisation';
+import { Certification, IndirectIndicator ,Report, Requirement, Survey } from '../../domain/Organisation';
 import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { getCurrentUser, removePrivates } from '../helpers';
@@ -40,6 +40,11 @@ export const actions = (state) => {
 		else if (_orgId) FirebaseService.saveDoc(`organisations/${_orgId}`, { model, updated: new Date() }, callbacks);
 		else FirebaseService.saveDoc(`models`, { ...model }, callbacks);
 	};
+	const addSurvey = (surv: Survey ,callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _repId } = surv;
+		const survey = { ...removePrivates(surv) };
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { survey, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
+	};
 
 	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = obj;
@@ -63,10 +68,11 @@ export const actions = (state) => {
 		'==': 'exactly'
 	};
 
-	const assess = (certifications: Certification[], indicators: Indicator[], report: Report) =>
+	const assess = (certifications: Certification[], indicators: IndirectIndicator[], report: Report) =>
 		map(certifications, (certification: Certification) => {
 			const { requirements } = certification;
 			const assessed = map(requirements, (requirement: Requirement) => {
+				// fixme: indicator --> indirectIndicator when new model is loaded..
 				const { indicator, operator } = requirement;
 				const value = toNumber(requirement.value);
 				const _computed = compute(indicators[indicator].value, report.data);
@@ -90,6 +96,7 @@ export const actions = (state) => {
 	return {
 		assess,
 		addData,
+		addSurvey,
 		addModel,
 		compute,
 		getCertificationIndex,

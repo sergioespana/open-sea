@@ -10,10 +10,27 @@ import Input from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
 
+
 const OrganisationReportSettings = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
-	const { match: { params: { orgId, repId } }, OrganisationsStore } = props;
+	const { match: { params: { orgId, repId } }, OrganisationsStore, history } = props;
 	const organisation = OrganisationsStore.findById(orgId);
 	const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
+
+	const onRemove = (event) => {
+		// fixme: delete survey aswell?
+		event.preventDefault();
+		const onSuccess = () => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			collection(organisation._reports).remove(report);
+			history.push(`reports/}`);};
+		const onError = (error) => {
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+				// TODO: Show flag
+			console.log('failed:', error);
+		};
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+		return OrganisationsStore.removeReport(report, { onSuccess, onError });
+	};
 
 	const PageHead = (
 		<Header
@@ -38,14 +55,14 @@ const OrganisationReportSettings = inject(app('OrganisationsStore', 'ReportsStor
 							<Input
 								appearance="default"
 								defaultValue={report.name}
-								disabled
+								//disabled
 								label="Name"
 								isCompact
 								type="text"
 							/>
 							<Input
 								appearance="default"
-								disabled
+								//disabled
 								label="Public"
 								help="This setting is inherited from the organisation's settings. In the future, you will be able to make a report publicly available separately from its organisation."
 								isCompact
@@ -54,20 +71,21 @@ const OrganisationReportSettings = inject(app('OrganisationsStore', 'ReportsStor
 								value={organisation.isPublic}
 							/>
 							<FormActions>
-								<Button appearance="default" disabled type="submit">Save changes</Button>
+								<Button appearance="default" disabled={false} type="submit">Save changes</Button>
 								{/* <Button appearance="link" type="reset">Cancel</Button> */}
 							</FormActions>
 						</Form>
 					</p>
 					<h3>Advanced</h3>
 					<p>
-						<Button appearance="error">Delete this report</Button>
+						<Button appearance="error" onClick={onRemove}>Delete this report</Button>
 					</p>
 				</Section>
 			</Container>
 		</React.Fragment>
 	);
-}));
+}
+));
 
 const onSubmit = (event) => event.preventDefault();
 

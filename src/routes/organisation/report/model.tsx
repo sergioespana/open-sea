@@ -133,8 +133,10 @@ class OrganisationsReportModel extends Component<any> {
 
 		if (!accepted) {
 			// TODO: Show first error in errors object in flag description.
-			errors.forEach(console.log);
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
+			//errors.forEach(console.log);
+			console.log(errors);
+			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'In your model: ' + errors });
+			//UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
 		} else {
 			const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
 			const model = parentNetwork

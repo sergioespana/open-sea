@@ -155,7 +155,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 	// parent network, use the report's model. If neither have certifications defined,
 	// don't do anything.
 	if (certModel && certModel.certifications) {
-		const assessed = ReportsStore.assess(certModel.certifications, certModel.indicators, report);
+		const assessed = ReportsStore.assess(certModel.certifications, certModel.indirectIndicators, report);
 		const { next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
 		const next = assessed[nextIndex];
 
@@ -181,7 +181,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 							const itemIndicators = item.chart ? [...item.chart.values] : [item.value];
 							const yMarkers = model.certifications
 								? filter(flatten(map(itemIndicators, (indId) => map(model.certifications, (certification) => {
-									const toPlot: any = find(certification.requirements, { indicator: indId });
+									const toPlot: any = find(certification.requirements, { indirectIndicator: indId });
 									return !isUndefined(toPlot)
 										? {
 											label: certification.name,
@@ -197,12 +197,12 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 									labels: map(withData, ({ name }) => name),
 									datasets: item.chart
 										? map(item.chart.data, (indId) => ({
-											title: model.indicators[indId].name,
-											values: map(withData, ({ data }) => ReportsStore.compute(model.indicators[indId].value, data))
+											title: model.indirectIndicators[indId].name,
+											values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[indId].value, data))
 										}))
 										: item.value ? [{
-											title: model.indicators[item.value].name,
-											values: map(withData, ({ data }) => ReportsStore.compute(model.indicators[item.value].value, data))
+											title: model.indirectIndicators[item.value].name,
+											values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[item.value].value, data))
 										}] : [],
 									yMarkers: yMarkers.length > 0 && yMarkers
 								}

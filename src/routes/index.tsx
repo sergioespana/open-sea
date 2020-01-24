@@ -20,6 +20,7 @@ import MdPeople from 'react-icons/lib/md/people';
 import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
 import MdImage from 'react-icons/lib/md/image';
+import MdQuestionAnswer from 'react-icons/lib/md/question-answer';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
@@ -52,6 +53,7 @@ class SearchDrawer extends Component<any> {
 
 		const reports = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _reports }) => _reports.length > 0), ({ _reports }) => _reports)), { keys: ['name'] })).search(query);
 		const infographics = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _infographics }) => _infographics.length > 0), ({ _infographics }) => _infographics)), { keys: ['name'] })).search(query);
+		//const surveys = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _surveys }) => _surveys.length > 0), ({ _surveys }) => _surveys)), { keys: ['name'] })).search(query);
 		const organisations = (new Fuse(reject(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const networks = (new Fuse(filter(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const users = (new Fuse(state.users, { keys: ['name'] })).search(query);
@@ -76,6 +78,8 @@ class SearchDrawer extends Component<any> {
 				{reports.length > 0 && map(reports, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
 				{infographics.length > 0 && <h3>Infographics</h3>}
 				{infographics.length > 0 && map(infographics, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
+				{/* {surveys.length > 0 && <h3>Surveys</h3>} */}
+				{/* {surveys.length > 0 &&  map(surveys, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)} */}
 				{organisations.length > 0 && <h3>Organisations</h3>}
 				{organisations.length > 0 && map(organisations, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
 				{networks.length > 0 && <h3>Networks</h3>}
@@ -334,6 +338,16 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/infographics`
 		},
 		{
+			icon: <MdPeople />,
+			label: 'Stakeholders',
+			to: `/${orgId}/stakeholders`
+		},
+		{
+			icon: <MdQuestionAnswer />,
+			label: 'Surveys',
+			to: `/${orgId}/surveys`
+		},
+		{
 			icon: <MdSettings />,
 			label: 'Settings',
 			to: `/${orgId}/settings`,
@@ -342,6 +356,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Details',
 					to: `/${orgId}/settings/details`
+				},
+				{
+					hidden: !inRange(currentUserAccess, 30, 101),
+					label: 'Survey',
+					to: `/${orgId}/settings/survey`
 				},
 				{
 					label: 'People',
@@ -376,6 +395,10 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 						to: `/${_id}/data`
 					},
 					{
+						label: 'Survey',
+						to: `/${_id}/survey`
+					},
+					{
 						label: 'Model',
 						to: `/${_id}/model`
 					},
@@ -402,6 +425,10 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					{
 						label: 'Data',
 						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/data`
+					},
+					{
+						label: 'Survey',
+						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/survey`
 					},
 					{
 						label: 'Specification',

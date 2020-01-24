@@ -37,7 +37,7 @@ export default class NetworkSettingsOrganisations extends Component<any> {
 		const users = network._users;
 		const model = get(network, 'model');
 		const certifications = get(model, 'certifications');
-		const indicators = get(model, 'indicators');
+		const indicators = get(model, 'indirectIndicators');
 		const currentUserAccess = get(find(users, { _id: get(getCurrentUser(state), '_id') }), 'access') || 0;
 
 		return (

@@ -4,7 +4,7 @@
 		"name": { "type": "string" },
 		"description": { "type": "string" },
 		"version": { "type": "string" },
-		"categories": {
+		"topics": {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
@@ -27,7 +27,7 @@
 						"items": {
 							"type": "object",
 							"properties": {
-								"indicator": { "type": "string" },
+								"indirectIndicator": { "type": "string" },
 								"operator": {
 									"type": "string",
 									"enum": [ ">", ">=", "<", "<=", "==" ]
@@ -40,7 +40,7 @@
 								}
 							},
 							"additionalProperties": false,
-							"required": [ "indicator", "operator", "value" ]
+							"required": [ "indirectIndicator", "operator", "value" ]
 						}
 					}
 				},
@@ -48,7 +48,23 @@
 				"required": [ "name", "requirements" ]
 			}
 		},
-		"metrics": {
+		"indicators":{
+			"type" : "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"type": {
+						"type": "string",
+						"enum": [ "indicator", "survey" ]
+					},
+					"topic": { "type": "string" }
+				},
+				"required": [ "name", "type" ]
+			}
+		},
+		"directIndicators" : {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
@@ -57,27 +73,25 @@
 					"help": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [ "text", "number", "list", "likert" ]
+						"enum": [ "text", "number", "list", "likert", "answer" ]
 					}
 				},
-				"required": [ "name", "type" ]
+				"required": [ "name", "type"]
 			}
 		},
-		"indicators": {
+		"indirectIndicators": {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": { "type": "string" },
-					"description": { "type": "string" },
-					"category": { "type": "string" },
+					"indicator": { "type": "string" },
+					"value": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [ "text", "number", "percentage", "list" ]
-					},
-					"value": { "type": "string" }
+						"enum": [ "text", "number", "percentage", "list", "response" ]
+					}
 				},
-				"required": [ "name", "type" ]
+				"required": [ "indicator", "type", "value" ]
 			}
 		},
 		"reportItems": {
@@ -115,5 +129,5 @@
 			}
 		}
 	},
-	"required": [ "metrics", "indicators" ]
+	"required": [ "directIndicators", "indirectIndicators" ]
 }

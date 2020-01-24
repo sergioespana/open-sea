@@ -16,7 +16,7 @@ export interface Certification {
 	requirements: Requirement[];
 }
 
-export interface Category {
+export interface Topic {
 	name: string;
 }
 
@@ -24,21 +24,45 @@ export interface Indicator {
 
 }
 
-export interface Metric {
+export interface IndirectIndicator {
+
+}
+
+export interface DirectIndicator {
 
 }
 
 export interface Model {
 	_id: string;
-	categories?: Category[];
+	topics?: Topic[];
 	certifications?: Certification[];
 	indicators: Indicator[];
-	metrics: Metric[];
+	indirectIndicators: IndirectIndicator[];
+	directIndicators: DirectIndicator[];
 	name: string;
 	reportItems?: Array<any>;
 }
 
 export interface Specification {
+}
+
+export interface StakeholderGroup {
+	_id: string;
+	_orgId: string;
+	_sgId: string;
+	name: string;
+	created: Date;
+}
+
+export interface Stakeholder {
+	_id: string;
+	_orgId: string;
+	_sId: string;
+	sgId: string;
+	name: string;
+	//firstName: string;
+	//lastName: string;
+	eMail: string;
 }
 
 export interface Report {
@@ -48,6 +72,7 @@ export interface Report {
 	created: Date;
 	data?: object;
 	model?: Model;
+	survey?: Survey;
 	name: string;
 }
 
@@ -61,11 +86,25 @@ export interface Infographic {
 	specification?: Specification;
 }
 
+export interface Survey {
+	_id: string;
+	_orgId: string;
+	_repId: string;
+	created: Date;
+	name: string;
+	sId: string;
+	description: string;
+	welcometext: string;
+	closingtext: string;
+}
+
 export interface Organisation {
 	_id: string;
 	_organisations: Organisation[];
 	_reports: Report[];
-	_infographics: Infographic[];
+	_infographics?: Infographic[];
+	_stakeholderGroups?: StakeholderGroup[];
+	_stakeholders?: Stakeholder[];
 	avatar: string;
 	created: Date;
 	description: string;
@@ -74,4 +113,7 @@ export interface Organisation {
 	model?: Model;
 	name: string;
 	specification?: Specification;
+	ls_account?: string;
+	ls_password?: string;
+	ls_host?: string;
 }

@@ -57,27 +57,41 @@ class OrganisationReportData extends Component<any> {
 		return (
 			<React.Fragment>
 				{PageHead}
-				<Container>
+				<Container style={{ maxWidth: 400 }}>
 					<Section>
 						<Form onSubmit={this.onSubmit}>
-							{model.categories
+						 {model.topics
 								? (
 									<React.Fragment>
-										{map(model.categories, ({ name }, catId) => {
-											const items = pickBy(model.metrics, ({ category }) => category === catId);
-											if (isEmpty(items)) return null;
+										{map(model.topics, ({ name }, topId) => {
+											const topItems = pickBy(model.indicators, ({ topic, type }) => topic === topId && type === 'indicator');
+											if (isEmpty(topItems)) return null;
 											return (
 												<React.Fragment>
-													<h3>{name}</h3>
-													{map(items, this.renderItem(data))}
+													<h2>{name}</h2>
+													{map(topItems, ({ name, description, type }, indId) => {
+														const items = pickBy(model.directIndicators, ({ indicator }) => indicator === indId && type === 'indicator');
+														if (isEmpty(items))return null;
+														return(
+															<React.Fragment>
+																<header>
+																<h3>{name}</h3>
+																<small>{description}</small>
+																</header>
+																{
+																map(items, this.renderItem(data)
+																)}
+															</React.Fragment>
+														);
+													})}
 												</React.Fragment>
 											);
 										})}
-										{!isEmpty(pickBy(model.metrics, ({ category }) => category === undefined)) && <h3>Uncategorised</h3>}
-										{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
+										{!isEmpty(pickBy(model.indicators, ({ topic }) => topic === undefined)) && <h3>Uncategorised</h3>}
+										{map(pickBy(model.indicators, ({ topic }) => topic === undefined), this.renderItem(data))}
 									</React.Fragment>
 								)
-								: map(model.metrics, this.renderItem(data))}
+								: map(model.directIndicators, this.renderItem(data))}
 							<FormActions>
 								<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
 								<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>

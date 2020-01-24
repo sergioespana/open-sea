@@ -45,6 +45,16 @@ service cloud.firestore {
 				allow read;
 				allow write: if currentUserHasAccess(orgId, 20);
 			}
+
+			match /stakeholdergroups/{sgId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+			}
+			
+			match /stakeholders/{sId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+			}
 		}
 
 		match /users/{uid} {
@@ -59,5 +69,8 @@ service cloud.firestore {
 		match /models/{modelId} {
 			allow read, write: if isAuthed();
 		}
-	}
+		match /surveys/{surveyId} {
+		 allow read, write: if isAuthed();
+		}
+  }
 }

@@ -1,6 +1,6 @@
 import { difference, filter, find, isString, map } from 'lodash';
 import { reaction } from 'mobx';
-import { Organisation, Report, Infographic } from '../../domain/Organisation';
+import { Infographic, Organisation, Report, Stakeholder, StakeholderGroup } from '../../domain/Organisation';
 import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
 import collection from '../collection';
@@ -38,9 +38,11 @@ export const actions = (state) => {
 	);
 
 	const startListening = (orgId: string) => {
-		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [], _infographics: []}, { onAdded: onOrganisation(orgId), onRemoved: organisations.remove });
+		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [], _stakeholderGroups: [], _stakeholders: [], _infographics: [] }, { onAdded: onOrganisation(orgId), onRemoved: organisations.remove });
 		FirebaseService.startListening(`organisations/${orgId}/reports`, {}, { onAdded: onOrganisationReport(orgId, 'added'), onRemoved: onOrganisationReport(orgId, 'removed') });
 		FirebaseService.startListening(`organisations/${orgId}/users`, {}, { onAdded: onOrganisationUser(orgId, 'added'), onRemoved: onOrganisationUser(orgId, 'removed') });
+		FirebaseService.startListening(`organisations/${orgId}/stakeholdergroups`, {}, { onAdded: onOrganisationStakeholderGroup(orgId, 'added'), onRemoved: onOrganisationStakeholderGroup(orgId, 'removed') });
+		FirebaseService.startListening(`organisations/${orgId}/stakeholders`, {}, { onAdded: onOrganisationStakeholder(orgId, 'added'), onRemoved: onOrganisationStakeholder(orgId, 'removed') });
 		FirebaseService.startListening(`organisations/${orgId}/infographics`, {}, { onAdded: onOrganisationInfographic(orgId, 'added'), onRemoved: onOrganisationInfographic(orgId, 'removed') });
 
 	};
@@ -67,6 +69,26 @@ export const actions = (state) => {
 			const _id = `${_orgId}/${_repId}`;
 			collection(organisation._reports).updateOrInsert({ _id, _orgId, _repId, ...data });
 		} else collection(organisation._reports).remove(report);
+	};
+
+	const onOrganisationStakeholderGroup = (_orgId: string, action: 'added' | 'removed') => (stakeholdergroup: any) => {
+		const organisation = organisations.findById(_orgId);
+
+		if (action === 'added') {
+			const { _id: _sgId, ...data } = stakeholdergroup;
+			const _id = `${_orgId}/${_sgId}`;
+			collection(organisation._stakeholderGroups).updateOrInsert({ _id, _orgId, _sgId, ...data });
+		} else collection(organisation._stakeholderGroups).remove(stakeholdergroup);
+	};
+
+	const onOrganisationStakeholder = (_orgId: string, action: 'added' | 'removed') => (stakeholder: any) => {
+		const organisation = organisations.findById(_orgId);
+
+		if (action === 'added') {
+			const { _id: _sId, ...data } = stakeholder;
+			const _id = `${_orgId}/${_sId}`;
+			collection(organisation._stakeholders).updateOrInsert({ _id, _orgId, _sId, ...data });
+		} else collection(organisation._stakeholders).remove(stakeholder);
 	};
 
 	const onOrganisationInfographic = (_orgId: string, action: 'added' | 'removed') => (infographic: any) => {
@@ -97,6 +119,33 @@ export const actions = (state) => {
 		const { _orgId, _repId } = rep;
 		const report = { ...removePrivates(rep), created: new Date(), createdBy: getCurrentUser(state)._id };
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, report, callbacks);
+	};
+
+	const removeReport = (rep: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _repId } = rep;
+		FirebaseService.removeDoc(`organisations/${_orgId}/reports/${_repId}`, callbacks);
+	};
+
+	const addStakeholderGroup = (stg: StakeholderGroup, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _sgId } = stg;
+		const stakeholdergroup = { ...removePrivates(stg), created: new Date(), createdBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_orgId}/stakeholdergroups/${_sgId}`, stakeholdergroup, callbacks);
+	};
+
+	const removeStakeholderGroup = (stg: StakeholderGroup , callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _sgId } = stg;
+		FirebaseService.removeDoc(`organisations/${_orgId}/stakeholdergroups/${_sgId}`, callbacks);
+	};
+
+	const addStakeholder = (sh: Stakeholder, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _sId } = sh;
+		const stakeholder = { ...removePrivates(sh), created: new Date(), createdBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_orgId}/stakeholders/${_sId}`, stakeholder, callbacks);
+	};
+
+	const removeStakeholder = (sh: Stakeholder , callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _sId } = sh;
+		FirebaseService.removeDoc(`organisations/${_orgId}/stakeholders/${_sId}`, callbacks);
 	};
 
 	const addInfographic = (infog: Infographic, callbacks?: { onError?: Function, onSuccess?: Function }) => {
@@ -155,15 +204,20 @@ export const actions = (state) => {
 
 	return {
 		...organisations,
+		addInfographic,
 		addOrganisation,
 		addReport,
-		addInfographic,
+		addStakeholder,
+		addStakeholderGroup,
 		checkAvailability,
 		create,
 		findParentNetworkById,
 		removeAccess,
-		removeOrganisation,
 		removeInfographic,
+		removeOrganisation,
+		removeReport,
+		removeStakeholder,
+		removeStakeholderGroup,
 		startListening,
 		updateOrganisation,
 		updateOrAddAccess
