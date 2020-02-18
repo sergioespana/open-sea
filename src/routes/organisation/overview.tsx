@@ -21,6 +21,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 	const organisation = OrganisationsStore.findById(orgId) || {};
 	const reports = organisation._reports;
 	const withData = filter(organisation._reports, 'data');
+	const infographics = organisation._infographics;
 
 	const PageHead = (
 		<Header
@@ -60,6 +61,38 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				sortingDisabled
 			/>
 			<p>Recently updated · <Link to={`/${orgId}/reports`}>View all reports</Link></p>
+		</React.Fragment>
+	);
+
+	const RecentInfographics = (
+		<React.Fragment>
+			<h1 style={{ margin: '36px 0 12px 0' }}>Infographics</h1>
+			<Table
+				columns={[
+					{
+						key: 'name',
+						label: 'Infographic',
+						format: (name, { _infographicId }) => <Link to={`/${orgId}/infographics/${_infographicId}`}>{name}</Link>
+					},
+					{
+						key: 'actions',
+						label: 'Edit',
+						labelHidden: true,
+						format: (orgid, { _infographicId }) => <Link to={`/${orgId}/infographics/${_infographicId}/data`}>Edit data</Link>
+					},
+					{
+						label: 'Last updated',
+						hidden: true,
+						value: ({ created, updated }) => created || updated,
+						format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
+					}
+				]}
+				data={infographics}
+				defaultSort="-last-updated"
+				limit={5}
+				sortingDisabled
+			/>
+			<p>Recently updated · <Link to={`/${orgId}/infographics`}>View all infographics</Link></p>
 		</React.Fragment>
 	);
 
@@ -105,6 +138,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				</Section>
 				<Section width={375}>
 					{RecentReports}
+					{infographics.length > 0 ? RecentInfographics : ''}
 				</Section>
 			</Container>
 		</React.Fragment>
@@ -190,6 +224,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 				<Section width={375}>
 					{RecentReports}
 					{CertificationProgress}
+					{infographics.length > 0 ? RecentInfographics : ''}
 				</Section>
 			</Container>
 		</React.Fragment>

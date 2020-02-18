@@ -38,6 +38,9 @@ export interface Model {
 	reportItems?: Array<any>;
 }
 
+export interface Specification {
+}
+
 export interface Report {
 	_id: string;
 	_orgId: string;
@@ -48,10 +51,21 @@ export interface Report {
 	name: string;
 }
 
+export interface Infographic {
+	_id: string;
+	_orgId: string;
+	_infographicId: string;
+	_repId: string;
+	created: Date;
+	name: string;
+	specification?: Specification;
+}
+
 export interface Organisation {
 	_id: string;
 	_organisations: Organisation[];
 	_reports: Report[];
+	_infographics: Infographic[];
 	avatar: string;
 	created: Date;
 	description: string;
@@ -59,4 +73,5 @@ export interface Organisation {
 	isNetwork?: boolean;
 	model?: Model;
 	name: string;
+	specification?: Specification;
 }

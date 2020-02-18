@@ -82,6 +82,10 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 								value: ({ _reports }) => _reports.length
 							},
 							{
+								label: 'Infographics',
+								value: ({ _infographics }) => _infographics.length
+							},
+							{
 								key: 'isPublic',
 								label: 'Public',
 								labelHidden: true,

@@ -17,7 +17,6 @@ const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((pro
 	if (!organisation) return <Redirect to="/dashboard/organisations" />;
 
 	const report = collection(organisation._reports).findById(`${orgId}/${repId}`);
-
 	if (!report) return <Redirect to={`/${orgId}/reports`} />;
 
 	return (

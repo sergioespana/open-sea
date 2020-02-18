@@ -1,6 +1,6 @@
 import { difference, filter, find, isString, map } from 'lodash';
 import { reaction } from 'mobx';
-import { Organisation, Report } from '../../domain/Organisation';
+import { Organisation, Report, Infographic } from '../../domain/Organisation';
 import { User } from '../../domain/User';
 import * as FirebaseService from '../../services/FirebaseService';
 import collection from '../collection';
@@ -38,9 +38,11 @@ export const actions = (state) => {
 	);
 
 	const startListening = (orgId: string) => {
-		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [] }, { onAdded: onOrganisation(orgId), onRemoved: organisations.remove });
+		FirebaseService.startListening(`organisations/${orgId}`, { _organisations: [], _reports: [], _users: [], _infographics: []}, { onAdded: onOrganisation(orgId), onRemoved: organisations.remove });
 		FirebaseService.startListening(`organisations/${orgId}/reports`, {}, { onAdded: onOrganisationReport(orgId, 'added'), onRemoved: onOrganisationReport(orgId, 'removed') });
 		FirebaseService.startListening(`organisations/${orgId}/users`, {}, { onAdded: onOrganisationUser(orgId, 'added'), onRemoved: onOrganisationUser(orgId, 'removed') });
+		FirebaseService.startListening(`organisations/${orgId}/infographics`, {}, { onAdded: onOrganisationInfographic(orgId, 'added'), onRemoved: onOrganisationInfographic(orgId, 'removed') });
+
 	};
 
 	const onNetworkOrganisation = (netId: string, action: 'added' | 'removed') => (organisation: any) => {
@@ -67,6 +69,16 @@ export const actions = (state) => {
 		} else collection(organisation._reports).remove(report);
 	};
 
+	const onOrganisationInfographic = (_orgId: string, action: 'added' | 'removed') => (infographic: any) => {
+		const organisation = organisations.findById(_orgId);
+
+		if (action === 'added') {
+			const { _id: _infographicId, ...data } = infographic;
+			const _id = `${_orgId}/${_infographicId}`;
+			collection(organisation._infographics).updateOrInsert({ _id, _orgId, _infographicId, ...data });
+		} else collection(organisation._infographics).remove(infographic);
+	};
+
 	const onOrganisationUser = (orgId: string, action: 'added' | 'removed') => (user: any) => {
 		const organisation = organisations.findById(orgId);
 
@@ -85,6 +97,17 @@ export const actions = (state) => {
 		const { _orgId, _repId } = rep;
 		const report = { ...removePrivates(rep), created: new Date(), createdBy: getCurrentUser(state)._id };
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, report, callbacks);
+	};
+
+	const addInfographic = (infog: Infographic, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _infographicId } = infog;
+		const infographic = { ...removePrivates(infog), created: new Date(), createdBy: getCurrentUser(state)._id };
+		FirebaseService.saveDoc(`organisations/${_orgId}/infographics/${_infographicId}`, infographic, callbacks);
+	};
+
+	const removeInfographic = (infog: Infographic, callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		const { _orgId, _infographicId } = infog;
+		FirebaseService.removeDoc(`organisations/${_orgId}/infographics/${_infographicId}`, callbacks);
 	};
 
 	const addOrganisation = (net: string | Organisation, org: string | Organisation, callbacks?: { onError?: Function, onSuccess?: Function }) => {
@@ -134,11 +157,13 @@ export const actions = (state) => {
 		...organisations,
 		addOrganisation,
 		addReport,
+		addInfographic,
 		checkAvailability,
 		create,
 		findParentNetworkById,
 		removeAccess,
 		removeOrganisation,
+		removeInfographic,
 		startListening,
 		updateOrganisation,
 		updateOrAddAccess

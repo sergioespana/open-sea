@@ -9,8 +9,10 @@ import NetworkSettingsRoutes from '../network/settings';
 import OrganisationCertification from './certification';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
+import OrganisationInfographicRoutes from './infographic';
 import OrganisationReports from './reports';
 import OrganisationSettingsRoutes from './settings';
+import OrganisationInfographics from './infographics';
 
 @inject(app('OrganisationsStore'))
 @observer
@@ -46,7 +48,9 @@ class OrganisationRoutes extends Component<any> {
 				<Route path="/:orgId/overview" exact component={OrganisationOverview} />
 				<Route path="/:orgId/reports" exact component={OrganisationReports} />
 				<Route path="/:orgId/certification" exact component={OrganisationCertification} />
+				<Route path="/:orgId/infographics" exact component={OrganisationInfographics} />
 				<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
+				<Route path="/:orgId/infographics/:infographicId" component={OrganisationInfographicRoutes} />
 				<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
 			</Switch>
 		);

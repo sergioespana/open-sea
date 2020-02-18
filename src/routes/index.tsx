@@ -19,6 +19,7 @@ import MdInbox from 'react-icons/lib/md/inbox';
 import MdPeople from 'react-icons/lib/md/people';
 import MdSearch from 'react-icons/lib/md/search';
 import MdSettings from 'react-icons/lib/md/settings';
+import MdImage from 'react-icons/lib/md/image';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
@@ -50,6 +51,7 @@ class SearchDrawer extends Component<any> {
 		const { isSearchDrawerOpen } = state;
 
 		const reports = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _reports }) => _reports.length > 0), ({ _reports }) => _reports)), { keys: ['name'] })).search(query);
+		const infographics = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _infographics }) => _infographics.length > 0), ({ _infographics }) => _infographics)), { keys: ['name'] })).search(query);
 		const organisations = (new Fuse(reject(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const networks = (new Fuse(filter(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const users = (new Fuse(state.users, { keys: ['name'] })).search(query);
@@ -72,6 +74,8 @@ class SearchDrawer extends Component<any> {
 				</form>
 				{reports.length > 0 && <h3>Reports</h3>}
 				{reports.length > 0 && map(reports, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
+				{infographics.length > 0 && <h3>Infographics</h3>}
+				{infographics.length > 0 && map(infographics, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
 				{organisations.length > 0 && <h3>Organisations</h3>}
 				{organisations.length > 0 && map(organisations, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
 				{networks.length > 0 && <h3>Networks</h3>}
@@ -114,6 +118,7 @@ const Routes = inject(app('UIStore'))(observer((props) => {
 			<DrawerButton to="/create/report"><MdAssessment />Report</DrawerButton>
 			<DrawerButton to="/create/organisation"><MdBusiness />Organisation</DrawerButton>
 			<DrawerButton to="/create/network"><MdGroupWork />Network</DrawerButton>
+			<DrawerButton to="/create/infographic"><MdImage />Infographic</DrawerButton>
 		</Drawer>
 	);
 
@@ -324,6 +329,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/certification`
 		},
 		{
+			icon: <MdImage />,
+			label: 'Infographics',
+			to: `/${orgId}/infographics`
+		},
+		{
 			icon: <MdSettings />,
 			label: 'Settings',
 			to: `/${orgId}/settings`,
@@ -336,6 +346,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 				{
 					label: 'People',
 					to: `/${orgId}/settings/people`
+				},
+				{
+					hidden: !inRange(currentUserAccess, 30, 101),
+					label: 'Specification',
+					to: `/${orgId}/settings/specification`
 				},
 				{
 					hidden: !inRange(currentUserAccess, 30, 101),
@@ -367,6 +382,34 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					{
 						label: 'Settings',
 						to: `/${_id}/settings`
+					}
+				]
+			};
+		}),
+		...map(organisation._infographics, ({ _id }) => {
+			const infographic = collection(organisation._infographics).findById(_id);
+
+			return {
+				hidden: true,
+				icon: null,
+				label: infographic.name,
+				to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }`,
+				navigationItems: [
+					{
+						label: 'Infographic',
+						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }`
+					},
+					{
+						label: 'Data',
+						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/data`
+					},
+					{
+						label: 'Specification',
+						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/specification`
+					},
+					{
+						label: 'Settings',
+						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/settings`
 					}
 				]
 			};
@@ -404,6 +447,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Model',
 					to: `/${orgId}/settings/model`
+				},
+				{
+					hidden: !inRange(currentUserAccess, 30, 101),
+					label: 'Specification',
+					to: `/${orgId}/settings/specification`
 				},
 				{
 					label: 'People',
