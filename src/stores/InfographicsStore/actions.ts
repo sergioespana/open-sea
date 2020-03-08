@@ -33,15 +33,22 @@ export const actions = (state) => {
 		*/
 		return { accepted: obj, errors: null};
 	};
-
+	
 	const addSpecification = (speci: Specification, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _infographicId } = speci;
 		const specification = { ...removePrivates(speci) };
+		const empty = "";
 		// Add specificiation to infogrpahic or to an organisation (only networks will call this function) depending
 		// on whether _repId is set within the model.
-		if (_infographicId) FirebaseService.saveDoc(`organisations/${_orgId}/infographics/${_infographicId}`, { specification, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
-		else if (_orgId) FirebaseService.saveDoc(`organisations/${_orgId}`, { specification }, callbacks);
-		else FirebaseService.saveDoc(`models`, { ...model }, callbacks);
+		if (_infographicId) {
+			FirebaseService.saveDoc(`organisations/${_orgId}/infographics/${_infographicId}`, { specification: empty });
+			FirebaseService.saveDoc(`organisations/${_orgId}/infographics/${_infographicId}`, { specification: specification, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
+		}
+		else if (_orgId) {
+			// FirebaseService.removeDoc(`organisations/${_orgId}`, callbacks);
+			FirebaseService.saveDoc(`organisations/${_orgId}`, { specification: empty }, callbacks);
+			FirebaseService.saveDoc(`organisations/${_orgId}`, { specification: specification }, callbacks);
+		}
 	};
 
 	const addData = (obj: Infographic, callbacks?: { onError?: Function, onSuccess?: Function }) => {
