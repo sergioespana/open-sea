@@ -46,6 +46,11 @@ export const actions = (state) => {
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { survey, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
 	};
 
+	const updateSurvey = (_orgId, _repId, identifier, value ,callbacks?: { onError?: Function, onSuccess?: Function }) => {
+		if (identifier === 'summary')
+		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}/survey`, { summary: value, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
+	};
+
 	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = obj;
 		const data = { ...removePrivates(obj) };
@@ -102,6 +107,7 @@ export const actions = (state) => {
 		getCertificationIndex,
 		parseStrToJson,
 		operatorText,
-		validateModel
+		validateModel,
+		updateSurvey
 	};
 };

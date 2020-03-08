@@ -1,11 +1,12 @@
 import linkState from 'linkstate';
-import { get, isEmpty, map, pickBy, trim } from 'lodash';
+import { get, isEmpty, map, pickBy, filter,find } from 'lodash';
 import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, FormEvent } from 'react';
 import { Survey } from '../../../../src/domain/Organisation';
 import AuthForm, { AuthFormHeader, AuthFormWrapper } from '../../../components/AuthForm';
+import Select, { AsyncSelect, SelectOption } from '../../../components/Select';
 //import { error } from 'util';
 import { Button, LinkButton } from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -19,13 +20,15 @@ import collection from '../../../stores/collection';
 import { requestImplement } from '../../../util/lime-api';
 interface State {
 	survey: Survey;
+	sgid: string;
 }
 
 @inject(app('OrganisationsStore', 'ReportsStore', 'UIStore'))
 @observer
 export default class OrganisationsReportSurvey extends Component<any> {
 	readonly state: State = {
-		survey: null
+		survey: null,
+		sgid: ''
 	};
 
 	componentWillMount () {
@@ -41,11 +44,26 @@ export default class OrganisationsReportSurvey extends Component<any> {
 		//const { state } = this.props;
 		const { survey } = this.state;
 
-		const { match: { params: { orgId, repId } }, OrganisationsStore } = this.props;
+		const { match: { params: { orgId, repId } }, OrganisationsStore, sgid } = this.props;
 
 		const items = this.renderQitems(orgId,repId,OrganisationsStore);
 		const organisation = items.organisation;
 		const report = items.report;
+		const stakeholders = items.stakeholdersData;
+
+		const sglist = [];
+		map(items.sGroupData,({ name , _sgId }) => sglist.push({ label: name, value: _sgId }));
+
+			/*
+		const stakeholderlist = [];
+
+		map(stakeholders, ({ name, sgId, _sId, email }) => {
+			stakeholderlist.push({ name: name, sId: _sId, sgId: sgId, email: email });
+		});
+
+
+
+*/
 
 		const title = repId ? `Survey - ${organisation.name} / ${report.name}` : `Survey - ${organisation.name} / Settings`;
 		const breadcrumbs = repId ? [
@@ -143,9 +161,17 @@ export default class OrganisationsReportSurvey extends Component<any> {
 								onChange={linkState(this, 'survey.closingtext')}
 								value={survey.closingtext}
 							/>
+							<Select
+								label="Select participants"
+								onChange={linkState(this, 'sgid', 'value')}
+								isCompact
+								options={sglist}
+								placeholder="Select group"
+								value={sgid}
+							/>
 							</React.Fragment>
 							<FormActions>
-								<Button appearance="default" disabled={false} type="Create survey">Save data</Button>
+								<Button appearance="default" disabled={false} type="Create survey">Create survey</Button>
 								<LinkButton appearance="link" to={`/${orgId}/${repId}`}>Cancel</LinkButton>
 							</FormActions>
 							</Form>
@@ -160,9 +186,15 @@ export default class OrganisationsReportSurvey extends Component<any> {
 		const { props, state } = this;
 		const { history, match: { params: { orgId, repId } }, ReportsStore, OrganisationsStore, UIStore } = props;
 		const survey = { ...state.survey, _orgId: orgId, _repId: repId };
+		const { sgid } = this.state;
+
+		console.log(sgid);
 
 		const items = this.renderQitems(orgId,repId,OrganisationsStore);
 		const organisation = items.organisation;
+		const stakeholder = items.stakeholdersData;		
+		const sthFiltered = filter(stakeholder, { 'sgId': sgid });
+		console.log(sthFiltered);
 
 		let surveyOldId = '';
 		if (items.report.survey !== undefined) surveyOldId = items.report.survey.sId;
@@ -173,7 +205,7 @@ export default class OrganisationsReportSurvey extends Component<any> {
 				await requestImplement(organisation.ls_host,[organisation.ls_account, organisation.ls_password], 'set_language_properties',[surveyOldId, { 'surveyls_title': survey.name, 'surveyls_description': survey.description, 'surveyls_welcometext': survey.welcometext, 'surveyls_endtext' : survey.closingtext }])
 				.catch(err => console.log(err))
 				.then(() => {
-					console.log('changed in limesurvey')
+					console.log('changed in limesurvey' )
 					this.pushToDatabase(props,orgId,repId,ReportsStore,survey,history);
 					UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Changes are applied.' });
 				});
@@ -192,14 +224,47 @@ export default class OrganisationsReportSurvey extends Component<any> {
 							});
 						});
 					});
-				}).then(() => {
+				}).then(async () => {
 					console.log('new survey in Limesurvey');
 					this.pushToDatabase(props,orgId,repId,ReportsStore,survey,history,surveyOldId);
+					// activate survey participants table
+					await requestImplement(organisation.ls_host,[organisation.ls_account, organisation.ls_password], 'activate_tokens',[surveyOldId]).catch(err => console.log(err)).then(async res => {
+						console.log('Participants table activated:' + res.status);
+						// add stakeholders to participants table
+						map(sthFiltered, async ({ firstname, lastname, email, _sId }) => {
+							props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+							const sth = [];
+							sth.push({ email: email, lastname: lastname, firstname: firstname });
+							await requestImplement(organisation.ls_host,[organisation.ls_account, organisation.ls_password], 'add_participants',[surveyOldId, sth]).catch(err => console.log(err)).then(async res => {
+								this.updateStakeholder(_sId,'token',res[0].token);
+								console.log(res);
+							});
+						});
+					});
 					UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Survey, questiongroup(s) and question(s) are newly added to limesurvey and database.' });
+					props.state.isBusy = false;
+					history.push(`/${orgId}/${repId}`);
 				});
 		});
 	}
 
+	private updateStakeholder = (sId, identifier, value) => {
+		const { props } = this;
+		const { history, OrganisationsStore, match: { params: { orgId } } } = props;
+
+		console.log(sId);
+
+		const onSuccess = () => {
+			console.log(`Stakeholder ${identifier} added`);
+		};
+
+		const onError = (error) => {
+					// TODO: Show flag
+			console.log('failed:', error);
+		};
+		return OrganisationsStore.updateStakeholder(identifier, value, orgId, sId, { onSuccess, onError });
+	}
+		
 	private pushToDatabase = (props,orgId,repId, ReportsStore,survey,history,surveyOldId?) => {
 		//UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Survey, questiongroup(s) and question(s) are added to limesurvey and database.' });
 		if (surveyOldId !== undefined && survey.sId !== surveyOldId) survey.sId = surveyOldId;
@@ -219,13 +284,15 @@ export default class OrganisationsReportSurvey extends Component<any> {
 
 	private renderQitems = (orgId, repId, OrganisationsStore) => {
 		const organisation = OrganisationsStore.findById(orgId);
+		const stakeholdersData = organisation._stakeholders;
+		const sGroupData = organisation._stakeholdergroups;
 		const report = repId ? collection(organisation._reports).findById(`${orgId}/${repId}`) : null;
 		const model = get(report, 'model');
 		if (model === undefined) { console.log('model is empty'); return { model, report, organisation }; } else {
 			const groupItems = pickBy(model.topics, ({ type }) => type === 'questiongroup');
 			const surveyItems = pickBy(model.indicators, ({ type }) => type === 'survey');
 			const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
-			return { groupItems , surveyItems, model , report, organisation, parentNetwork };
+			return { groupItems , surveyItems, model , report, organisation, parentNetwork, stakeholdersData, sGroupData };
 		}
 	}
 

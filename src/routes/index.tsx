@@ -344,7 +344,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 		},
 		{
 			icon: <MdQuestionAnswer />,
-			label: 'Surveys',
+			label: 'Survey responses',
 			to: `/${orgId}/surveys`
 		},
 		{

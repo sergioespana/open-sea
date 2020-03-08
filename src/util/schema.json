@@ -27,7 +27,7 @@
 						"items": {
 							"type": "object",
 							"properties": {
-								"indirectIndicator": { "type": "string" },
+								"indirectIndicator": { "type": "string" }, 
 								"operator": {
 									"type": "string",
 									"enum": [ ">", ">=", "<", "<=", "==" ]
@@ -94,6 +94,28 @@
 				"required": [ "indicator", "type", "value" ]
 			}
 		},
+		"surveys": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"questions": {
+						"name": "string",
+						"description": "string",
+						"isMandatory": "string",
+						"answerType": "string",
+						"topic": "string"
+					},
+					"sample": {
+						"sampletype": "string",
+						"stakeholdergroup": "string"
+					}
+				},
+				"required": [ "name", "questions"]
+			}
+		},
 		"reportItems": {
 			"type": "array",
 			"items": {
@@ -129,5 +151,5 @@
 			}
 		}
 	},
-	"required": [ "directIndicators", "indirectIndicators" ]
+	"required": [ "surveys" ]
 }

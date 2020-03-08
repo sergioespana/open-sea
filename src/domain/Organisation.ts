@@ -39,6 +39,7 @@ export interface Model {
 	indicators: Indicator[];
 	indirectIndicators: IndirectIndicator[];
 	directIndicators: DirectIndicator[];
+	surveys?: Survey[];
 	name: string;
 	reportItems?: Array<any>;
 }
@@ -46,7 +47,7 @@ export interface Model {
 export interface Specification {
 }
 
-export interface StakeholderGroup {
+export interface Stakeholdergroup {
 	_id: string;
 	_orgId: string;
 	_sgId: string;
@@ -60,9 +61,9 @@ export interface Stakeholder {
 	_sId: string;
 	sgId: string;
 	name: string;
-	//firstName: string;
-	//lastName: string;
-	eMail: string;
+	firstname: string;
+	lastname: string;
+	email: string;
 }
 
 export interface Report {
@@ -72,8 +73,22 @@ export interface Report {
 	created: Date;
 	data?: object;
 	model?: Model;
-	survey?: Survey;
+	surveyresponses?: SurveyResponse[];
 	name: string;
+}
+
+export interface SurveyResponse {
+	_id: string;
+	_orgId: string;
+	_repId: string;
+	_sId: string;
+	summary: string;
+	questionresponses?: QuestionResponse[];
+}
+
+export interface QuestionResponse {
+	_qId: string;
+	values: object;  // array?
 }
 
 export interface Infographic {
@@ -90,12 +105,21 @@ export interface Survey {
 	_id: string;
 	_orgId: string;
 	_repId: string;
+	_sId: string;
 	created: Date;
 	name: string;
-	sId: string;
 	description: string;
 	welcometext: string;
 	closingtext: string;
+	questions: Question[];
+}
+
+export interface Question {
+ 	_qId: string;
+	name: string;
+	description?: string;
+	isMandatory: boolean;
+	answerType?: string; // for now string and not mandatory, future object or new instance?
 }
 
 export interface Organisation {
@@ -103,7 +127,7 @@ export interface Organisation {
 	_organisations: Organisation[];
 	_reports: Report[];
 	_infographics?: Infographic[];
-	_stakeholderGroups?: StakeholderGroup[];
+	_stakeholdergroups?: Stakeholdergroup[];
 	_stakeholders?: Stakeholder[];
 	avatar: string;
 	created: Date;
