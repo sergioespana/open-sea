@@ -1,4 +1,4 @@
-import csv from 'csvtojson';
+/*import csv from 'csvtojson';
 import parse from 'html-react-parser';
 import { get, isEmpty, isEqual, isNumber, List, map, pickBy, set, toNumber } from 'lodash';
 import { app } from 'mobx-app';

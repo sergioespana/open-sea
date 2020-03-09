@@ -396,7 +396,24 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					},
 					{
 						label: 'Survey',
-						to: `/${_id}/survey`
+						to: `/${_id}/survey`,
+						navigationItems: [
+							{
+								hidden: !inRange(currentUserAccess, 30, 101),
+								label: 'Summary',
+								to: `/${_id}/survey/summary`
+							},
+							{
+								hidden: !inRange(currentUserAccess, 30, 101),
+								label: 'Response',
+								to: `/${_id}/survey/response`
+							},
+							{
+								hidden: !inRange(currentUserAccess, 30, 101),
+								label: 'Participants',
+								to: `/${_id}/survey/participants`
+							}
+						]
 					},
 					{
 						label: 'Model',

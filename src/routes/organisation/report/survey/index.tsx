@@ -1,4 +1,4 @@
-import { app } from 'mobx-app';
+/*import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Switch } from 'react-router-dom';
@@ -10,7 +10,7 @@ import OrganisationCertification from './certification';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
 import OrganisationStakeholders from './stakeholders';
-//import OrganisationSurveys from './report/survey/surveys';
+import OrganisationSurveys from './report/survey/surveys';
 import OrganisationInfographicRoutes from './infographic';
 import OrganisationReports from './reports';
 import OrganisationSettingsRoutes from './settings';
@@ -36,15 +36,6 @@ class OrganisationRoutes extends Component<any> {
 
 		if (!organisation && isAuthed) return <Redirect to="/dashboard/organisations" />;
 
-		if (organisation.isNetwork) return (
-			<Switch>
-				<Route path="/:netId" exact component={NetworkOverview} />
-				<Route path="/:nedId/compare" exact />
-				<Route path="/:netId/overview" exact component={NetworkOverview} />
-				<Route path="/:netId/settings" component={NetworkSettingsRoutes} />
-			</Switch>
-		);
-
 		return (
 			<Switch>
 				<Route path="/:orgId" exact component={OrganisationOverview} />
@@ -53,8 +44,8 @@ class OrganisationRoutes extends Component<any> {
 				<Route path="/:orgId/certification" exact component={OrganisationCertification} />
 				<Route path="/:orgId/infographics" exact component={OrganisationInfographics} />
 				<Route path="/:orgId/stakeholders" exact component={OrganisationStakeholders} />
-				{//<Route path="/:orgId/surveys" exact component={OrganisationSurveys} />
-				}<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
+				<Route path="/:orgId/surveys" exact component={OrganisationSurveys} />
+				<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
 				<Route path="/:orgId/infographics/:infographicId" component={OrganisationInfographicRoutes} />
 				<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
 			</Switch>

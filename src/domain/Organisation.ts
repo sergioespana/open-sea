@@ -83,6 +83,9 @@ export interface SurveyResponse {
 	_repId: string;
 	_sId: string;
 	summary: string;
+	completed: string;
+	fullresponse: string;
+	incomplete: string;
 	questionresponses?: QuestionResponse[];
 }
 
