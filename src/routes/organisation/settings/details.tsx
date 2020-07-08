@@ -13,16 +13,20 @@ import Input, { TextArea } from '../../../components/NewInput';
 import { Section } from '../../../components/Section';
 import { Organisation } from '../../../domain/Organisation';
 import { requestValidate } from '../../../util/lime-api';
+import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../../components/Modal';
+
 
 interface State {
 	organisation: Organisation;
+	showModal: boolean;
 }
 
 @inject(app('OrganisationsStore', 'UIStore'))
 @observer
 class OrganisationSettingsDetails extends Component<any, State> {
 	readonly state: State = {
-		organisation: null
+		organisation: null,
+		showModal: false
 	};
 
 	componentWillMount () {
@@ -31,7 +35,7 @@ class OrganisationSettingsDetails extends Component<any, State> {
 
 	render () {
 		const { match: { params: { orgId } }, OrganisationsStore, UIStore, state } = this.props;
-		const { organisation } = this.state;
+		const { organisation, showModal } = this.state;
 		const originalOrg = OrganisationsStore.findById(orgId);
 		const preventSubmit = true/*state.isBusy || isEqual(organisation, originalOrg)*/;
 
@@ -85,7 +89,8 @@ class OrganisationSettingsDetails extends Component<any, State> {
 								placeholder={`This is a public ${organisation.isNetwork ? 'network' : 'organisation'}`}
 								type="checkbox"
 							/>
-						<h2>Limesurvey Credentials</h2>
+						<h2>LimeSurvey Credentials</h2>
+						<Button appearance="light" onClick={this.toggleModal} type="button"> Instructions</Button>
 								<Input
 									appearance="default"
 									disabled={false}
@@ -125,9 +130,28 @@ class OrganisationSettingsDetails extends Component<any, State> {
 						</Form>
 					</Section>
 				</Container>
+				<Modal
+					isOpen={showModal}
+					onClose={this.toggleModal}
+				>
+					<form onSubmit={this.onSubmit}>
+						<ModalHeader>
+							<h1>Add stakeholdergroup</h1>
+						</ModalHeader>
+						<ModalSection>
+							<p>
+								Please add a stakeholdergroup or stakeholder. Unfortunately, a stakeholdergroup and stakeholder cannot be added simultaneously.
+							</p>
+						</ModalSection>
+						<ModalFooter>
+								<Button appearance="subtle-link" onClick={this.toggleModal} type="button">Cancel</Button>
+						</ModalFooter>
+					</form>
+				</Modal>
 			</React.Fragment>
 		);
 	}
+	private toggleModal = () => this.setState(toggleModal);
 
 	private resetForm = () => {
 		const { match: { params: { orgId } }, OrganisationsStore } = this.props;
@@ -152,18 +176,17 @@ class OrganisationSettingsDetails extends Component<any, State> {
 		};
 
 		if (organisation.ls_host !== undefined || '' && organisation.ls_account !== undefined || '' && organisation.ls_password !== undefined || '') {
-
 			await requestValidate(organisation.ls_host,[organisation.ls_account, organisation.ls_password]).then(res => {
 				if (res.data.result.status === undefined) {
 					UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Credentials are valid' });
 					props.state.isBusy = true; // FIXME: Use setAppState for this when it works
 				} else UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description: res.data.result.status.toString() });})
 				.catch(err => {
-					UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description:  'The host name is incorrect or cors is not disabled as explained in ..' });
+					console.log(err);
+					UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description: 'Cannot connect to Limesurvey, please check the instructions above' });
 				});
-		}
-		return OrganisationsStore.updateOrganisation(organisation, { onSuccess, onError });
+		} else return OrganisationsStore.updateOrganisation(organisation, { onSuccess, onError });
 	}
 }
-
+const toggleModal = (prevState: State) => ({ showModal: !prevState.showModal });
 export default withRouter(OrganisationSettingsDetails);

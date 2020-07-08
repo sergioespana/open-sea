@@ -2,7 +2,7 @@ import linkState from 'linkstate';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdClose from 'react-icons/lib/md/close';
+import { MdClose } from 'react-icons/md';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import Header from '../../../components/Header';

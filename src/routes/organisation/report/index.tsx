@@ -9,8 +9,8 @@ import OrganisationReportData from './data';
 import OrganisationReportModel from './model';
 import OrganisationReportOverview from './report';
 import OrganisationReportSettings from './settings';
-//import OrganisationsReportSurvey from './survey';
-import SurveyRoutes from './survey/index';
+import ReportSurveyRoutes from './survey';
+import OrganisationReportSurveys from './surveys';
 
 const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId, repId } }, OrganisationsStore } = props;
@@ -22,12 +22,14 @@ const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((pro
 	if (!report) return <Redirect to={`/${orgId}/reports`} />;
 
 	return (
+		//			<Route path="/:orgId/:repId/:sId" component={ReportSurveyRoutes} />
 		<Switch>
 			<Route path="/:orgId/:repId" exact component={OrganisationReportOverview} />
 			<Route path="/:orgId/:repId/data" exact component={OrganisationReportData} />
 			<Route path="/:orgId/:repId/model" exact component={OrganisationReportModel} />
 			<Route path="/:orgId/:repId/settings" exact component={OrganisationReportSettings} />
-			<Route path="/:orgId/:repId/:sId" component={SurveyRoutes} />
+			<Route path="/:orgId/:repId/surveys" exact component={OrganisationReportSurveys} />
+			<Route path="/:orgId/:repId/:sId" component={ReportSurveyRoutes} />
 		</Switch>
 	);
 }));

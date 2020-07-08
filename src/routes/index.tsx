@@ -5,22 +5,7 @@ import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdAccountCircle from 'react-icons/lib/md/account-circle';
-import MdAdd from 'react-icons/lib/md/add';
-import MdAssessment from 'react-icons/lib/md/assessment';
-import MdAssignmentTurnedIn from 'react-icons/lib/md/assignment-turned-in';
-import MdBusiness from 'react-icons/lib/md/business';
-import MdCollectionsBookmark from 'react-icons/lib/md/collections-bookmark';
-import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
-import MdGroupWork from 'react-icons/lib/md/group-work';
-import MdHelp from 'react-icons/lib/md/help';
-import MdHome from 'react-icons/lib/md/home';
-import MdInbox from 'react-icons/lib/md/inbox';
-import MdPeople from 'react-icons/lib/md/people';
-import MdSearch from 'react-icons/lib/md/search';
-import MdSettings from 'react-icons/lib/md/settings';
-import MdImage from 'react-icons/lib/md/image';
-import MdQuestionAnswer from 'react-icons/lib/md/question-answer';
+import { MdAccountCircle, MdAdd, MdAssessment, MdAssignmentTurnedIn, MdBusiness, MdCollectionsBookmark, MdCompareArrows, MdGroupWork, MdHelp, MdHome, MdImage, MdInbox, MdPeople, MdQuestionAnswer, MdSearch, MdSettings } from 'react-icons/md';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
@@ -53,7 +38,6 @@ class SearchDrawer extends Component<any> {
 
 		const reports = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _reports }) => _reports.length > 0), ({ _reports }) => _reports)), { keys: ['name'] })).search(query);
 		const infographics = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _infographics }) => _infographics.length > 0), ({ _infographics }) => _infographics)), { keys: ['name'] })).search(query);
-		//const surveys = (new Fuse(flattenDeep(map(filter(toJS(state.organisations), ({ _surveys }) => _surveys.length > 0), ({ _surveys }) => _surveys)), { keys: ['name'] })).search(query);
 		const organisations = (new Fuse(reject(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const networks = (new Fuse(filter(state.organisations, { isNetwork: true }), { keys: ['name'] })).search(query);
 		const users = (new Fuse(state.users, { keys: ['name'] })).search(query);
@@ -78,8 +62,6 @@ class SearchDrawer extends Component<any> {
 				{reports.length > 0 && map(reports, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
 				{infographics.length > 0 && <h3>Infographics</h3>}
 				{infographics.length > 0 && map(infographics, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)}
-				{/* {surveys.length > 0 && <h3>Surveys</h3>} */}
-				{/* {surveys.length > 0 &&  map(surveys, ({ _id, name }) => <DrawerButton to={`/${_id}`}>{name}</DrawerButton>)} */}
 				{organisations.length > 0 && <h3>Organisations</h3>}
 				{organisations.length > 0 && map(organisations, ({ _id, avatar, name }) => <DrawerButton to={`/${_id}`}><img src={avatar} />{name}</DrawerButton>)}
 				{networks.length > 0 && <h3>Networks</h3>}
@@ -395,25 +377,8 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 						to: `/${_id}/data`
 					},
 					{
-						label: 'Survey',
-						to: `/${_id}/survey`,
-						navigationItems: [
-							{
-								hidden: !inRange(currentUserAccess, 30, 101),
-								label: 'Summary',
-								to: `/${_id}/survey/summary`
-							},
-							{
-								hidden: !inRange(currentUserAccess, 30, 101),
-								label: 'Response',
-								to: `/${_id}/survey/response`
-							},
-							{
-								hidden: !inRange(currentUserAccess, 30, 101),
-								label: 'Participants',
-								to: `/${_id}/survey/participants`
-							}
-						]
+						label: 'Surveys',
+						to: `/${_id}/surveys`
 					},
 					{
 						label: 'Model',

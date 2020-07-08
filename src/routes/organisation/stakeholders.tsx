@@ -1,9 +1,6 @@
 import csv from 'csvtojson';
-import differenceInHours from 'date-fns/difference_in_hours';
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
-import format from 'date-fns/format';
 import linkState from 'linkstate';
-import { debounce, find, get, inRange, isUndefined, map } from 'lodash';
+import { inRange, isUndefined, map, merge} from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component, SyntheticEvent } from 'react';
@@ -14,17 +11,19 @@ import { Link } from '../../components/Link';
 import Modal, { ModalFooter, ModalHeader, ModalSection } from '../../components/Modal';
 import Select, { AsyncSelect, SelectOption } from '../../components/Select';
 import Input from '../../components/NewInput'
-import { Table, TableCellWrapper } from '../../components/Table';
+import { Table } from '../../components/Table';
 import { Stakeholder, Stakeholdergroup } from '../../domain/Organisation';
 import { getCurrentUserAccess } from '../../stores/helpers';
 import { UIStore, OrganisationsStore } from 'src/stores';
-import MdRemoveCircle from 'react-icons/lib/md/remove-circle';
-import MdSettings from 'react-icons/lib/md/settings';
+import { isNullOrUndefined } from 'util';
+import collection from '../../stores/collection';
+
 
 interface State {
 	sgId: string;
 	showModal: boolean;
 	showCSVModal: boolean;
+	showDeleteModal: boolean;
 	userId: string;
 	stakeholdergroup: Stakeholdergroup;
 	stakeholder: Stakeholder;
@@ -40,6 +39,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		sgId: '',
 		showModal: false,
 		showCSVModal: false,
+		showDeleteModal: false,
 		userId: '',
 		stakeholdergroup: null,
 		stakeholder: null,
@@ -48,9 +48,11 @@ export default class OrganisationSettingsPeople extends Component<any> {
 
 	render () {
 		const { AuthStore, match: { params: { orgId } }, OrganisationsStore, state } = this.props;
-		let { sgId, showModal, showCSVModal, stakeholdersData } = this.state;
+		let { sgId, showModal, showCSVModal, showDeleteModal, stakeholdersData, stakeholdergroup } = this.state;
 		const organisation = OrganisationsStore.findById(orgId);
-		stakeholdersData = organisation._stakeholders;
+		stakeholdersData = {};
+
+		map(organisation._stakeholdergroups, ({ stakeholders }) => merge(stakeholdersData, stakeholders));
 		const stakeholdergroups = organisation._stakeholdergroups;
 		const users = organisation._users;
 		const currentUserAccess = getCurrentUserAccess(state, organisation);
@@ -58,8 +60,6 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		const sglist = [];
 
 		map(stakeholdergroups,({ name , _sgId }) => sglist.push({ label: name, value: _sgId }));
-
-		console.log(sglist);
 
 		const csvInput = (
 			<input
@@ -83,22 +83,14 @@ export default class OrganisationSettingsPeople extends Component<any> {
 				>
 					{inRange(currentUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add</Button>}
 					{inRange(currentUserAccess, 30, 101) && <Button appearance="light" onClick={this.toggleCSVModal}>Import</Button>}
-					{/* File should be a standard CSV (comma delimited) file with optional double quotes around values (default for most spreadsheet tools).
-					The first line must contain the field names. The fields can be in any order.
-					Mandatory field: email
-					Optional fields: firstname, lastname,blacklisted,language
-					Separator used: Comma | semi collumn
-
-					participants table --> multiple tables with list of participants
-					*/}
-					{/*StakeholderInput*/}
+					{inRange(currentUserAccess, 30, 101) && <Button appearance="error" onClick={this.toggleDeleteModal}>Delete</Button>}
 				</Header>
 				<Container style={{ display: 'block' }}>
 				<Table
 					columns={[
 						{
 							key: 'name',
-							label: 'Name',
+							label: 'Name'
 							//format: (name, { _id }) => <Link to={this.toggleModal}>{name}</Link> // When click --> edit
 						},
 						{
@@ -107,33 +99,14 @@ export default class OrganisationSettingsPeople extends Component<any> {
 							format: (email) => email.toLowerCase()
 						},
 						{
-							key: 'sgId',
+							key: '_sgId',
 							label: 'Group',
-							format: (sgId) => sgId.toLowerCase()[0].toUpperCase() + sgId.toLowerCase().slice(1)
-						},
-						{
-							key: 'createdBy',
-							label: 'Created by',
-							value: ({ createdBy }) => get(find(state.users, { _id: createdBy }), 'name'),
-							format: (name, { createdBy }) => <Link to={`/dashboard/people/${createdBy}`}>{name}</Link>
-						},
-						{
-							label: 'Updated',
-							value: ({ created, updated }) => updated || created,
-							format: (updated) => differenceInHours(new Date(), updated) > 24 ? format(updated, 'DD-MM-YYYY') : distanceInWordsToNow(updated, { addSuffix: true })
-						},
-						{
-							key: '_sId',
-							label: '',
-							format: (sId) => {
-								return (
-										<Button appearance="subtle-link" onClick={this.onRemove(sId)}>{<MdRemoveCircle />}</Button>);
-							}
+							format: (_sgId) => _sgId.toLowerCase()[0].toUpperCase() + _sgId.toLowerCase().slice(1)
 						}
 					]}
 					data={stakeholdersData}
-					defaultSort="-sgId"
-					filters={['name', 'email', 'sgId', 'createdBy']}
+					defaultSort="name"
+					//filters={['name', 'email', 'sgId', 'createdBy']}
 				/>
 				</Container>
 				<Modal
@@ -155,10 +128,8 @@ export default class OrganisationSettingsPeople extends Component<any> {
 									disabled={false}
 									isCompact
 									onChange={linkState(this, 'stakeholdergroup.name')}
-									//label="Please enter stakeholdergroup name"
 									placeholder="Stakeholdergroup name"
 									type="text"
-									//value={organisation.ls_account}
 							/>
 							</ModalSection>
 							<ModalHeader>
@@ -170,33 +141,26 @@ export default class OrganisationSettingsPeople extends Component<any> {
 									disabled={false}
 									isCompact
 									onChange={linkState(this, 'stakeholder.firstname')}
-									//label="Please enter stakeholdergroup name"
 									placeholder="First Name"
 									type="text"
-									//value={organisation.ls_account}
 							/>
 							<Input
 									appearance="default"
 									disabled={false}
 									isCompact
 									onChange={linkState(this, 'stakeholder.lastname')}
-									//label="Please enter stakeholdergroup name"
 									placeholder="Last Name"
 									type="text"
-									//value={organisation.ls_account}
 							/>
 							<Input
 									appearance="default"
 									disabled={false}
 									isCompact
 									onChange={linkState(this, 'stakeholder.email')}
-									//label="Please enter stakeholdergroup name"
 									placeholder="Email adress"
 									type="text"
-									//value={organisation.ls_account}
 							/>
 							<Select
-								//label="Select group"
 								onChange={linkState(this, 'sgId', 'value')}
 								isCompact
 								options={sglist}
@@ -208,7 +172,7 @@ export default class OrganisationSettingsPeople extends Component<any> {
 							<ButtonGroup>
 								<Button
 									appearance="default"
-									disabled={sgId === ''}
+									//disabled={/*sgId !== '' || stakeholdergroup.name !== ''  FIXME*/}
 									type="submit"
 								>
 									Add
@@ -236,6 +200,9 @@ export default class OrganisationSettingsPeople extends Component<any> {
 								placeholder="Choose stakeholdergroup"
 								value={sgId}
 							/>
+							<p>
+								If no stakeholdergroup can be selected, please add one on the previous page.
+							</p>
 						</ModalSection>
 						<ModalFooter>
 							<ButtonGroup>
@@ -250,6 +217,40 @@ export default class OrganisationSettingsPeople extends Component<any> {
 								<Button appearance="subtle-link" onClick={this.toggleCSVModal} type="button">Cancel</Button>
 							</ButtonGroup>
 							{csvInput}
+						</ModalFooter>
+					</form>
+				</Modal>
+				<Modal
+					isOpen={showDeleteModal}
+					onClose={this.toggleDeleteModal}
+				>
+					<form onSubmit={this.onRemove}>
+						<ModalHeader>
+							<h1>Delete stakeholdergroup</h1>
+							<p>
+								Please select a stakeholdergroup to be deleted.
+							</p>
+						</ModalHeader>
+							<ModalSection>
+							<Select
+								onChange={linkState(this, 'sgId', 'value')}
+								isCompact
+								options={sglist}
+								placeholder="Select group"
+								value={sgId}
+							/>
+						</ModalSection>
+						<ModalFooter>
+							<ButtonGroup>
+								<Button
+									appearance="error"
+									//disabled={/*sgId !== '' || stakeholdergroup.name !== ''  FIXME*/}
+									type="submit"
+								>
+									Delete
+								</Button>
+								<Button appearance="subtle-link" onClick={this.toggleDeleteModal} type="button">Cancel</Button>
+							</ButtonGroup>
 						</ModalFooter>
 					</form>
 				</Modal>
@@ -270,6 +271,8 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		const { srcElement }: { srcElement: Partial<FileReader> } = ev;
 		const { result } = srcElement;
 		const { UIStore } = this.props;
+		const sgId = this.state.sgId ;
+		const { history, match: { params: { orgId } } } = this. props;
 
 		if (!result) {
 			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
@@ -283,17 +286,19 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		}
 
 		csv().fromString(result.toString()).then((csvResult) => {
-			console.log(csvResult);
 			csvResult.forEach(csvRow => {
-				const sth: Stakeholder[] = csvRow;
-				console.log(sth);
-				this.addStakeholder(sth);
+				const sth = csvRow;
+				sth._sgId = sgId;
+				this.addStakeholderGroup(undefined, sth);
 			});
 		});
+		history.push(`/${orgId}/stakeholders`);
 	}
 
 	private toggleModal = () => this.setState(toggleModal);
 	private toggleCSVModal = () => this.setState(toggleCSVModal);
+	private toggleDeleteModal = () => this.setState(toggleDeleteModal);
+
 
 	private onSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -301,24 +306,33 @@ export default class OrganisationSettingsPeople extends Component<any> {
 		const { UIStore } = this.props;
 		const stakeholdergroup = { ...state.stakeholdergroup } ;
 		const stakeholder = { ...state.stakeholder } ;
+		const sgId = state.sgId ;
+		stakeholder._sgId = sgId;
 
 		console.log(stakeholder);
-
 		if (stakeholdergroup.name !== undefined) return this.addStakeholderGroup(stakeholdergroup);
-		else if (stakeholder.firstname !== undefined && stakeholder.lastname !== undefined && stakeholder.email !== undefined) return this.addStakeholder(stakeholder);
+		else if (stakeholder.firstname !== undefined && stakeholder.lastname !== undefined && stakeholder.email !== undefined) return this.addStakeholderGroup(undefined, stakeholder);
 		// fixMe: stakeholdergroup id to be added to add stakeholder
 		else UIStore.addFlag({ appearance: 'error', title: 'Stakeholder data', description: 'Please provide firstname, lastname and email adress.' });
 
 	}
-	private onRemove = (sId) => () => {
+
+	private onRemove = (event: SyntheticEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const { state } = this;
+		const sgId = state.sgId ;
+
 		const { props } = this;
 		const { history, match: { params: { orgId } }, OrganisationsStore } = props;
-		let { stakeholderData } = props;
-		//const stakeholder = { ...state.stakeholder } ;
+		const organisation = OrganisationsStore.findById(orgId);
+		const stakeholdergroup = collection(organisation._stakeholdergroups).findById(`${orgId}/${sgId}`);
+
 
 		const onSuccess = () => {
+			collection(organisation._stakeholdergroups).remove(stakeholdergroup);
+			console.log('stakeholdergroup deleted');
 			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
-			console.log('stakeholder deleted');
+			//history.push(`/${orgId}/stakeholders`);
 			location.reload(true);
 		};
 
@@ -327,65 +341,56 @@ export default class OrganisationSettingsPeople extends Component<any> {
 					// TODO: Show flag
 			console.log('failed:', error);
 		};
-		console.log(sId);
 		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
-		return OrganisationsStore.removeStakeholder(orgId, sId, { onSuccess, onError });
+		return OrganisationsStore.removeStakeholderGroup(stakeholdergroup, { onSuccess, onError });
 	}
 
-	private addStakeholderGroup = (stakeholdergroup) => {
+	private addStakeholderGroup = (stakeholdergroup?, stakeholder?) => {
 		const { props } = this;
 		const { history, OrganisationsStore, match: { params: { orgId } } } = props;
-		stakeholdergroup.name = stakeholdergroup.name[0].toUpperCase() + stakeholdergroup.name.slice(1);
+		let groupObject: Stakeholdergroup = {
+			name: null,
+			_orgId: null,
+			_sgId: null,
+			_id: null
+		};
 
-		stakeholdergroup.name = stakeholdergroup.name;
-		stakeholdergroup._orgId = orgId;
-		stakeholdergroup._sgId = this.capitalizeLetters(stakeholdergroup.name);
-		stakeholdergroup._id = `${orgId}/stakeholdergroups/${stakeholdergroup._sgId}`;
-		console.log(stakeholdergroup);
 
+		if (!isNullOrUndefined(stakeholdergroup)) {
+			const _sgId = this.capitalizeLetters(stakeholdergroup.name);
+			groupObject.name = stakeholdergroup.name[0].toUpperCase() + stakeholdergroup.name.slice(1);
+			groupObject._orgId = orgId;
+			groupObject._sgId = _sgId;
+			groupObject._id = `${orgId}/${stakeholdergroup._sgId}`;
+		} else
+		if (!isNullOrUndefined(stakeholder)) {
+			const organisation = OrganisationsStore.findById(orgId);
+			console.log(stakeholder);
+			groupObject = collection(organisation._stakeholdergroups).findById(`${orgId}/${stakeholder._sgId}`);
+			const sId = stakeholder.lastname + stakeholder.firstname + this.getRandomID();
+			if (isUndefined(groupObject.stakeholders)) groupObject.stakeholders = {};
+			groupObject.stakeholders[sId] = {
+				_sgId: stakeholder._sgId,
+				_sId: sId,
+				name: stakeholder.firstname + ' ' + stakeholder.lastname,
+				firstname: stakeholder.firstname,
+				lastname: stakeholder.lastname,
+				email: stakeholder.email
+			};
+		}
 		const onSuccess = () => {
-			//props.state.isBusy = false; // FIXME: Use setAppState for this when it works
-			console.log('stakeholdergroupadded');
-			history.push(`/${orgId}/stakeholders`);
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			console.log('stakeholder data added');
+			location.reload(true);
 		};
 
 		const onError = (error) => {
-			//props.state.isBusy = false; // FIXME: Use setAppState for this when it works
+			props.state.isBusy = false; // FIXME: Use setAppState for this when it works
 				// TODO: Show flag
 			console.log('failed:', error);
 		};
-		//props.state.isBusy = true; // FIXME: Use setAppState for this when it works
-		return OrganisationsStore.addStakeholderGroup(stakeholdergroup, { onSuccess, onError });
-	}
-	private addStakeholder = (stakeholder) => {
-		const { props } = this;
-		const { history, OrganisationsStore, match: { params: { orgId } } } = props;
-		const { sgId } = this.state;
-
-		const sId = stakeholder.lastname + stakeholder.firstname + this.getRandomID();
-		stakeholder.firstname = stakeholder.firstname.toLowerCase()[0].toUpperCase() + stakeholder.firstname.toLowerCase().slice(1) ;
-		stakeholder.lastname = stakeholder.lastname.toLowerCase()[0].toUpperCase() + stakeholder.lastname.toLowerCase().slice(1) ;
-
-		stakeholder.name = stakeholder.firstname + ' ' + stakeholder.lastname;
-		stakeholder._orgId = orgId;
-		stakeholder.sgId = sgId;
-		stakeholder._sId = sId;
-		stakeholder._id = `${orgId}/stakeholders/${sId}`;
-
-		console.log(stakeholder);
-
-		const onSuccess = () => {
-			//props.state.isBusy = false; // FIXME: Use setAppState for this when it works
-			console.log('added to firebase');
-			history.push(`/${orgId}/stakeholders`);
-		};
-
-		const onError = (error) => {
-					// TODO: Show flag
-			console.log('failed:', error);
-		};
-		//props.state.isBusy = true; // FIXME: Use setAppState for this when it works
-		return OrganisationsStore.addStakeholder(stakeholder, { onSuccess, onError });
+		props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+		return OrganisationsStore.addStakeholderGroup(groupObject, { onSuccess, onError });
 	}
 	private getRandomID = () => {
 		return Math.floor(Math.random() * Math.floor(999));
@@ -396,3 +401,5 @@ export default class OrganisationSettingsPeople extends Component<any> {
 }
 const toggleModal = (prevState: State) => ({ showModal: !prevState.showModal });
 const toggleCSVModal = (prevState: State) => ({ showCSVModal: !prevState.showCSVModal });
+const toggleDeleteModal = (prevState: State) => ({ showDeleteModal: !prevState.showDeleteModal });
+

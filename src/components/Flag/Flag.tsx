@@ -1,6 +1,6 @@
 import { map } from 'lodash';
 import React, { SFC } from 'react';
-import MdClose from 'react-icons/lib/md/close';
+import { MdClose } from 'react-icons/md';
 import { Link, LinkProps } from 'react-router-dom';
 import styled from '../../util/styled-components';
 import FlagContent from './FlagContent';

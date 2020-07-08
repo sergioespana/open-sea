@@ -9,7 +9,9 @@
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": { "type": "string" }
+					"name": { "type": "string" },
+					"topic": { "type": "string" },
+					"description": { "type": "string" }
 				}
 			}
 		},
@@ -57,41 +59,14 @@
 					"description": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [ "indicator", "survey" ]
+						"enum": [ "directindicator", "indirectindicator" ]
 					},
-					"topic": { "type": "string" }
+					"topic": { "type": "string" },
+					"unit": { "type": "string" },
+					"help": { "type": "string" },
+					"formula": { "type": "string" }
 				},
 				"required": [ "name", "type" ]
-			}
-		},
-		"directIndicators" : {
-			"type": "object",
-			"additionalProperties": {
-				"type": "object",
-				"properties": {
-					"name": { "type": "string" },
-					"help": { "type": "string" },
-					"type": {
-						"type": "string",
-						"enum": [ "text", "number", "list", "likert", "answer" ]
-					}
-				},
-				"required": [ "name", "type"]
-			}
-		},
-		"indirectIndicators": {
-			"type": "object",
-			"additionalProperties": {
-				"type": "object",
-				"properties": {
-					"indicator": { "type": "string" },
-					"value": { "type": "string" },
-					"type": {
-						"type": "string",
-						"enum": [ "text", "number", "percentage", "list", "response" ]
-					}
-				},
-				"required": [ "indicator", "type", "value" ]
 			}
 		},
 		"surveys": {
@@ -101,19 +76,30 @@
 				"properties": {
 					"name": { "type": "string" },
 					"description": { "type": "string" },
+					"welcometext": { "type": "string" },
+					"closingtext": { "type": "string" },
+					"responserate": { "type": "string" },
+					"topic": { "type": "string" },
 					"questions": {
-						"name": "string",
-						"description": "string",
-						"isMandatory": "string",
-						"answerType": "string",
-						"topic": "string"
-					},
-					"sample": {
-						"sampletype": "string",
-						"stakeholdergroup": "string"
+						"type": "object",
+						"additionalProperties": {
+							"type": "object",
+							"properties": {
+								"name": { "type": "string" },
+								"order": { "type": "number" },
+								"description": { "type": "string" },
+								"ismandatory": { "type": "string" },
+								"answertype": { "type": "string" },
+								"others": { "type": "string" },
+								"options": { "type": "array" },
+								"aggregatedqs": { "type": "array" },
+								"indicator": { "type": "string" }
+							},
+							"required": [ "name", "answertype" ]
+						}
 					}
 				},
-				"required": [ "name", "questions"]
+				"required": [ "name", "responserate" ]
 			}
 		},
 		"reportItems": {

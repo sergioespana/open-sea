@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { MdFileDownload } from 'react-icons/md';
 import { withRouter } from 'react-router-dom';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -10,7 +11,7 @@ import Header from '../../../components/Header';
 import { Link } from '../../../components/Link';
 import { Section } from '../../../components/Section';
 import { Organisation } from '../../../domain/Organisation';
-import MdFileDownload from 'react-icons/lib/md/file-download';
+
 
 @inject(app('OrganisationsStore', 'InfographicsStore', 'UIStore'))
 @observer

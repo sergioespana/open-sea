@@ -10,12 +10,11 @@ import OrganisationCertification from './certification';
 import OrganisationOverview from './overview';
 import OrganisationReportRoutes from './report';
 import OrganisationStakeholders from './stakeholders';
-//import OrganisationSurveys from './report/survey/surveys';
 import OrganisationInfographicRoutes from './infographic';
 import OrganisationReports from './reports';
 import OrganisationSettingsRoutes from './settings';
 import OrganisationInfographics from './infographics';
-//import OrganisationSurveys from './surveys';
+//import ReportSurveyRoutes from './report/survey';
 
 @inject(app('OrganisationsStore'))
 @observer
@@ -53,8 +52,7 @@ class OrganisationRoutes extends Component<any> {
 				<Route path="/:orgId/certification" exact component={OrganisationCertification} />
 				<Route path="/:orgId/infographics" exact component={OrganisationInfographics} />
 				<Route path="/:orgId/stakeholders" exact component={OrganisationStakeholders} />
-				{//<Route path="/:orgId/surveys" exact component={OrganisationSurveys} />
-				}<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
+				<Route path="/:orgId/settings" component={OrganisationSettingsRoutes} />
 				<Route path="/:orgId/infographics/:infographicId" component={OrganisationInfographicRoutes} />
 				<Route path="/:orgId/:repId" component={OrganisationReportRoutes} />
 			</Switch>

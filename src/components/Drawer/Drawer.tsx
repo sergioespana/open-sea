@@ -1,6 +1,6 @@
 import React, { Component, SyntheticEvent } from 'react';
 import { createPortal } from 'react-dom';
-import MdArrowBack from 'react-icons/lib/md/arrow-back';
+import { MdArrowBack } from 'react-icons/md';
 import Transition from 'react-transition-group/Transition';
 import Overlay from '../FullscreenOverlay';
 import Button from './Button';

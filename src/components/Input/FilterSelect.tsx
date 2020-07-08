@@ -1,7 +1,6 @@
 import { isUndefined, map } from 'lodash';
 import React, { Component, HTMLProps } from 'react';
-import MdClose from 'react-icons/lib/md/close';
-import MdExpandMore from 'react-icons/lib/md/expand-more';
+import { MdClose, MdExpandMore } from 'react-icons/md';
 import { LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from '../Button';

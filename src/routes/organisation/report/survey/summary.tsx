@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class SurveySummary extends Component<any> {
+class ReportSurveySummary extends Component<any> {
 	render () {
 
 		return(
@@ -11,4 +11,5 @@ class SurveySummary extends Component<any> {
 	}
 }
 
-export default SurveySummary;
+export default ReportSurveySummary;
+

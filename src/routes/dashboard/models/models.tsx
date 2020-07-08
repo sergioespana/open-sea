@@ -2,7 +2,7 @@ import Fuse from 'fuse.js';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdFileUpload from 'react-icons/lib/md/file-upload';
+import { MdFileUpload } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';

@@ -4,7 +4,7 @@ import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdFileDownload from 'react-icons/lib/md/file-download';
+import { MdFileDownload } from 'react-icons/md';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';

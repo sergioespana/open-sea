@@ -3,7 +3,7 @@ import { createStore } from 'mobx-app';
 import { Provider } from 'mobx-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MdInfoOutline from 'react-icons/lib/md/info-outline';
+import { MdInfoOutline } from 'react-icons/md';
 import App from './app';
 import * as stores from './stores/index';
 

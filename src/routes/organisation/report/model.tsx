@@ -4,7 +4,7 @@ import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdFileDownload from 'react-icons/lib/md/file-download';
+import { MdFileDownload } from 'react-icons/md';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
 import EmptyState from '../../../components/EmptyState';
@@ -123,8 +123,11 @@ class OrganisationsReportModel extends Component<any> {
 			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Could not read the selected file.' });
 			return;
 		}
-
 		const json = ReportsStore.parseStrToJson(result);
+		if (json.name === 'YAMLException') {
+			UIStore.addFlag({ appearance: 'error', title: 'YAML file error', description: json.message });
+			return;
+		}
 		return this.validateAndStoreModel(json);
 	}
 	private validateAndStoreModel = (json) => {
@@ -135,7 +138,7 @@ class OrganisationsReportModel extends Component<any> {
 			// TODO: Show first error in errors object in flag description.
 			//errors.forEach(console.log);
 			console.log(errors);
-			UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'In your model: ' + errors });
+			UIStore.addFlag({ appearance: 'error', title: 'Error in the model', description: errors[0].dataPath + ' ' + errors[0].message });
 			//UIStore.addFlag({ appearance: 'error', title: 'Error', description: 'Your model contained errors.' });
 		} else {
 			const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);

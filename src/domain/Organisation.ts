@@ -18,10 +18,19 @@ export interface Certification {
 
 export interface Topic {
 	name: string;
+	description: string;
+	parenttopic?: string;
 }
 
 export interface Indicator {
-
+	name?: string;
+	description?: string;
+	type?: string;
+	indicator?: string;
+	formula?: string;
+	formulameta?: any;
+	unit?: string;
+	help?: string;
 }
 
 export interface IndirectIndicator {
@@ -34,11 +43,11 @@ export interface DirectIndicator {
 
 export interface Model {
 	_id: string;
+	_orgId: string;
+	_repId: string;
 	topics?: Topic[];
 	certifications?: Certification[];
 	indicators: Indicator[];
-	indirectIndicators: IndirectIndicator[];
-	directIndicators: DirectIndicator[];
 	surveys?: Survey[];
 	name: string;
 	reportItems?: Array<any>;
@@ -52,14 +61,14 @@ export interface Stakeholdergroup {
 	_orgId: string;
 	_sgId: string;
 	name: string;
-	created: Date;
+	created?: Date;
+	stakeholders?: object;
 }
 
 export interface Stakeholder {
-	_id: string;
 	_orgId: string;
 	_sId: string;
-	sgId: string;
+	_sgId: string;
 	name: string;
 	firstname: string;
 	lastname: string;
@@ -73,25 +82,18 @@ export interface Report {
 	created: Date;
 	data?: object;
 	model?: Model;
-	surveyresponses?: SurveyResponse[];
 	name: string;
 }
 
 export interface SurveyResponse {
 	_id: string;
 	_orgId: string;
-	_repId: string;
 	_sId: string;
+	repId: string;
 	summary: string;
 	completed: string;
 	fullresponse: string;
 	incomplete: string;
-	questionresponses?: QuestionResponse[];
-}
-
-export interface QuestionResponse {
-	_qId: string;
-	values: object;  // array?
 }
 
 export interface Infographic {
@@ -107,22 +109,39 @@ export interface Infographic {
 export interface Survey {
 	_id: string;
 	_orgId: string;
-	_repId: string;
 	_sId: string;
+	_repId: string;
+	lsId: string;
 	created: Date;
 	name: string;
 	description: string;
 	welcometext: string;
 	closingtext: string;
 	questions: Question[];
+	participants: string;
+	status: string;
+	responserate: number;
+	population: string;
+	responses?: object;
+	respObtained: string;
+	validResp: string;
+	incompleteResp: string;
 }
 
 export interface Question {
  	_qId: string;
 	name: string;
+	value: string;
 	description?: string;
-	isMandatory: boolean;
-	answerType?: string; // for now string and not mandatory, future object or new instance?
+	isMandatory: string;
+	answerType?: string;
+	responses?: Array<any>;
+	indicator?: string;
+	qhandler?: string;
+	options?: any;
+	aggregatedQs?: Array<any>;
+	others: boolean;
+	order: number;
 }
 
 export interface Organisation {
@@ -130,8 +149,9 @@ export interface Organisation {
 	_organisations: Organisation[];
 	_reports: Report[];
 	_infographics?: Infographic[];
-	_stakeholdergroups?: Stakeholdergroup[];
-	_stakeholders?: Stakeholder[];
+	_stakeholdergroups?: Stakeholdergroup;
+	_stakeholders?: Stakeholder;
+	_surveys?: Survey[];
 	avatar: string;
 	created: Date;
 	description: string;

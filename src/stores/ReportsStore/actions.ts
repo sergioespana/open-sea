@@ -6,6 +6,7 @@ import * as FirebaseService from '../../services/FirebaseService';
 import schema from '../../util/schema.json';
 import { getCurrentUser, removePrivates } from '../helpers';
 import math from '../math';
+import { isNullOrUndefined } from 'util';
 
 const ajv = new AJV({
 	coerceTypes: true,
@@ -14,8 +15,39 @@ const ajv = new AJV({
 
 export const actions = (state) => {
 
-	const compute = (value: string, data: object) => {
-		try {
+	const compute = (value: string, data: object, unit?: string) => {
+		if (unit) try {
+			switch (unit) {
+			case 'number': {
+				const ret = roundIfNumber(math.eval(value, data), 2);
+				return ret;
+			}
+			case 'date': {
+				const ret = roundIfNumber(math.eval(value, data), 2);
+				return ret;
+			}
+			case 'percentage': {
+				return `${roundIfNumber(math.eval(value, data), 2) * 100}%`;
+			}
+			case 'text': {
+				let returnstring = '';
+				if (!isNullOrUndefined(data)) {
+					const valarr = value.split('+');
+					valarr.forEach(e => {
+						const el = e.split(' ').join('');
+						if (isNullOrUndefined(data[el])) returnstring = 'No responses available';
+						else if (valarr.length > 1) returnstring += el + ': ' + data[el] + '\n';
+						else returnstring = data[el];
+					});
+				} else returnstring = '0';
+				return returnstring;
+			}
+			}
+		} catch (error) {
+			console.log(error);
+			return 0;
+		}
+		else try {
 			return roundIfNumber(math.eval(value, data), 2);
 		} catch (error) {
 			return 0;
@@ -24,7 +56,12 @@ export const actions = (state) => {
 
 	const roundIfNumber = (val: any, precision?: number) => isNumber(val) ? round(val, precision) : val;
 
-	const parseStrToJson = (str: string) => safeLoad(str);
+	const parseStrToJson = (str: string) => {
+		try { return safeLoad(str); } catch (e) {
+			console.log(e);
+			return e;
+		}
+	};
 
 	const validateModel = (obj: object) => {
 		if (ajv.validate(schema, obj)) return { accepted: obj, errors: null };
@@ -40,7 +77,8 @@ export const actions = (state) => {
 		else if (_orgId) FirebaseService.saveDoc(`organisations/${_orgId}`, { model, updated: new Date() }, callbacks);
 		else FirebaseService.saveDoc(`models`, { ...model }, callbacks);
 	};
-	const addSurvey = (surv: Survey ,callbacks?: { onError?: Function, onSuccess?: Function }) => {
+
+	/*const addSurvey = (surv: Survey ,callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = surv;
 		const survey = { ...removePrivates(surv) };
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}`, { survey, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
@@ -49,7 +87,7 @@ export const actions = (state) => {
 	const updateSurvey = (_orgId, _repId, identifier, value ,callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		if (identifier === 'summary')
 		FirebaseService.saveDoc(`organisations/${_orgId}/reports/${_repId}/survey`, { summary: value, updated: new Date(), updatedBy: get(getCurrentUser(state), '_id') }, callbacks);
-	};
+	};*/
 
 	const addData = (obj: Report, callbacks?: { onError?: Function, onSuccess?: Function }) => {
 		const { _orgId, _repId } = obj;
@@ -101,13 +139,13 @@ export const actions = (state) => {
 	return {
 		assess,
 		addData,
-		addSurvey,
+		//addSurvey,
 		addModel,
 		compute,
 		getCertificationIndex,
 		parseStrToJson,
 		operatorText,
 		validateModel,
-		updateSurvey
+		//updateSurvey
 	};
 };

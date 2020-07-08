@@ -5,7 +5,7 @@ import { filter, find, get } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import MdLock from 'react-icons/lib/md/lock';
+import { MdLock } from 'react-icons/md';
 import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
