@@ -28,7 +28,7 @@ export default class AccountResetPassword extends Component<any, State> {
 		return (
 			<AuthFormWrapper>
 				<AuthFormHeader>
-					<h1>openSEA</h1>
+					<h1>openESEA</h1>
 					<h2>Unable to login?</h2>
 				</AuthFormHeader>
 				<AuthForm onSubmit={this.onSubmit}>

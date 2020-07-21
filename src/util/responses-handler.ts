@@ -19,12 +19,17 @@ export const getResponses = async (organisation, survey) => {
 			// push responses to database
 			for (let i = 0; i < result.responses.length; i++) {
 				// this to calculate question
-				map(survey.questions, ({ aggregatedQs }, qId) => {
-					if (aggregatedQs) {
+				map(survey.questions, ({ aggregatedQs, options, answerType }, qId) => {
+					if (answerType === 'instruction') return null;
+					else if (aggregatedQs) {
 						map(aggregatedQs, (values, id) => {
-							if(result.responses[i][i + 1][`${qId}[T${id}]`]) survey.questions[qId].responses.push(values);
+							if (result.responses[i][i + 1][`${qId}[T${id}]`]) survey.questions[qId].responses.push(values);
 						});
 						//result.responses[i][i + 1][`${qId}[T${}]`]
+					} else if (options) {
+						map(options, (values, id) => {
+							if (result.responses[i][i + 1][qId] === `A${id}`) survey.questions[qId].responses.push(values);
+						});
 					} else survey.questions[qId].responses.push(result.responses[i][i + 1][qId]);
 				});
 			}
@@ -63,11 +68,13 @@ export const getValue = (qObject, statistics) => {
 					break;
 				}
 				case 'dropdown' : {
-					responsesInt[index] = parseInt(responses[index].slice(-1));
+					console.log(responses[index]);
+					responsesInt[index] = responses[index];
 					break;
 				}
 				case 'radio' : {
-					responsesInt[index] = parseInt(responses[index].slice(-1));
+					console.log(responsesInt[index]);
+					responsesInt[index] = responses[index];
 					break;
 				}
 				case 'number' : {
@@ -142,14 +149,15 @@ export const getValue = (qObject, statistics) => {
 				break;
 			}
 			case 'dropdown': {
-				val = options[val];
+				val = val.slice(0, -1);
 				break;
 			}
 			case 'radio': {
-				val = options[val];
+				val = val.slice(0, -1);
 				break;
 			}
 			case 'multipleChoice': {
+				val = val.slice(0, -1);
 				break;
 			}
 			case 'enumYesNo': {
@@ -163,6 +171,8 @@ export const getValue = (qObject, statistics) => {
 			}
 		}
 	});
+
+	console.log(val);
 
 	return val;
 };

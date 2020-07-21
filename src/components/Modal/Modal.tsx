@@ -8,12 +8,13 @@ interface ModalProps {
 	isOpen?: boolean;
 	onClose?: (event: SyntheticEvent<any>) => void;
 	width?: number;
+	height?: number;
 }
 
 export default class Modal extends Component<ModalProps> {
 
 	render () {
-		const { children, isOpen, onClose, width } = this.props;
+		const { children, isOpen, onClose, width, height } = this.props;
 
 		return createPortal((
 			<React.Fragment>
@@ -33,7 +34,7 @@ export default class Modal extends Component<ModalProps> {
 					mountOnEnter
 					unmountOnExit
 				>
-					{(state) => <Wrapper width={width} animationState={state}>{children}</Wrapper>}
+					{(state) => <Wrapper width={width} height={height} animationState={state}>{children}</Wrapper>}
 				</Transition>
 			</React.Fragment>
 		), document.body);

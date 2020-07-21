@@ -15,6 +15,7 @@ import Progress from '../../components/Progress';
 import { ReportGrid, ReportGridItem } from '../../components/ReportGrid';
 import { Section } from '../../components/Section';
 import { Table } from '../../components/Table';
+import { size } from 'polished';
 
 const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observer((props) => {
 	const { match: { params: { orgId } }, OrganisationsStore, ReportsStore } = props;
@@ -105,7 +106,7 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 						<img src="/assets/images/empty-state-welcome.svg" />
 						<h1>Let's begin</h1>
 						<p>
-							To get started using openSEA for {organisation.name}, create a report below.
+							To get started using openESEA for {organisation.name}, create a report below.
 						</p>
 						<p>
 							<LinkButton appearance="default" to={`/create/report?organisation=${orgId}`}>Create a report</LinkButton>
@@ -116,7 +117,35 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 		</React.Fragment>
 	);
 
-	if (withData.length < 2) return (
+	
+	return (
+		<React.Fragment>
+			{PageHead}
+			<Container>
+				<Section>
+				<h1>Certification disabled</h1>
+						<p>
+							Due to changes in indicator structures certification statusses can not be depicted any more.
+							Plesea see the image below for previous certification features.
+						</p>
+					<img src="/assets/images/Certification example1.png" width="700" />
+					<img src="/assets/images/Certification example2.png" width="700" />
+					<img src="/assets/images/Certification example3.png" width="700" />
+					<img src="/assets/images/Certification example4.png" width="700" />
+				</Section>
+				<Section width={375}>
+					{RecentReports}
+					{infographics.length > 0 ? RecentInfographics : ''}
+				</Section>
+			</Container>
+		</React.Fragment>
+	);
+
+
+
+
+/*
+	if (withData.length > 100000) return (
 		<React.Fragment>
 			{PageHead}
 			<Container>
@@ -146,89 +175,91 @@ const OrganisationOverview = inject(app('OrganisationsStore', 'ReportsStore'))(o
 
 	const report = last(withData);
 	const model = get(report, 'model');
-	const items = get(model, 'reportItems');
-	let CertificationProgress = null;
-	const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
-	const certModel = parentNetwork ? get(parentNetwork, 'model') : model;
 
-	// To display certifications, prefer the model from parent network. If there's no
-	// parent network, use the report's model. If neither have certifications defined,
-	// don't do anything.
-	if (certModel && certModel.certifications) {
-		const assessed = ReportsStore.assess(certModel.certifications, certModel.indirectIndicators, report);
-		const { next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
-		const next = assessed[nextIndex];
+		const items = get(model, 'reportItems');
+		let CertificationProgress = null;
+		const parentNetwork = OrganisationsStore.findParentNetworkById(orgId);
+		const certModel = parentNetwork ? get(parentNetwork, 'model') : model;
 
-		if (next) {
-			const met = filter(next.requirements, { _pass: true });
-			CertificationProgress = (
-				<React.Fragment>
-					<h1 style={{ margin: '36px 0 12px 0' }}>Certification</h1>
-					<Progress value={met.length} max={next.requirements.length} />
-					<p>Progress based on latest report · <Link to={`/${orgId}/certification`}>More details</Link></p>
-				</React.Fragment>
-			);
+		// To display certifications, prefer the model from parent network. If there's no
+		// parent network, use the report's model. If neither have certifications defined,
+		// don't do anything.
+		if (certModel && certModel.certifications) {
+			const assessed = ReportsStore.assess(certModel.certifications, certModel.indirectIndicators, report);
+			const { next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
+			const next = assessed[nextIndex];
+
+			if (next) {
+				const met = filter(next.requirements, { _pass: true });
+				CertificationProgress = (
+					<React.Fragment>
+						<h1 style={{ margin: '36px 0 12px 0' }}>Certification</h1>
+						<Progress value={met.length} max={next.requirements.length} />
+						<p>Progress based on latest report · <Link to={`/${orgId}/certification`}>More details</Link></p>
+					</React.Fragment>
+				);
+			}
 		}
-	}
 
-	return (
-		<React.Fragment>
-			{PageHead}
-			<Container>
-				<Section maxWidth={700}>
-					<ReportGrid>
-						{map(items, (item) => {
-							const itemIndicators = item.chart ? [...item.chart.values] : [item.value];
-							const yMarkers = model.certifications
-								? filter(flatten(map(itemIndicators, (indId) => map(model.certifications, (certification) => {
-									const toPlot: any = find(certification.requirements, { indirectIndicator: indId });
-									return !isUndefined(toPlot)
-										? {
-											label: certification.name,
-											value: toPlot.value
-										}
-										: undefined;
-								}))), (value) => !isUndefined(value))
-								: [];
+		return (
+			<React.Fragment>
+				{PageHead}
+				<Container>
+					<Section maxWidth={700}>
+						<ReportGrid>
+							{map(items, (item) => {
+								const itemIndicators = item.chart ? [...item.chart.values] : [item.value];
+								const yMarkers = model.certifications
+									? filter(flatten(map(itemIndicators, (indId) => map(model.certifications, (certification) => {
+										const toPlot: any = find(certification.requirements, { indirectIndicator: indId });
+										return !isUndefined(toPlot)
+											? {
+												label: certification.name,
+												value: toPlot.value
+											}
+											: undefined;
+									}))), (value) => !isUndefined(value))
+									: [];
 
-							const chart = {
-								type: 'line',
-								data: {
-									labels: map(withData, ({ name }) => name),
-									datasets: item.chart
-										? map(item.chart.data, (indId) => ({
-											title: model.indirectIndicators[indId].name,
-											values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[indId].value, data))
-										}))
-										: item.value ? [{
-											title: model.indirectIndicators[item.value].name,
-											values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[item.value].value, data))
-										}] : [],
-									yMarkers: yMarkers.length > 0 && yMarkers
-								}
-							};
+								const chart = {
+									type: 'line',
+									data: {
+										labels: map(withData, ({ name }) => name),
+										datasets: item.chart
+											? map(item.chart.data, (indId) => ({
+												title: model.indirectIndicators[indId].name,
+												values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[indId].value, data))
+											}))
+											: item.value ? [{
+												title: model.indirectIndicators[item.value].name,
+												values: map(withData, ({ data }) => ReportsStore.compute(model.indirectIndicators[item.value].value, data))
+											}] : [],
+										yMarkers: yMarkers.length > 0 && yMarkers
+									}
+								};
 
-							const dataTypes = flatten(map(chart.data.datasets, (set) => map(set.values, (value) => typeof value)));
-							// Don't render a graph when there's string data in the datasets.
-							if (dataTypes.includes('string')) return null;
+								const dataTypes = flatten(map(chart.data.datasets, (set) => map(set.values, (value) => typeof value)));
+								// Don't render a graph when there's string data in the datasets.
+								if (dataTypes.includes('string')) return null;
 
-							return (
-								<ReportGridItem key={item.name}>
-									<h2>{item.name}</h2>
-									<Chart {...chart} />
-								</ReportGridItem>
-							);
-						})}
-					</ReportGrid>
-				</Section>
-				<Section width={375}>
-					{RecentReports}
-					{CertificationProgress}
-					{infographics.length > 0 ? RecentInfographics : ''}
-				</Section>
-			</Container>
-		</React.Fragment>
-	);
+								return (
+									<ReportGridItem key={item.name}>
+										<h2>{item.name}</h2>
+										<Chart {...chart} />
+									</ReportGridItem>
+								);
+							})}
+						</ReportGrid>
+					</Section>
+					<Section width={375}>
+						{RecentReports}
+						{//CertificationProgress}
+						}
+						{infographics.length > 0 ? RecentInfographics : ''}
+					</Section>
+				</Container>
+			</React.Fragment>
+		);*/
 }));
 
 export default OrganisationOverview;

@@ -41,7 +41,7 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 						<img src="/assets/images/empty-state-welcome.svg" />
 						<h1>Insufficient permissions</h1>
 						<p>
-							openSEA requires a model to be set for this network, however you do not have
+							openESEA requires a model to be set for this network, however you do not have
 							the required access level to do so. Please contact the owner or one of the
 							administrators to fix this.
 						</p>
@@ -61,7 +61,7 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 							<img src="/assets/images/empty-state-welcome.svg" />
 							<h1>Let's begin</h1>
 							<p>
-								To get started using openSEA for your network, add an organisation.
+								To get started using openESEA for your network, add an organisation.
 							</p>
 							<p>
 								<LinkButton appearance="default" to={`/${netId}/settings/organisations`}>Manage organisations</LinkButton>
@@ -70,7 +70,7 @@ const NetworkOverview = inject(app('OrganisationsStore', 'ReportsStore'))(observ
 					) : (
 						<EmptyState>
 							<img src="/assets/images/empty-state-welcome.svg" />
-							<h1>Welcome to openSEA networks</h1>
+							<h1>Welcome to openESEA networks</h1>
 							<p>
 								To get started, at least one organisation within this network is required, however you do not have
 								the required access level to add one. Please contact the owner or one of the administrators to fix this.

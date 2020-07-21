@@ -28,8 +28,8 @@ const onWindowLoad = () => {
 								label: 'Remind me later'
 							}],
 							icon: <MdInfoOutline />,
-							title: 'openSEA was updated',
-							description: 'An update for openSEA was downloaded in the background. Refresh to get access.'
+							title: 'openESEA was updated',
+							description: 'An update for openESEA was downloaded in the background. Refresh to get access.'
 						});
 					}
 				};

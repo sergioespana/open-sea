@@ -25,9 +25,9 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 				<Section>
 					<EmptyState>
 						<img src="/assets/images/empty-state-welcome.svg" />
-						<h1>Welcome to openSEA</h1>
+						<h1>Welcome to openESEA</h1>
 						<p>
-							openSEA allows you to easily track progress on metrics and indicators you
+							openESEA allows you to easily track progress on metrics and indicators you
 							define for your organisation. To get started, simply click below to
 							claim your organisation's name.
 						</p>

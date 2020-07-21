@@ -26,7 +26,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 			<Container>
 				<EmptyState>
 					<img src="/assets/images/empty-state-welcome.svg" />
-					<h1>Welcome to openSEA!</h1>
+					<h1>Welcome to openESEA!</h1>
 					<p>
 						To get started, create an organisation or network below.
 					</p>

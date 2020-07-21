@@ -71,12 +71,12 @@ class OrganisationsInfographicSpecification extends Component<any> {
 						{parentNetwork ? (
 							<p>
 								Since your organisation belongs to a network, you may use the network's infographic specification. You may also upload a new infographic specification. Learn more
-								about openSEA infographic specifications <a>here</a>.
+								about openESEA infographic specifications <a>here</a>.
 							</p>
 						) : (
 							<p>
 								The interface around this infographic is derived from an infographic specification which this report lacks.
-								Learn more about openSEA infographic specifications<a>here</a>.
+								Learn more about E infographic specifications<a>here</a>.
 							</p>
 						)}
 						<p>
@@ -101,7 +101,7 @@ class OrganisationsInfographicSpecification extends Component<any> {
 							being referenced.
 						</p>
 						<p>
-							openSEA does <strong>not</strong> yet hold on to previous versions of models, so make<br />
+							openESEA does <strong>not</strong> yet hold on to previous versions of models, so make<br />
 							sure you keep a backup yourself.
 						</p>
 						<h3>Current specification</h3>

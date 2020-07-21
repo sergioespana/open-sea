@@ -5,11 +5,9 @@ import { Switch } from 'react-router-dom';
 import { Redirect } from '../../../components/Redirect';
 import { Route } from '../../../components/Route';
 import collection from '../../../stores/collection';
-import OrganisationReportData from './data';
 import OrganisationReportModel from './model';
-import OrganisationReportOverview from './report';
+import OrganisationReportOverview from './Report';
 import OrganisationReportSettings from './settings';
-import ReportSurveyRoutes from './survey';
 import OrganisationReportSurveys from './surveys';
 
 const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((props) => {
@@ -22,14 +20,11 @@ const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((pro
 	if (!report) return <Redirect to={`/${orgId}/reports`} />;
 
 	return (
-		//			<Route path="/:orgId/:repId/:sId" component={ReportSurveyRoutes} />
 		<Switch>
 			<Route path="/:orgId/:repId" exact component={OrganisationReportOverview} />
-			<Route path="/:orgId/:repId/data" exact component={OrganisationReportData} />
 			<Route path="/:orgId/:repId/model" exact component={OrganisationReportModel} />
 			<Route path="/:orgId/:repId/settings" exact component={OrganisationReportSettings} />
 			<Route path="/:orgId/:repId/surveys" exact component={OrganisationReportSurveys} />
-			<Route path="/:orgId/:repId/:sId" component={ReportSurveyRoutes} />
 		</Switch>
 	);
 }));

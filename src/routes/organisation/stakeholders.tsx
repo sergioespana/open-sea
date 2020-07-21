@@ -75,10 +75,9 @@ export default class OrganisationSettingsPeople extends Component<any> {
 			<React.Fragment>
 				<Header
 					title="People"
-					headTitle={`People - ${organisation.name} / Settings`}
+					headTitle={`People - ${organisation.name} / Stakeholders`}
 					breadcrumbs={[
-						<Link key={`/${orgId}`} to={`/${orgId}`}>{organisation.name}</Link>,
-						<Link key={`/${orgId}/settings`} to={`/${orgId}/settings`}>Settings</Link>
+						<Link key={`/${orgId}`} to={`/${orgId}`}>{organisation.name}</Link>
 					]}
 				>
 					{inRange(currentUserAccess, 30, 101) && <Button appearance="default" onClick={this.toggleModal}>Add</Button>}

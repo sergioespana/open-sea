@@ -218,10 +218,10 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 							trigger={<NavButton round><MdHelp /></NavButton>}
 						>
 							<h3>Help</h3>
-							<MenuOption>openSEA documentation</MenuOption>
+							<MenuOption>openESEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
 							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
-							<MenuOption>About openSEA</MenuOption>
+							<MenuOption>About openESEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
 							<MenuOption>Privacy Policy</MenuOption>
@@ -234,7 +234,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 							position="bottom-right"
 							trigger={<NavButton round>{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}</NavButton>}
 						>
-							<h3>Your openSEA</h3>
+							<h3>Your openESEA</h3>
 							<MenuOption to={`/dashboard/people/${curUser._id}`}>Profile</MenuOption>
 							<MenuOption>Give feedback</MenuOption>
 							<MenuOption to="/account/signout">Log out</MenuOption>
@@ -248,7 +248,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 			navigationItems={[
 				{
 					isHeader: true,
-					label: 'openSEA'
+					label: 'openESEA'
 				},
 				{
 					icon: <MdInbox />,
@@ -325,11 +325,6 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/stakeholders`
 		},
 		{
-			icon: <MdQuestionAnswer />,
-			label: 'Survey responses',
-			to: `/${orgId}/surveys`
-		},
-		{
 			icon: <MdSettings />,
 			label: 'Settings',
 			to: `/${orgId}/settings`,
@@ -338,11 +333,6 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					hidden: !inRange(currentUserAccess, 30, 101),
 					label: 'Details',
 					to: `/${orgId}/settings/details`
-				},
-				{
-					hidden: !inRange(currentUserAccess, 30, 101),
-					label: 'Survey',
-					to: `/${orgId}/settings/survey`
 				},
 				{
 					label: 'People',
@@ -371,10 +361,6 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					{
 						label: 'Report',
 						to: `/${_id}`
-					},
-					{
-						label: 'Data',
-						to: `/${_id}/data`
 					},
 					{
 						label: 'Surveys',
@@ -407,10 +393,6 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 					{
 						label: 'Data',
 						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/data`
-					},
-					{
-						label: 'Survey',
-						to: `/${orgId}/infographics/${ _id.substring(_id.indexOf("/") + 1) }/survey`
 					},
 					{
 						label: 'Specification',
@@ -503,10 +485,10 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							)}
 						>
 							<h3>Help</h3>
-							<MenuOption>openSEA documentation</MenuOption>
+							<MenuOption>openESEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
 							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
-							<MenuOption>About openSEA</MenuOption>
+							<MenuOption>About openESEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
 							<MenuOption>Privacy Policy</MenuOption>
@@ -520,7 +502,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							position="bottom-right"
 							trigger={<NavButton round>{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}</NavButton>}
 						>
-							<h3>Your openSEA</h3>
+							<h3>Your openESEA</h3>
 							<MenuOption to={`/dashboard/people/${curUser._id}`}>Profile</MenuOption>
 							<MenuOption>Give feedback</MenuOption>
 							<MenuOption to="/account/signout">Log out</MenuOption>

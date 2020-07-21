@@ -66,12 +66,12 @@ class OrganisationsReportModel extends Component<any> {
 							<p>
 								Since your organisation belongs to a network, the model that you upload will be merged
 								with the network's if it is set. You may also use the network's directly. Learn more
-								about openSEA models <a>here</a>.
+								about openESEA models <a>here</a>.
 							</p>
 						) : (
 							<p>
 								The interface around this report is derived from a model which this report lacks.
-								Learn more about openSEA models <a>here</a>.
+								Learn more about openESEA models <a>here</a>.
 							</p>
 						)}
 						<p>
@@ -95,7 +95,7 @@ class OrganisationsReportModel extends Component<any> {
 							being referenced.
 						</p>
 						<p>
-							openSEA does <strong>not</strong> yet hold on to previous versions of models, so make<br />
+							openESEA does <strong>not</strong> yet hold on to previous versions of models, so make<br />
 							sure you keep a backup yourself.
 						</p>
 						<h3>Current model</h3>

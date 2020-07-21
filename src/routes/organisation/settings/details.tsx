@@ -133,19 +133,50 @@ class OrganisationSettingsDetails extends Component<any, State> {
 				<Modal
 					isOpen={showModal}
 					onClose={this.toggleModal}
+					width={10000}
 				>
 					<form onSubmit={this.onSubmit}>
 						<ModalHeader>
-							<h1>Add stakeholdergroup</h1>
+							<h1>Limesurvey instructions</h1>
 						</ModalHeader>
 						<ModalSection>
-							<p>
-								Please add a stakeholdergroup or stakeholder. Unfortunately, a stakeholdergroup and stakeholder cannot be added simultaneously.
-							</p>
+								<h2>Create LimeSurvey account and instance</h2>
+								<ol>
+									<li>Create a LimeSurvey account at <a href="https://www.limesurvey.org/en/">limesurvey.org</a></li>
+									<li>Activate the account via the activation link obtained in email.</li>
+									<li>Create a LimeSurvey instance at <a href="https://account.limesurvey.org/your-account/your-limesurvey-profile">account.limesurvey.org</a> </li>
+									<li>Provide the details for the LimeSurvey instance:</li>
+									<ol>
+									<li>Own defined unqiue <i>domain name</i></li>
+									<li>Server <i>location</i></li>
+									<li>Domain host <i>limequery.org</i></li>
+									</ol></ol>
+										<p/>
+								<h2>Configure LimeSurvey instance</h2>
+								<ol>
+									<li>Go to https://<i>[domain name]</i>.limequery.org/index.php/admin</li>
+									<ul><small>Replace <i>[domain name]</i> with the domain name credentials as defined in 4.3</small></ul>
+									<li>Go to <i>Configuration / Global settings / Interfaces</i></li>
+									<li>Activate remote RPC with the following options</li>
+									<ol>
+										<li>RPC interface enabled: <i>JSON-RPC</i></li>
+										<li>Publish API on /admin/remotecontrol: <i>On</i></li>
+										<li>Set Access-Control-Allow-Origin header: <i>Off</i></li>
+									</ol>
+									<li>Save changes</li>
+									</ol>
+									<p/>
+									<h2>Activate CORS changer</h2>
+									<ol>
+										<li>Download a <i>CORS CHANGER</i> browser plugin</li>
+										<ul><small>In our example we use Google Chrome with the plugin Moesif origin and CORS CHANGER.</small></ul>
+										<li>In Access Control Allow Headers at the following; <i>path,host,user-agent,connection,Accept,Content-Type</i></li>
+										<li>In domain list provide domain name credentials as defined in 4.3</li>
+										<ul><small>For example; http://openesea.limequery.org</small></ul>
+									</ol>
+									<p><b>Please be aware to turn the plugin off after use </b></p>
+									<Button appearance="default" onClick={this.toggleModal} type="button">Ok</Button>
 						</ModalSection>
-						<ModalFooter>
-								<Button appearance="subtle-link" onClick={this.toggleModal} type="button">Cancel</Button>
-						</ModalFooter>
 					</form>
 				</Modal>
 			</React.Fragment>
@@ -180,12 +211,13 @@ class OrganisationSettingsDetails extends Component<any, State> {
 				if (res.data.result.status === undefined) {
 					UIStore.addFlag({ appearance: 'success', title: 'LimeSurvey: ', description: 'Credentials are valid' });
 					props.state.isBusy = true; // FIXME: Use setAppState for this when it works
+					return OrganisationsStore.updateOrganisation(organisation, { onSuccess, onError });
 				} else UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description: res.data.result.status.toString() });})
 				.catch(err => {
 					console.log(err);
 					UIStore.addFlag({ appearance: 'error', title: 'LimeSurvey: ', description: 'Cannot connect to Limesurvey, please check the instructions above' });
 				});
-		} else return OrganisationsStore.updateOrganisation(organisation, { onSuccess, onError });
+		} 
 	}
 }
 const toggleModal = (prevState: State) => ({ showModal: !prevState.showModal });
