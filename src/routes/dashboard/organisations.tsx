@@ -5,7 +5,7 @@ import { filter, find, get, isUndefined, reject } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import MdLock from 'react-icons/lib/md/lock';
+import { MdLock } from 'react-icons/md';
 import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
@@ -25,9 +25,9 @@ const DashboardOrganisations = inject(app('state'))(observer((props) => {
 				<Section>
 					<EmptyState>
 						<img src="/assets/images/empty-state-welcome.svg" />
-						<h1>Welcome to openSEA</h1>
+						<h1>Welcome to openESEA</h1>
 						<p>
-							openSEA allows you to easily track progress on metrics and indicators you
+							openESEA allows you to easily track progress on metrics and indicators you
 							define for your organisation. To get started, simply click below to
 							claim your organisation's name.
 						</p>

@@ -1,7 +1,7 @@
 import { find, get, map } from 'lodash';
 import { darken } from 'polished';
 import React, { Component, createElement, HTMLProps } from 'react';
-import MdExpandMore from 'react-icons/lib/md/expand-more';
+import { MdExpandMore } from 'react-icons/md';
 import { LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from '../Button';

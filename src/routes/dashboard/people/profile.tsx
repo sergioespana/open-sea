@@ -2,7 +2,7 @@ import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import MdArrowBack from 'react-icons/lib/md/arrow-back';
+import { MdArrowBack } from 'react-icons/md';
 import slugify from 'slugify';
 import { Button, LinkButton } from '../../../components/Button';
 import { Input } from '../../../components/NewInput';

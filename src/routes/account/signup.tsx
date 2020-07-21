@@ -31,7 +31,7 @@ export default class AccountSignout extends Component<any, State> {
 		return (
 			<AuthFormWrapper>
 				<AuthFormHeader>
-					<h1>openSEA</h1>
+					<h1>openESEA</h1>
 					<h2>Create your account</h2>
 				</AuthFormHeader>
 				<AuthForm onSubmit={this.onSubmit}>
@@ -72,7 +72,7 @@ export default class AccountSignout extends Component<any, State> {
 					</Button>
 				</AuthForm>
 				<AuthFormFooter>
-					<Link to="/account/signin">Already have an openSEA account? Log in</Link>
+					<Link to="/account/signin">Already have an openESEA account? Log in</Link>
 				</AuthFormFooter>
 			</AuthFormWrapper>
 		);

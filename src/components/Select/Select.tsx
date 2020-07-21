@@ -1,6 +1,6 @@
 import { find } from 'lodash';
 import React, { HTMLProps, SFC } from 'react';
-import MdExpandMore from 'react-icons/lib/md/expand-more';
+import { MdExpandMore } from 'react-icons/md';
 import ReactSelect, { SelectProps } from 'react-select';
 import slugify from 'slugify';
 import styled from '../../util/styled-components';

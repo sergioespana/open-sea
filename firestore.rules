@@ -35,7 +35,7 @@ service cloud.firestore {
 				allow read;
 				allow write: if currentUserHasAccess(orgId, 20);
 			}
-
+      
 			match /users/{uid} {
 				allow read;
 				allow write: if currentUserHasAccess(orgId, 30);
@@ -44,6 +44,21 @@ service cloud.firestore {
 			match /infographics/{infographicId} {
 				allow read;
 				allow write: if currentUserHasAccess(orgId, 20);
+			}
+			match /surveys/{sId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+      }
+
+			match /stakeholdergroups/{sgId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+        
+       	match /stakeholders/{sId} {
+				allow read;
+				allow write: if currentUserHasAccess(orgId, 20);
+        allow delete: if currentUserHasAccess(orgId, 100);
+				} 
 			}
 		}
 
@@ -59,5 +74,5 @@ service cloud.firestore {
 		match /models/{modelId} {
 			allow read, write: if isAuthed();
 		}
-	}
+  }
 }

@@ -4,12 +4,14 @@
 		"name": { "type": "string" },
 		"description": { "type": "string" },
 		"version": { "type": "string" },
-		"categories": {
+		"topics": {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
-					"name": { "type": "string" }
+					"name": { "type": "string" },
+					"topic": { "type": "string" },
+					"description": { "type": "string" }
 				}
 			}
 		},
@@ -27,7 +29,7 @@
 						"items": {
 							"type": "object",
 							"properties": {
-								"indicator": { "type": "string" },
+								"indirectIndicator": { "type": "string" }, 
 								"operator": {
 									"type": "string",
 									"enum": [ ">", ">=", "<", "<=", "==" ]
@@ -40,7 +42,7 @@
 								}
 							},
 							"additionalProperties": false,
-							"required": [ "indicator", "operator", "value" ]
+							"required": [ "indirectIndicator", "operator", "value" ]
 						}
 					}
 				},
@@ -48,36 +50,56 @@
 				"required": [ "name", "requirements" ]
 			}
 		},
-		"metrics": {
-			"type": "object",
+		"indicators":{
+			"type" : "object",
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
 					"name": { "type": "string" },
-					"help": { "type": "string" },
+					"description": { "type": "string" },
 					"type": {
 						"type": "string",
-						"enum": [ "text", "number", "list", "likert" ]
-					}
+						"enum": [ "directindicator", "indirectindicator" ]
+					},
+					"topic": { "type": "string" },
+					"unit": { "type": "string" },
+					"help": { "type": "string" },
+					"formula": { "type": "string" }
 				},
 				"required": [ "name", "type" ]
 			}
 		},
-		"indicators": {
+		"surveys": {
 			"type": "object",
 			"additionalProperties": {
 				"type": "object",
 				"properties": {
 					"name": { "type": "string" },
 					"description": { "type": "string" },
-					"category": { "type": "string" },
-					"type": {
-						"type": "string",
-						"enum": [ "text", "number", "percentage", "list" ]
-					},
-					"value": { "type": "string" }
+					"welcometext": { "type": "string" },
+					"closingtext": { "type": "string" },
+					"responserate": { "type": "string" },
+					"topic": { "type": "string" },
+					"questions": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "object",
+							"properties": {
+								"name": { "type": "string" },
+								"order": { "type": "number" },
+								"description": { "type": "string" },
+								"ismandatory": { "type": "string" },
+								"answertype": { "type": "string" },
+								"others": { "type": "string" },
+								"options": { "type": "array" },
+								"aggregatedqs": { "type": "array" },
+								"indicator": { "type": "string" }
+							},
+							"required": [ "name", "answertype" ]
+						}
+					}
 				},
-				"required": [ "name", "type" ]
+				"required": [ "name", "responserate" ]
 			}
 		},
 		"reportItems": {
@@ -115,5 +137,5 @@
 			}
 		}
 	},
-	"required": [ "metrics", "indicators" ]
+	"required": [ "surveys" ]
 }

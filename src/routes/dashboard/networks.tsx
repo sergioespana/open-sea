@@ -5,7 +5,7 @@ import { filter, find, get } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import MdLock from 'react-icons/lib/md/lock';
+import { MdLock } from 'react-icons/md';
 import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
@@ -25,7 +25,7 @@ const DashboardNetworks = inject(app('state'))(observer((props) => {
 				<Section>
 					<EmptyState>
 						<img src="/assets/images/empty-state-welcome.svg" />
-						<h1>Welcome to openSEA networks</h1>
+						<h1>Welcome to openESEA networks</h1>
 						<p>
 							Link your organisations by adding them to a network, allowing you
 							to easily compare results.

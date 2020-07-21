@@ -14,7 +14,7 @@ const Wrapper = styled(UnstyledWrapper)`
 `;
 
 const UnstyledLabel: React.StatelessComponent<HTMLProps<HTMLLabelElement>> = (props) => <label {...props} />;
-const Label = styled(UnstyledLabel)`
+export const Label = styled(UnstyledLabel)`
 	color: ${({ theme }) => theme.text.secondary};
 	font-size: 0.857rem;
 	font-weight: 500;

@@ -5,21 +5,7 @@ import { toJS } from 'mobx';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdAccountCircle from 'react-icons/lib/md/account-circle';
-import MdAdd from 'react-icons/lib/md/add';
-import MdAssessment from 'react-icons/lib/md/assessment';
-import MdAssignmentTurnedIn from 'react-icons/lib/md/assignment-turned-in';
-import MdBusiness from 'react-icons/lib/md/business';
-import MdCollectionsBookmark from 'react-icons/lib/md/collections-bookmark';
-import MdCompareArrows from 'react-icons/lib/md/compare-arrows';
-import MdGroupWork from 'react-icons/lib/md/group-work';
-import MdHelp from 'react-icons/lib/md/help';
-import MdHome from 'react-icons/lib/md/home';
-import MdInbox from 'react-icons/lib/md/inbox';
-import MdPeople from 'react-icons/lib/md/people';
-import MdSearch from 'react-icons/lib/md/search';
-import MdSettings from 'react-icons/lib/md/settings';
-import MdImage from 'react-icons/lib/md/image';
+import { MdAccountCircle, MdAdd, MdAssessment, MdAssignmentTurnedIn, MdBusiness, MdCollectionsBookmark, MdCompareArrows, MdGroupWork, MdHelp, MdHome, MdImage, MdInbox, MdPeople, MdQuestionAnswer, MdSearch, MdSettings } from 'react-icons/md';
 import { Switch } from 'react-router-dom';
 import Button from '../components/Button';
 import Drawer, { Button as DrawerButton, SearchInput } from '../components/Drawer';
@@ -232,10 +218,10 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 							trigger={<NavButton round><MdHelp /></NavButton>}
 						>
 							<h3>Help</h3>
-							<MenuOption>openSEA documentation</MenuOption>
+							<MenuOption>openESEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
 							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
-							<MenuOption>About openSEA</MenuOption>
+							<MenuOption>About openESEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
 							<MenuOption>Privacy Policy</MenuOption>
@@ -248,7 +234,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 							position="bottom-right"
 							trigger={<NavButton round>{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}</NavButton>}
 						>
-							<h3>Your openSEA</h3>
+							<h3>Your openESEA</h3>
 							<MenuOption to={`/dashboard/people/${curUser._id}`}>Profile</MenuOption>
 							<MenuOption>Give feedback</MenuOption>
 							<MenuOption to="/account/signout">Log out</MenuOption>
@@ -262,7 +248,7 @@ const DashboardNavigation = inject(app('UIStore'))(observer((props) => {
 			navigationItems={[
 				{
 					isHeader: true,
-					label: 'openSEA'
+					label: 'openESEA'
 				},
 				{
 					icon: <MdInbox />,
@@ -334,6 +320,11 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 			to: `/${orgId}/infographics`
 		},
 		{
+			icon: <MdPeople />,
+			label: 'Stakeholders',
+			to: `/${orgId}/stakeholders`
+		},
+		{
 			icon: <MdSettings />,
 			label: 'Settings',
 			to: `/${orgId}/settings`,
@@ -372,8 +363,8 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 						to: `/${_id}`
 					},
 					{
-						label: 'Data',
-						to: `/${_id}/data`
+						label: 'Surveys',
+						to: `/${_id}/surveys`
 					},
 					{
 						label: 'Model',
@@ -494,10 +485,10 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							)}
 						>
 							<h3>Help</h3>
-							<MenuOption>openSEA documentation</MenuOption>
+							<MenuOption>openESEA documentation</MenuOption>
 							<MenuOption>What's new</MenuOption>
 							<MenuOption onClick={UIStore.toggleKSModalOpen}>Keyboard shortcuts</MenuOption>
-							<MenuOption>About openSEA</MenuOption>
+							<MenuOption>About openESEA</MenuOption>
 							<h3>Legal</h3>
 							<MenuOption>Terms of Use</MenuOption>
 							<MenuOption>Privacy Policy</MenuOption>
@@ -511,7 +502,7 @@ const OrganisationNavigation = inject(app('OrganisationsStore', 'UIStore'))(obse
 							position="bottom-right"
 							trigger={<NavButton round>{isLoading ? <MdAccountCircle /> : <img src={curUser.avatar} />}</NavButton>}
 						>
-							<h3>Your openSEA</h3>
+							<h3>Your openESEA</h3>
 							<MenuOption to={`/dashboard/people/${curUser._id}`}>Profile</MenuOption>
 							<MenuOption>Give feedback</MenuOption>
 							<MenuOption to="/account/signout">Log out</MenuOption>

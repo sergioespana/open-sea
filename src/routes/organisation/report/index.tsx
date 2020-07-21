@@ -5,10 +5,10 @@ import { Switch } from 'react-router-dom';
 import { Redirect } from '../../../components/Redirect';
 import { Route } from '../../../components/Route';
 import collection from '../../../stores/collection';
-import OrganisationReportData from './data';
 import OrganisationReportModel from './model';
-import OrganisationReportOverview from './report';
+import OrganisationReportOverview from './Report';
 import OrganisationReportSettings from './settings';
+import OrganisationReportSurveys from './surveys';
 
 const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((props) => {
 	const { match: { params: { orgId, repId } }, OrganisationsStore } = props;
@@ -22,9 +22,9 @@ const OrganisationReportRoutes = inject(app('OrganisationsStore'))(observer((pro
 	return (
 		<Switch>
 			<Route path="/:orgId/:repId" exact component={OrganisationReportOverview} />
-			<Route path="/:orgId/:repId/data" exact component={OrganisationReportData} />
 			<Route path="/:orgId/:repId/model" exact component={OrganisationReportModel} />
 			<Route path="/:orgId/:repId/settings" exact component={OrganisationReportSettings} />
+			<Route path="/:orgId/:repId/surveys" exact component={OrganisationReportSurveys} />
 		</Switch>
 	);
 }));

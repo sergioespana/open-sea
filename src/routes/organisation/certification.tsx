@@ -59,7 +59,7 @@ class OrganisationCertification extends Component<any, State> {
 
 		if (!certifications) return <Redirect to={`/${orgId}`} />;
 
-		const assessed: Certification[] = ReportsStore.assess(certifications, model.indicators, report);
+		const assessed: Certification[] = ReportsStore.assess(certifications, model.indirectIndicators, report);
 		const { current: currentIndex, next: nextIndex } = ReportsStore.getCertificationIndex(assessed);
 		const current = assessed[currentIndex];
 		const next = assessed[nextIndex];
@@ -105,7 +105,7 @@ class OrganisationCertification extends Component<any, State> {
 									const { _computed, indicator, operator, value } = requirement;
 									return (
 										<li>
-											<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator}) should be {ReportsStore.operatorText[operator]}
+											<strong>{get(network, `model.indirectIndicators.${indicator}.name`)}</strong> ({indicator}) should be {ReportsStore.operatorText[operator]}
 											&nbsp;{value}{operator !== '==' ? `. It currently has a value of ${_computed}.` : ', which it is.'}
 										</li>
 									);
@@ -117,7 +117,7 @@ class OrganisationCertification extends Component<any, State> {
 									const { _computed, indicator, operator, value } = requirement;
 									return (
 										<li>
-											<strong>{get(network, `model.indicators.${indicator}.name`)}</strong> ({indicator})
+											<strong>{get(network, `model.indirectIndicators.${indicator}.name`)}</strong> ({indicator})
 										should be {ReportsStore.operatorText[operator]} {value}, however it is currently at {_computed}.
 									</li>
 									);

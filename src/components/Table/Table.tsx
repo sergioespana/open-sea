@@ -1,8 +1,7 @@
 import { find, isUndefined, map, reject, sortBy, uniq } from 'lodash';
 import { parse, stringify } from 'query-string';
 import React from 'react';
-import MdArrowDown from 'react-icons/lib/md/arrow-drop-down';
-import MdArrowUp from 'react-icons/lib/md/arrow-drop-up';
+import { MdArrowDownward , MdArrowUpward } from 'react-icons/md';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import slugify from 'slugify';
 import { LinkButton } from '../Button';
@@ -147,9 +146,9 @@ export const renderColumnHead = (sortingDisabled: TableProps['sortingDisabled'],
 	const sortKey = key || slugify(label, { lower: true });
 	const searchIconProps = { height: 16, viewBox: '0 0 40 40', width: 16 };
 	const sortIcon = search.sort === `-${sortKey}`
-		? <MdArrowDown {...searchIconProps} />
+		? <MdArrowDownward {...searchIconProps} />
 		: search.sort === sortKey
-			? <MdArrowUp {...searchIconProps} />
+			? <MdArrowUpward {...searchIconProps} />
 			: <svg {...searchIconProps} />;
 	// Render the head item.
 	return sortingDisabled ? (

@@ -5,7 +5,7 @@ import { reject } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
-import MdLock from 'react-icons/lib/md/lock';
+import { MdLock } from 'react-icons/md';
 import { LinkButton } from '../../components/Button';
 import Container from '../../components/Container';
 import EmptyState from '../../components/EmptyState';
@@ -26,7 +26,7 @@ const DashboardOverview = inject(app('state'))(observer((props) => {
 			<Container>
 				<EmptyState>
 					<img src="/assets/images/empty-state-welcome.svg" />
-					<h1>Welcome to openSEA!</h1>
+					<h1>Welcome to openESEA!</h1>
 					<p>
 						To get started, create an organisation or network below.
 					</p>

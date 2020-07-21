@@ -2,7 +2,7 @@ import Fuse from 'fuse.js';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdFileUpload from 'react-icons/lib/md/file-upload';
+import { MdFileUpload } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -55,9 +55,9 @@ export default class DashboardModelsOverview extends Component<any> {
 					<Section>
 						<EmptyState>
 							<img src="/assets/images/empty-state-welcome.svg" />
-							<h1>Welcome to openSEA model repository</h1>
+							<h1>Welcome to openESEA model repository</h1>
 							<p>
-								The openSEA model repository currently contains no models. Why don't
+								The openESEA model repository currently contains no models. Why don't
 								you <a onClick={this.openInput}>add the first</a>?
 							</p>
 						</EmptyState>

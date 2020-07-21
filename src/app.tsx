@@ -13,8 +13,8 @@ export const App = () => (
 		<Router history={history}>
 			<React.Fragment>
 				<Helmet
-					titleTemplate="%s — openSEA"
-					defaultTitle="openSEA"
+					titleTemplate="%s — openESEA"
+					defaultTitle="openESEA"
 				/>
 				<Switch>
 					<Route path="/product" component={ProductRoutes} />

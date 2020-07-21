@@ -1,7 +1,7 @@
 import { isArray, isNull, isString, map } from 'lodash';
 import { darken, transparentize } from 'polished';
 import React, { createElement } from 'react';
-import MdArrowBack from 'react-icons/lib/md/arrow-back';
+import { MdArrowBack } from 'react-icons/md';
 import { LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { NavLink } from '../Link';

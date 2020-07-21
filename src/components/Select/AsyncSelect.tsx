@@ -1,6 +1,6 @@
 import { find } from 'lodash';
 import React, { HTMLProps, SFC } from 'react';
-import MdExpandMore from 'react-icons/lib/md/expand-more';
+import { MdExpandMore } from 'react-icons/md';
 import { SelectProps } from 'react-select';
 import { default as AsyncReactSelect } from 'react-select/lib/Async';
 import styled from '../../util/styled-components';

@@ -29,7 +29,7 @@ export default class AccountSignin extends Component<any, State> {
 		return (
 			<AuthFormWrapper>
 				<AuthFormHeader>
-					<h1>openSEA</h1>
+					<h1>openESEA</h1>
 					<h2>Log in to your account</h2>
 				</AuthFormHeader>
 				<AuthForm onSubmit={this.onSubmit}>

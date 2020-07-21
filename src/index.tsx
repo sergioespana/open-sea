@@ -3,7 +3,7 @@ import { createStore } from 'mobx-app';
 import { Provider } from 'mobx-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MdInfoOutline from 'react-icons/lib/md/info-outline';
+import { MdInfoOutline } from 'react-icons/md';
 import App from './app';
 import * as stores from './stores/index';
 
@@ -28,8 +28,8 @@ const onWindowLoad = () => {
 								label: 'Remind me later'
 							}],
 							icon: <MdInfoOutline />,
-							title: 'openSEA was updated',
-							description: 'An update for openSEA was downloaded in the background. Refresh to get access.'
+							title: 'openESEA was updated',
+							description: 'An update for openESEA was downloaded in the background. Refresh to get access.'
 						});
 					}
 				};

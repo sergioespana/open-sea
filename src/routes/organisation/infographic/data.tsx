@@ -62,11 +62,11 @@ class OrganisationInfographicData extends Component<any> {
 				<Container>
 					<Section>
 						<Form onSubmit={this.onSubmit}>
-							{model.categories
+							{model.topics
 								? (
 									<React.Fragment>
-										{map(model.categories, ({ name }, catId) => {
-											const items = pickBy(model.metrics, ({ category }) => category === catId);
+										{map(model.topics, ({ name }, catId) => {
+											const items = pickBy(model.directIndicators, ({ category }) => category === catId);
 											if (isEmpty(items)) return null;
 											return (
 												<React.Fragment>
@@ -75,11 +75,11 @@ class OrganisationInfographicData extends Component<any> {
 												</React.Fragment>
 											);
 										})}
-										{!isEmpty(pickBy(model.metrics, ({ category }) => category === undefined)) && <h3>Uncategorised</h3>}
-										{map(pickBy(model.metrics, ({ category }) => category === undefined), this.renderItem(data))}
+										{!isEmpty(pickBy(model.directIndicators, ({ category }) => category === undefined)) && <h3>Uncategorised</h3>}
+										{map(pickBy(model.directIndicators, ({ category }) => category === undefined), this.renderItem(data))}
 									</React.Fragment>
 								)
-								: map(model.metrics, this.renderItem(data))}
+								: map(model.directIndicators, this.renderItem(data))}
 							<FormActions>
 								<Button appearance="default" disabled={preventSubmit} type="submit">Save data</Button>
 								<LinkButton appearance="link" to={`/${orgId}/infographics/${infographicId}`}>Cancel</LinkButton>

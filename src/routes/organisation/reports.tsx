@@ -37,7 +37,7 @@ const OrganisationReports = inject(app('OrganisationsStore'))(observer((props) =
 						<img src="/assets/images/empty-state-welcome.svg" />
 						<h1>Let's begin</h1>
 						<p>
-							To get started using openSEA for {organisation.name}, create a report below.
+							To get started using openESEA for {organisation.name}, create a report below.
 						</p>
 						<p>
 							<LinkButton appearance="default" to={`/create/report?organisation=${orgId}`}>Create a report</LinkButton>

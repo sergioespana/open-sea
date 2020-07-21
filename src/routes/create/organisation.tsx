@@ -17,6 +17,9 @@ interface State {
 	name: string;
 	orgUrlTaken: boolean;
 	url: string;
+	ls_host: string;
+	ls_account: string;
+	ls_password: string;
 }
 
 @inject(app('OrganisationsStore'))
@@ -28,7 +31,10 @@ export default class CreateOrganisation extends Component<any, State> {
 		isPublic: false,
 		name: '',
 		orgUrlTaken: null,
-		url: ''
+		url: '',
+		ls_host: '',
+		ls_account: '',
+		ls_password: ''
 	};
 
 	private searchForId = debounce(() => {
@@ -134,7 +140,7 @@ export default class CreateOrganisation extends Component<any, State> {
 		const { props, state } = this;
 		const { history, OrganisationsStore } = props;
 		const { avatar, description, isPublic, name, url } = state;
-		const organisation = { _id: url, avatar, description, isPublic, name };
+		const organisation = { _id: url, avatar, description, isPublic, name, ls_host: '' ,ls_account: '', ls_password: '' };
 
 		const onSuccess = reaction(
 			() => !isUndefined(find(props.state.organisations, { _id: url })),

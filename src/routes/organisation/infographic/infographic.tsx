@@ -1,9 +1,8 @@
-import { get, isEmpty, map } from 'lodash';
+import { get, isEmpty, map, pickBy } from 'lodash';
 import { app } from 'mobx-app';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import MdEdit from 'react-icons/lib/md/edit';
-import MdMoreHoriz from 'react-icons/lib/md/more-horiz';
+import { MdEdit, MdMoreHoriz } from 'react-icons/md';
 import { Redirect, withRouter } from 'react-router-dom';
 import { Button, LinkButton } from '../../../components/Button';
 import Container from '../../../components/Container';
@@ -14,24 +13,69 @@ import { Section } from '../../../components/Section';
 import collection from '../../../stores/collection';
 import { getYear } from 'date-fns';
 import { values } from 'mobx';
+import { getResponses, getValue } from '../../../util/responses-handler';
+
 
 
 interface State {
 	showModal: boolean;
+	datas: object;
 }
 
-@inject(app('OrganisationsStore', 'InfographicsStore', 'UIStore'))
+@inject(app('OrganisationsStore', 'InfographicsStore', 'ReportsStore',  'UIStore'))
 @observer
 class OrganisationInfographicOverview extends Component<any, State> {
 	state: State = {
-		showModal: false
+		showModal: false,
+		datas: {}
 	};
+	async componentWillMount () {
+		//calculate indicator values based on responses.
+		let { match: { params: { orgId, repId } } } = this.props;
+		const items = this.renderItem();
+		const organisation = items.organisation;
+		const { datas } = this.state;
+
+		const report = repId ? collection(organisation._reports).findById(`${orgId}/${repId}`) : null;
+		const model = get(report, 'model');
+
+		if(model) {
+			const indirectIndicators = pickBy(model.indicators, ({ type }) => type === 'indirectindicator');
+			let iilist = {};
+			map(indirectIndicators, ({ formulameta }) => {
+				map(formulameta, ({ statistic, name }, di) => {
+					iilist[di] = {
+						statistic: statistic,
+						name: name
+					};
+				});
+			});
+			map(organisation._surveys, async ({ _sId }) => {
+				const survey = collection(organisation._surveys).findById(`${orgId}/${repId}/${_sId}`);
+				//get survey object with responses
+				if (survey) {
+					// calculate value
+					map(survey.questions, async ({ indicator }, qId) => {
+						if (indicator) {
+							const indi = pickBy(iilist, ({}, indi) => indi === indicator);
+							map(indi, ({ statistic }, iId) => {
+								const value = getValue(pickBy(survey.questions, ({}, sId) => sId === qId), statistic);
+								if (value) datas[iId] = value;
+							});
+						}
+					});
+				}
+			});
+		}
+	}
 
 	render () {
-		const { match: { params: { orgId, infographicId } }, OrganisationsStore, InfographicsStore } = this.props;
+		const { match: { params: { orgId, infographicId } }, OrganisationsStore, ReportsStore } = this.props;
 		const organisation = OrganisationsStore.findById(orgId);
 		const infographic = collection(organisation._infographics).findById(`${orgId}/${infographicId}`);
 		const specification = get(infographic, 'specification');
+		const { datas } = this.state;
+
 		
 		const PageHead = (
 			<Header
@@ -152,7 +196,7 @@ class OrganisationInfographicOverview extends Component<any, State> {
 		// Function for charts, calculating values of indicators in an array and returning an array of data
 		function calculateChartData(ChartDataInput) {
 			var report = collection(organisation._reports).findById(`${infographic.report}`);
-			var data = get(report, 'data');
+			var data = datas;
 			var model = get(report, 'model');
 			// var items = get(model, 'reportItems');
 			var indicators = get(model, 'indicators');
@@ -186,7 +230,7 @@ class OrganisationInfographicOverview extends Component<any, State> {
 					// console.log("Report: "+ reportFound +" Indicator: "+ indicatorFound);
 
 					if(indicatorFound_check != undefined && indicatorFound_check.type != "text") {
-						ChartDataItemValue = ChartDataItemValue.replace(reportFound +"#"+ indicatorFound, InfographicsStore.compute(indicatorFound_check.value, otherData));
+						ChartDataItemValue = ChartDataItemValue.replace(reportFound +"#"+ indicatorFound, ReportsStore.compute(indicatorFound_check.value, otherData));
 					}
 					else{ break; }
 				}
@@ -197,7 +241,7 @@ class OrganisationInfographicOverview extends Component<any, State> {
 					var indicatorFound_check = get(indicators, indicatorFound[0]);
 						
 					if(indicatorFound_check != undefined && indicatorFound_check.type != "text") {
-						ChartDataItemValue = ChartDataItemValue.replace(indicatorFound[0], InfographicsStore.compute(indicatorFound_check.value, data));
+						ChartDataItemValue = ChartDataItemValue.replace(indicatorFound[0], ReportsStore.compute(indicatorFound_check.value, data));
 					}
 					else { break; }
 				}
@@ -225,7 +269,7 @@ class OrganisationInfographicOverview extends Component<any, State> {
 			var report = collection(organisation._reports).findById(`${infographic.report}`);
 			var model = get(report, 'model');
 			var items = get(model, 'reportItems');
-			var data = get(report, 'data');
+			var data = datas;
 
 			infographic_bgcolor = "#eeeeee";
 			if(items == undefined) var infographic_height = 100; else var infographic_height = 50 + items.length*65 + 40 + 10;
@@ -274,7 +318,7 @@ class OrganisationInfographicOverview extends Component<any, State> {
 						
 						context.fillStyle = "#000000";
 						context.font = "13px Segoe Ui";
-						var itemValue = InfographicsStore.compute(model.indicators[item.value].value, data);
+						var itemValue = ReportsStore.compute(model.indicators[item.value].value, data);
 						if(model.indicators[item.value].type == "percentage") itemValue = itemValue +"%";
 						context.fillText(itemValue, 15, 110 + i*65, infographic_size[0]-30);
 					}
@@ -1457,6 +1501,18 @@ class OrganisationInfographicOverview extends Component<any, State> {
 				</Container>
 			</React.Fragment>
 		); 
+	}
+	private renderItem = () => {
+		const { props } = this;
+		const { OrganisationsStore, match: { params: { orgId, repId } } } = props;
+
+		const organisation = OrganisationsStore.findById(orgId);
+		const report = repId ? collection(organisation._reports).findById(`${orgId}/${repId}`) : null;
+		const survey = organisation._surveys;
+
+		const model = get(report, 'model');
+		//const stakeholdergroups = sgId ? collection(organisation._stakeholdergroups).findById(`${orgId}/${sgId}`) : null;
+		return { organisation, report, model, survey, repId, orgId };
 	}
 }
 
